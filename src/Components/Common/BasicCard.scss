@@ -1,0 +1,62 @@
+.basicCard {
+    min-width: 250px; // Minimum width for the card
+    padding: 1rem;    // Padding inside the card
+    transition: transform 0.2s; // Smooth transition for hover effect
+
+    &:hover {
+        transform: translateY(-2px); // Lift effect on hover
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); // Increase shadow on hover for depth
+    }
+
+    .basicCardContainer {
+        display: flex; // Use flexbox for layout
+        align-items: center; // Center items vertically
+        justify-content: space-between; // Space items evenly
+
+        .heading {
+            font-size: 16px; // Font size for the heading
+            font-weight: bold; // Bold text for emphasis
+        }
+
+        .duration {
+            font-size: 11px; // Smaller font size for duration
+            margin-top: -0.75rem; // Adjust margin for positioning
+            color: #00000080; // Light gray color for duration text
+        }
+
+        .value {
+            font-size: 24px; // Large font size for the main value
+            font-weight: 600; // Bold text for emphasis
+            padding: 0; // Reset padding
+            margin: 0; // Reset margin
+        }
+
+        .iconContainer {
+            display: flex; // Use flexbox for icon container
+            align-items: center; // Center icon vertically
+            justify-content: center; // Center icon horizontally
+            border-radius: 25px; // Rounded corners for the icon container
+            height: 60px; // Fixed height for the icon container
+            width: 60px; // Fixed width for the icon container
+            overflow: hidden; // Ensure the icon fits within the circle
+        }
+    }
+
+    .cardFooterContainer {
+        margin-top: 1rem; // Space above the footer
+
+        .cardFooter {
+            color: #606060; // Default color for footer text
+            font-weight: normal; // Normal font weight for footer text
+            font-size: 16px; // Font size for footer text
+
+            .up {
+                color: #00B69B; // Color for positive change
+            }
+
+            .down {
+                color: #F93C65; // Color for negative change
+            }
+        }
+    }
+}

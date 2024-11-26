@@ -1,0 +1,20 @@
+{
+  "short_name": "Kreative, Performative Individuals",
+  "name": "Kreative, Performative Individuals",
+  "icons": [
+    {
+      "src": "logo.jpg",
+      "type": "image/jpg",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo.jpg",
+      "type": "image/jpg",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

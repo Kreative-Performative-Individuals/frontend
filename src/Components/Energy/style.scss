@@ -1,0 +1,44 @@
+.energy {
+    display: flex; // Flexbox layout for the main container
+    flex-direction: column; // Stack children vertically
+
+    .energyStatsConatiner {
+        display: flex; // Flexbox layout for the stats container
+        gap: 1rem; // Space between stats cards
+        padding: 1rem; // Add some padding around the container
+        justify-content: space-between; // Distribute space between items
+    }
+
+    .energyHeader {
+        margin-top: 30px; // Space above the header
+        margin-bottom: 15px; // Space below the header
+        display: flex; // Flexbox layout for the header
+        align-items: center; // Center items vertically
+        justify-content: space-between; // Space items evenly
+
+        .headerHeading {
+            font-size: 16px; // Font size for the header text
+        }
+
+        .headerFilters {
+            display: flex; // Flexbox layout for the filters
+            align-items: center; // Center items vertically
+            gap: 1rem; // Space between filters
+            min-width: 400px; // Minimum width for the filters container
+            flex-wrap : nowrap; // Prevent wrapping of filter items
+
+        }
+    }
+
+    .machinesList {
+        display: flex; // Flexbox layout for the list of machines
+        align-items: center; // Center items vertically
+        gap: 1.5rem; // Space between machine cards
+        flex-wrap: wrap; // Allow wrapping of machine cards
+    }
+
+    /* Optional: Style the Chip component */
+    .MuiChip-root {
+        margin: 0; // Remove margin to prevent wrapping
+    }
+}

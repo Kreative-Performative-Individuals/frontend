@@ -1,0 +1,18 @@
+.dashboardStatsContainer {
+    display: flex;              // Use flexbox for layout
+    flex-wrap: wrap;           // Allow items to wrap onto the next line if needed
+    gap: 1rem;                 // Space between cards
+    padding: 1rem;             // Add some padding around the container
+    justify-content: space-between; // Distribute space between items
+}
+
+.recentlyViewedContainer {
+    margin-top: 25px;
+}
+
+.recentlyViewed {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}

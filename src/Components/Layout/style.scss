@@ -1,0 +1,45 @@
+.sidebar {
+    overflow: hidden;
+    // Styles for the sidebar
+    .listItem {
+        // Styles for each list item in the sidebar
+        .listBtn {
+            // Styles for the button within the list item
+            transition: transform 0.6s ease, background-color 0.6s ease; // Smooth transition for transform and background color
+            transition: opacity 0.6s ease; // Smooth transition for opacity
+        }
+        
+        &.active {
+            // Styles for the active list item
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            .listBtn {
+                background-color: #4880FF; // Change background color for active button
+                border-radius: 5px; // Round the corners of the button
+                color: #fff; // Change text color to white
+                transform: translateX(10px); // Shift the button slightly to the right
+                .iconStyle {
+                    color: #fff; // Change icon color to white when active
+                }
+            }
+        }
+
+        &:hover {
+            // Styles for list item on hover
+            // padding: 0 0.5rem; // Add padding on hover
+            .listBtn {
+                box-shadow: 4px 4px 10px rgba(72, 128, 255, 0.3); // Add shadow effect on hover
+                background-color: #4880FF; // Change background color on hover
+                border-radius: 5px; // Round the corners of the button
+                color: #fff; // Change text color to white
+                transform: translateX(10px); // Shift the button slightly to the right on hover
+                .iconStyle {
+                    color: #fff; // Change icon color to white on hover
+                    transform: scale(1.2); // Scale up the icon on hover
+                }
+            }
+        }
+        &:focus {
+            outline: 2px solid #4880FF; // Add a focus outline
+        }
+    }
+}

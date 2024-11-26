@@ -1,0 +1,97 @@
+.productionCard {
+    padding: 1rem; // Padding inside the card
+    background-color: #fff; // Background color of the card
+    border-radius: 15px; // Rounded corners for the card
+    width: 325px; // Fixed width for the card
+
+    .cardHead {
+        display: flex; // Use flexbox for layout
+        align-items: center; // Center items vertically
+        justify-content: space-between; // Space items evenly
+
+        .machineName {
+            font-weight: 600; // Bold font for machine name
+            font-size: 16px; // Font size for machine name
+            color: #202224; // Text color for machine name
+        }
+
+        .machineType {
+            font-weight: 400; // Normal font weight for machine type
+            font-size: 11px; // Font size for machine type
+            color: #202224; // Text color for machine type
+            margin-top: -5px; // Negative margin to adjust spacing
+        }
+
+        .machineStatus {
+            font-size: 12px; // Font size for machine status
+            font-weight: 600; // Bold font for machine status
+            padding: 0.5rem 1rem; // Padding around the status
+            border-radius: 5px; // Rounded corners for status badge
+
+            &.working {
+                background-color: rgba($color: #00B69B, $alpha: 0.2); // Background color for working status
+                color: #00B69B; // Text color for working status
+            }
+
+            &.offline {
+                background-color: rgba($color: #EF3826, $alpha: 0.2); // Background color for offline status
+                color: #EF3826; // Text color for offline status
+            }
+
+            &.idle {
+                background-color: rgba($color: #FD9A56, $alpha: 0.2); // Background color for idle status
+                color: #FD9A56; // Text color for idle status
+            }
+
+            &.maintenance {
+                background-color: rgba($color: #7e7e7e, $alpha: 0.2); // Background color for maintenance status
+                color: #7e7e7e; // Text color for maintenance status
+            }
+        }
+    }
+
+    cursor: pointer; // Change cursor to pointer on hover
+
+    &:hover {
+        scale: 1.05; // Scale up the card on hover
+        transition: all 0.5s ease; // Smooth transition for hover effect
+    }
+
+    .productionCardBody {
+        padding: 1rem 0.5rem;
+
+        .statRow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 300;
+            font-size: 15px;
+        }
+
+        .cycleBar {
+            display: flex;
+            height: 15px;
+            overflow: hidden;
+        }
+    }
+
+    .productionCardFooter {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: -20px;
+
+        .gaugeContainer {
+            // display: flex;
+            // flex-direction: column;
+            // align-items: center;
+            // justify-content: center;
+            text-align: center;
+
+            .gaugeLegend {
+                font-size: 10px;
+                margin-top: -25px;
+            }
+        }
+    }
+}

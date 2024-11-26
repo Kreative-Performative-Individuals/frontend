@@ -1,0 +1,122 @@
+.productionDetail {
+    .productionDetailHead {
+        display: flex; // Use flexbox for layout
+        align-items: center; // Center items vertically
+        justify-content: space-between; // Space items evenly
+
+        .productionDetailIntro {
+            display: flex; // Use flexbox for layout
+            align-items: center; // Center items vertically
+            justify-content: space-between; // Space items evenly
+            gap: 1rem;
+
+            .machineName {
+                font-size: 24px;
+                font-weight: 500;
+            }
+
+            .machineStatus {
+                font-size: 12px; // Font size for machine status
+                font-weight: 600; // Bold font for machine status
+                padding: 0.5rem 1rem; // Padding around the status
+                border-radius: 5px; // Rounded corners for status badge
+
+                &.working {
+                    background-color: rgba($color: #00B69B, $alpha: 0.2); // Background color for working status
+                    color: #00B69B; // Text color for working status
+                }
+
+                &.offline {
+                    background-color: rgba($color: #EF3826, $alpha: 0.2); // Background color for offline status
+                    color: #EF3826; // Text color for offline status
+                }
+
+                &.idle {
+                    background-color: rgba($color: #FD9A56, $alpha: 0.2); // Background color for idle status
+                    color: #FD9A56; // Text color for idle status
+                }
+
+                &.maintenance {
+                    background-color: rgba($color: #7e7e7e, $alpha: 0.2); // Background color for maintenance status
+                    color: #7e7e7e; // Text color for maintenance status
+                }
+            }
+        }
+
+        .productionDetailFilters {
+            display: flex;
+
+            .button {
+                padding: 0.5rem 1rem;
+                color: #fff;
+                background-color: #4880FF;
+                border-radius: 10px;
+            }
+        }
+    }
+
+    .productionDetailStats {
+        margin-top: 15px;
+        display: flex; // Flexbox layout for the stats container
+        gap: 1rem; // Space between stats cards
+        padding: 1rem; // Add some padding around the container
+        justify-content: space-between; // Distribute space between items
+    }
+
+    .machineDetailChartFilter {
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+        gap: 1.5rem;
+        margin-top: 30px;
+        align-items: center;
+        justify-content: space-between;
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            .Filters {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: #FAFBFD;
+
+                .chartFilterButton {
+                    height: 40px;
+                    border: 1px solid #979797;
+                    border-radius: 0;
+
+                    &.left {
+                        border-top-left-radius: 10px;
+                        border-bottom-left-radius: 10px;
+                    }
+
+                    &.right {
+                        border-top-right-radius: 10px;
+                        border-bottom-right-radius: 10px;
+                    }
+
+                    &:hover {
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                    }
+
+                }
+            }
+        }
+    }
+
+    .machineDetailDetails {
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+        gap: 1.5rem;
+        align-items: center;
+        justify-content: flex-start;
+
+        .additionalDetails {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+    }
+}
