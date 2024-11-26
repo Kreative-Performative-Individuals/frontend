@@ -10,6 +10,7 @@ import Production from "./Components/Production";
 import ProductionDetail from "./Components/ProductionDetail";
 import Energy from "./Components/Energy";
 import EnergyDetail from "./Components/EnergyDetail";
+import FinancialReport from "./Components/Financial";
 
 function App() {
   // Create a router object with defined routes
@@ -49,6 +50,10 @@ function App() {
     {
       path: "/energy/:machineId", // Route for specific machine details
       element: <EnergyDetail />, // Component to render for this route
+    },
+    {
+      path: "/financial", // Route for specific machine details
+      element: <FinancialReport />, // Component to render for this route
     },
     {
       path: "/logout", // Route for Logout

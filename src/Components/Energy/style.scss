@@ -10,7 +10,6 @@
     }
 
     .energyHeader {
-        margin-top: 30px; // Space above the header
         margin-bottom: 15px; // Space below the header
         display: flex; // Flexbox layout for the header
         align-items: center; // Center items vertically
@@ -18,6 +17,7 @@
 
         .headerHeading {
             font-size: 16px; // Font size for the header text
+            margin-bottom: -30px;
         }
 
         .headerFilters {
@@ -26,7 +26,6 @@
             gap: 1rem; // Space between filters
             min-width: 400px; // Minimum width for the filters container
             flex-wrap : nowrap; // Prevent wrapping of filter items
-
         }
     }
 

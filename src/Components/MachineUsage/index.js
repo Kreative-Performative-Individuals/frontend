@@ -76,7 +76,7 @@ const MachineUsage = () => {
     const machines = [
         { machineId: "010001", machineName: "Assembly Machine 1", machineType: "Metal Cutting", machineStatus: "Working", chartData: [9, 6, 8, 1] },
         { machineId: "010002", machineName: "Assembly Machine 2", machineType: "Laser Cutting", machineStatus: "Offline", chartData: [14, 2, 4, 4] },
-        { machineId: "010003", machineName: "Assembly Machine 3", machineType: "Laser Welding", machineStatus : "Idle", chartData: [7, 12, 3, 2] },
+        { machineId: "010003", machineName: "Assembly Machine 3", machineType: "Laser Welding", machineStatus: "Idle", chartData: [7, 12, 3, 2] },
         { machineId: "010004", machineName: "Assembly Machine 4", machineType: "Assembly", machineStatus: "Under Maintenance", chartData: [10, 11, 1, 2] },
         { machineId: "010005", machineName: "Assembly Machine 5", machineType: "Testing", machineStatus: "Working", chartData: [15, 5, 3, 1] },
         { machineId: "010006", machineName: "Assembly Machine 6", machineType: "Riveting", machineStatus: "Offline", chartData: [3, 9, 8, 4] },
@@ -109,7 +109,7 @@ const MachineUsage = () => {
                 <Box className="machinesHeader">
                     <Typography variant="p" className='headerHeading'>Machine Usage</Typography>
 
-                    <Box className="headerFilters">
+                    <div className="headerFilters">
                         {/* Dropdown for selecting machine types */}
                         <FormControl style={{ width: "100%" }}>
                             <InputLabel id="machineTypeSelector">Machine Type</InputLabel>
@@ -166,8 +166,8 @@ const MachineUsage = () => {
                                 ))}
                             </Select>
                         </FormControl>
-                        <Button onClick={handleReset}>Reset Filters</Button> {/* Button to reset filters */}
-                    </Box>
+                        <Button onClick={handleReset}>Reset</Button> {/* Button to reset filters */}
+                    </div>
                 </Box>
 
                 <Box className="machinesList">

@@ -6,7 +6,8 @@ import ConsumptionIcon from "../../Assets/Consumption Logo.svg";
 import CostIcon from "../../Assets/Total Cost.svg";
 import EnergyIcon from "../../Assets/Energy Logo.svg";
 
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, FormControl, InputLabel, MenuItem, Typography } from '@mui/material';
+import Select from '@mui/material/Select';
 import './style.scss';
 import BasicCard from '../Common/BasicCard';
 import ProductionDetailLineChart from './ProductionDetailLineChart';
@@ -94,6 +95,46 @@ const ProductionDetail = () => {
                     </Box>
 
                     <Box className="productionDetailFilters">
+
+                        <Box sx={{ minWidth: 200, backgroundColor: "#fff" }}>
+                            <FormControl fullWidth>
+                                <InputLabel id="custom-range-select-label">Custom Range</InputLabel>
+                                <Select
+                                    labelId="custom-range-select-label"
+                                    id="demo-simple-select"
+                                    label="Custom Range"
+                                    placeholder="Custom Range"
+                                >
+                                    <MenuItem value={"Custom Range"}>Custom Range</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Box>
+                        <Box sx={{ minWidth: 120, backgroundColor: "#fff" }}>
+                            <FormControl fullWidth>
+                                <InputLabel id="date-select-label">Date</InputLabel>
+                                <Select
+                                    labelId="date-select-label"
+                                    id="date-select"
+                                    label="Date"
+                                    placeholder="Date"
+                                >
+                                    <MenuItem value={"Date"}>Date</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Box>
+                        <Box sx={{ minWidth: 120, backgroundColor: "#fff" }}>
+                            <FormControl fullWidth>
+                                <InputLabel id="month-select-label">Month</InputLabel>
+                                <Select
+                                    labelId="month-select-label"
+                                    id="month-select"
+                                    label="Month"
+                                    placeholder="Month"
+                                >
+                                    <MenuItem value={"Month"}>Month</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Box>
                         <Button className="button">Download Report</Button>
                     </Box>
                 </Box>

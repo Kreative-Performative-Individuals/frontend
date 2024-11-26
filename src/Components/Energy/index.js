@@ -222,7 +222,7 @@ const Energy = () => {
                                 ))}
                             </Select>
                         </FormControl>
-                        <Button onClick={handleReset}>Reset Filters</Button> {/* Button to reset filters */}
+                        <Button onClick={handleReset}>Reset</Button> {/* Button to reset filters */}
                     </Box>
                 </Box>
 
