@@ -19,7 +19,7 @@ function SignIn({ userLogin, loading, loginError, isAuth, errMsg }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log();
+    // console.log();
     await userLogin({
       email: data.get("email"),
       password: data.get("password")

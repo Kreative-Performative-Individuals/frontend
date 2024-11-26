@@ -11,10 +11,20 @@ import QueryStatsIcon from '@mui/icons-material/QueryStats'; // Import QueryStat
 import LogoutIcon from '@mui/icons-material/Logout'; // Import Logout icon
 import { Link, useLocation } from 'react-router-dom'; // Import Link and useLocation from react-router-dom
 import "./style.scss"; // Import custom styles
+import { getLocal } from "../../constants/localstorage";
 
 const MainListItems = () => {
   const location = useLocation(); // Get the current location from the router
 
+  const [smoView, setSmoView] = React.useState(false);
+
+    React.useEffect(() => {
+        const user = getLocal("authUser");
+        const userData = JSON.parse(user);
+        if (userData.email.includes("smo")) {
+            setSmoView(true);
+        }
+    }, [])
   return (
     <React.Fragment>
       <div className="sidebar">
@@ -55,14 +65,16 @@ const MainListItems = () => {
           </ListItemButton>
         </div>
   
-        <div className={`listItem ${location.pathname === "/financial" && "active"}`}>
-          <ListItemButton component={Link} to="/financial" className="listBtn">
-            <ListItemIcon>
-              <EuroIcon className="iconStyle" />
-            </ListItemIcon>
-            <ListItemText primary="Financials" />
-          </ListItemButton>
-        </div>
+        {smoView && (
+          <div className={`listItem ${location.pathname === "/financial" && "active"}`}>
+            <ListItemButton component={Link} to="/financial" className="listBtn">
+              <ListItemIcon>
+                <EuroIcon className="iconStyle" />
+              </ListItemIcon>
+              <ListItemText primary="Financials" />
+            </ListItemButton>
+          </div>
+        )}
   
         <div className={`listItem ${location.pathname === "/custom-kpi" && "active"}`}>
           <ListItemButton component={Link} to="/custom-kpi" className="listBtn">
