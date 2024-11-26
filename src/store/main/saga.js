@@ -13,7 +13,7 @@ import {
 } from "../types";
 
 import setDefaultToken, {
-  setLocal,
+  // setLocal,
   clearLocal
 } from "../../constants/localstorage";
 
@@ -35,7 +35,7 @@ import {
 } from "./actions";
 
 import {
-  LoginUserAPI,
+  // LoginUserAPI,
   RegisterUserAPI,
   ForgetPasswordAPI,
   ResetPasswordAPI,
@@ -43,9 +43,9 @@ import {
   UploadAssetAPI
 } from "../../constants/apiRoutes";
 
-const userLoginAPI = async data => {
-  return await axios.post(LoginUserAPI, data);
-};
+// const userLoginAPI = async data => {
+//   return await axios.post(LoginUserAPI, data);
+// };
 const userRegisterAPI = async data => {
   return await axios.post(RegisterUserAPI, data);
 };
@@ -74,10 +74,11 @@ function* userRegisterSaga({ payload, navigate }) {
 
 function* userLoginSaga({ payload, history }) {
   try {
-    const { data } = yield call(userLoginAPI, { ...payload });
-    setDefaultToken("Authorization", data.token);
-    setLocal("token", data.token);
-    setLocal("authUser", JSON.stringify({ ...data }));
+    // const { data } = yield call(userLoginAPI, { ...payload });
+    // setDefaultToken("Authorization", data.token);
+    // setLocal("token", data.token);
+    // setLocal("authUser", JSON.stringify({ ...data }));
+    const data = { ...payload }
     yield put(userLoginSuccess({ ...data }));
     yield history("/dashboard");
   } catch (error) {
