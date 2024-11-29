@@ -144,7 +144,7 @@ const Production = () => {
 
     return (
         <Layout>
-            <Box className="machines">
+            <Box className="production">
                 <Box className="machineStatsConatiner">
                     {/* Display statistics for total, working, idle, and offline machines */}
                     {cardData.map(({ id, heading, duration, value, isStat, statUpOrDown, statPercent, statText, icon, iconBackground }) => (
@@ -222,7 +222,7 @@ const Production = () => {
                                 ))}
                             </Select>
                         </FormControl>
-                        <Button onClick={handleReset}>Reset Filters</Button> {/* Button to reset filters */}
+                        <Button onClick={handleReset}>Reset</Button> {/* Button to reset filters */}
                     </Box>
                 </Box>
 

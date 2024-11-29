@@ -1,49 +1,22 @@
-.machineDetail {
-    .machineDetailHead {
+.financialReport {
+    .financialReportHead {
         display: flex; // Use flexbox for layout
         align-items: center; // Center items vertically
         justify-content: space-between; // Space items evenly
 
-        .machineDetailIntro {
+        .financialReportIntro {
             display: flex; // Use flexbox for layout
             align-items: center; // Center items vertically
             justify-content: space-between; // Space items evenly
             gap: 1rem;
 
-            .machineName {
+            .financialHeading {
                 font-size: 24px;
                 font-weight: 500;
             }
-
-            .machineStatus {
-                font-size: 12px; // Font size for machine status
-                font-weight: 600; // Bold font for machine status
-                padding: 0.5rem 1rem; // Padding around the status
-                border-radius: 5px; // Rounded corners for status badge
-
-                &.working {
-                    background-color: rgba($color: #00B69B, $alpha: 0.2); // Background color for working status
-                    color: #00B69B; // Text color for working status
-                }
-
-                &.offline {
-                    background-color: rgba($color: #EF3826, $alpha: 0.2); // Background color for offline status
-                    color: #EF3826; // Text color for offline status
-                }
-
-                &.idle {
-                    background-color: rgba($color: #FD9A56, $alpha: 0.2); // Background color for idle status
-                    color: #FD9A56; // Text color for idle status
-                }
-
-                &.maintenance {
-                    background-color: rgba($color: #7e7e7e, $alpha: 0.2); // Background color for maintenance status
-                    color: #7e7e7e; // Text color for maintenance status
-                }
-            }
         }
 
-        .machineDetailFilters {
+        .financialReportFilters {
             display: flex;
             gap: 0.5rem;
 
@@ -56,7 +29,7 @@
         }
     }
 
-    .machineDetailStats {
+    .financialReportStats {
         margin-top: 15px;
         display: flex; // Flexbox layout for the stats container
         gap: 1rem; // Space between stats cards
@@ -64,7 +37,7 @@
         justify-content: space-between; // Distribute space between items
     }
 
-    .machineDetailChartFilter {
+    .financialReportChartFilter {
         display: grid;
         grid-template-columns: 3fr 1fr;
         gap: 1.5rem;
@@ -107,7 +80,7 @@
         }
     }
 
-    .machineDetailDetails {
+    .financialDetails {
         display: grid;
         grid-template-columns: 3fr 1fr;
         gap: 1.5rem;

@@ -1,53 +1,72 @@
-import React from 'react'; // Import React
-import { useParams } from 'react-router-dom'; // Import useParams for routing
-import Layout from '../Layout';
-import PowerIcon from "../../Assets/Power Logo.svg";
-import ConsumptionIcon from "../../Assets/Consumption Logo.svg";
-import CostIcon from "../../Assets/Total Cost.svg";
-import EnergyIcon from "../../Assets/Energy Logo.svg";
+import React from 'react'
+import Layout from '../Layout'
 
 import { Box, Button, FormControl, InputLabel, MenuItem, Typography } from '@mui/material';
 import Select from '@mui/material/Select';
-import BasicCard from '../Common/BasicCard';
-import MachineDetailLineChart from './MachineDetailLineChart';
-import './style.scss';
 
-const MachineDetail = () => {
-    const { machineId } = useParams(); // Get machineId from URL parameters
+import BasicCard from '../Common/BasicCard'
 
-    const machines = [
-        { machineId: "010001", machineName: "Assembly Machine 1", machineType: "Metal Cutting", machineStatus: "Working", chartData: [9, 6, 8, 1] },
-        { machineId: "010002", machineName: "Assembly Machine 2", machineType: "Laser Cutting", machineStatus: "Offline", chartData: [14, 2, 4, 4] },
-        { machineId: "010003", machineName: "Assembly Machine 3", machineType: "Laser Welding", machineStatus: "Idle", chartData: [7, 12, 3, 2] },
-        { machineId: "010004", machineName: "Assembly Machine 4", machineType: "Assembly", machineStatus: "Under Maintenance", chartData: [10, 11, 1, 2] },
-        { machineId: "010005", machineName: "Assembly Machine 5", machineType: "Testing", machineStatus: "Working", chartData: [15, 5, 3, 1] },
-        { machineId: "010006", machineName: "Assembly Machine 6", machineType: "Riveting", machineStatus: "Offline", chartData: [3, 9, 8, 4] },
-        { machineId: "010007", machineName: "Assembly Machine 7", machineType: "Riveting", machineStatus: "Idle", chartData: [1, 5, 6, 12] },
-        { machineId: "010008", machineName: "Assembly Machine 8", machineType: "Testing", machineStatus: "Under Maintenance", chartData: [5, 6, 12, 1] },
+import GroupIcon from "../../Assets/Group.svg";
+import WorkingIcon from "../../Assets/Working Machines.svg";
+import CostIcon from "../../Assets/Total Cost.svg";
+import OfflineIcon from "../../Assets/Offline Machines.svg";
+
+import FinancialLineChart from './FinancialLineChart'
+
+import "./style.scss";
+
+const FinancialReport = () => {
+
+    const cardData = [
+        {
+            id: 1,
+            heading: "Gross Margin %",
+            value: "37%",
+            isStat: false,
+            icon: GroupIcon,
+            iconBackground: "rgba(130, 128, 255, 0.25)",
+        },
+        {
+            id: 2,
+            heading: "ROI %",
+            value: "12%",
+            statUpOrDown: "Up",
+            statPercent: "1.3%",
+            statText: "Up from prev quarter",
+            icon: WorkingIcon,
+            iconBackground: "rgba(254, 197, 61, 0.25)",
+        },
+        {
+            id: 3,
+            heading: "Revenue / Employee",
+            value: "6300€",
+            statUpOrDown: "Down",
+            statPercent: "4%",
+            statText: "Down from prev quarter",
+            icon: CostIcon,
+            iconBackground: "rgba(74, 217, 145, 0.25)",
+        },
+        {
+            id: 4,
+            heading: "Sales growth Rate %",
+            value: "12%",
+            statUpOrDown: "Up",
+            statPercent: "1.3%",
+            statText: "Up from prev quarter",
+            icon: OfflineIcon,
+            iconBackground: "rgba(254, 144, 102, 0.25)",
+        },
     ];
-
-    // Find the machine based on the machineId from the URL
-    const currentMachine = machines.find(machine => machine.machineId === machineId);
-
-    // If no machine is found, you can handle it accordingly
-    if (!currentMachine) {
-        return <Typography variant="h6">Machine not found</Typography>;
-    }
-
-    const { machineName, machineStatus } = currentMachine; // Destructure the machine details
 
     return (
         <Layout>
-            <Box className="machineDetail">
-                <Box className="machineDetailHead">
-                    <Box className="machineDetailIntro">
-                        <Typography className='machineName'>{machineName}</Typography>
-                        <Box className={`machineStatus ${machineStatus === "Working" ? "working" : ""} ${machineStatus === "Offline" ? "offline" : ""} ${machineStatus === "Idle" ? "idle" : ""} ${machineStatus === "Under Maintenance" ? "maintenance" : ""}`}>
-                            {machineStatus}
-                        </Box>
+            <Box className="financialReport">
+                <Box className="financialReportHead">
+                    <Box className="financialReportIntro">
+                        <Typography className='financialHeading'>Financial Report</Typography>
                     </Box>
 
-                    <Box className="machineDetailFilters">
+                    <Box className="financialReportFilters">
 
                         <Box sx={{ minWidth: 200, backgroundColor: "#fff" }}>
                             <FormControl fullWidth>
@@ -88,44 +107,26 @@ const MachineDetail = () => {
                                 </Select>
                             </FormControl>
                         </Box>
-
                         <Button className="button">Download Report</Button>
                     </Box>
                 </Box>
-                <Box className="machineDetailStats">
-                    <BasicCard heading="Total Power" value="70 kW" icon={PowerIcon} iconBackground="rgba(130, 128, 255, 0.25)" />
-                    <BasicCard
-                        heading="Total Consumption"
-                        value="50.55kWh"
-                        icon={ConsumptionIcon}
-                        iconBackground="rgba(254, 197, 61, 0.25)"
-                        duration='Today'
-                        statPercent="4.3%"
-                        statUpOrDown="Up"
-                        statText="Up from yesterday"
-                    />
-                    <BasicCard
-                        heading="Total Cost"
-                        value="54.13€"
-                        icon={CostIcon}
-                        iconBackground="rgba(74, 217, 145, 0.25)"
-                        duration='Today'
-                        statPercent="1.7%"
-                        statUpOrDown="Down"
-                        statText="Down from yesterday"
-                    />
-                    <BasicCard
-                        heading="Energy Contributions"
-                        value="7 hours"
-                        icon={EnergyIcon}
-                        iconBackground="rgba(254, 144, 102, 0.25)"
-                        duration='Today'
-                        statPercent="1.7%"
-                        statUpOrDown="Down"
-                        statText="Down from yesterday"
-                    />
+                <Box className="financialReportStats">
+                    {cardData.map(({ id, heading, duration, value, isStat, statUpOrDown, statPercent, statText, icon, iconBackground }) => (
+                        <BasicCard
+                            key={id} // Using unique ID as key
+                            heading={heading}
+                            duration={duration}
+                            value={value}
+                            isStat={isStat}
+                            statUpOrDown={statUpOrDown}
+                            statPercent={statPercent}
+                            statText={statText}
+                            icon={icon}
+                            iconBackground={iconBackground}
+                        />
+                    ))}
                 </Box>
-                <Box className="machineDetailChartFilter">
+                <Box className="financialReportChartFilter">
                     <Box className="header">
                         <Typography>Utilization</Typography>
                         <Box className="Filters">
@@ -136,22 +137,21 @@ const MachineDetail = () => {
                     </Box>
                     <Box></Box>
                 </Box>
-                <Box className="machineDetailDetails">
-                    <Box><MachineDetailLineChart /></Box>
+                <Box className="financialDetails">
+                    <Box><FinancialLineChart /></Box>
                     <Box className="additionalDetails">
-                        <BasicCard heading={"Utilization Rate"} duration={"Today"} value={"76%"} isIcon={false} />
-                        <BasicCard heading={"Availability"} duration={"Today"} value={"37%"} isIcon={false} />
-                        <BasicCard heading={"Downtime"} duration={"Today"} value={"1 hour"} isIcon={false} />
-                        <BasicCard heading={"Mean time b/w Failure"} duration={"Today"} value={"1 hour"} isIcon={false} />
+                        <BasicCard heading={"Total Operational Cost"} duration={"Today"} value={"6300€"} isIcon={false} />
+                        <BasicCard heading={"Cost Per Unit"} value={"650€"} isIcon={false} />
+                        <BasicCard heading={"Cost per Cycle"} value={"65000€"} isIcon={false} />
+                        <BasicCard heading={"Total Energy Cost"} duration={"Today"} value={"500€"} isIcon={false} />
                     </Box>
                 </Box>
             </Box>
         </Layout>
-    );
+    )
 }
 
-export default MachineDetail;
-
+export default FinancialReport;
 
 const AreaChartSVG = () => {
     return (

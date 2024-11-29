@@ -1,0 +1,140 @@
+/* General Chatbot Container */
+.chatbot {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+  }
+  
+  /* Floating Chat Icon */
+  .chatbot-icon {
+    background-color: #4880FF;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    font-size: 24px;
+    transition: transform 0.2s;
+  }
+  
+  .chatbot-icon:hover {
+    transform: scale(1.1);
+  }
+  
+  /* Chat Panel */
+  .chat-panel {
+    width: 400px;
+    height: 400px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    overflow: hidden;
+    animation: slide-up 0.3s ease-out;
+  }
+  
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Chat Header */
+  .chat-header {
+    background-color: #4880FF;
+    color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .chat-header h4 {
+    margin: 0;
+  }
+  
+  .close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  /* Chat Body */
+  .chat-body {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .chat-message {
+    max-width: 80%;
+    padding: 8px;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+  
+  .user-message {
+    align-self: flex-end;
+    background-color: #4880FF;
+    color: white;
+  }
+  
+  .bot-message {
+    align-self: flex-start;
+    background-color: #e9ecef;
+    color: #333;
+  }
+  .processing-message {
+    align-self: flex-start;
+    color: #33333380;
+    padding: 0 8px;
+  }
+  
+  /* Chat Footer */
+  .chat-footer {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+  }
+  
+  .chat-footer input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-right: 5px;
+  }
+  
+  .chat-footer button {
+    padding: 8px 12px;
+    background-color: #4880FF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .chat-footer button:hover {
+    background-color: #0056b3;
+  }
+  

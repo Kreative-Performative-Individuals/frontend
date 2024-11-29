@@ -21,7 +21,7 @@ const MainListItems = () => {
     React.useEffect(() => {
         const user = getLocal("authUser");
         const userData = JSON.parse(user);
-        if (userData.email.includes("smo")) {
+        if (userData && userData.email.includes("smo")) {
             setSmoView(true);
         }
     }, [])
@@ -77,7 +77,7 @@ const MainListItems = () => {
         )}
   
         <div className={`listItem ${location.pathname === "/custom-kpi" && "active"}`}>
-          <ListItemButton component={Link} to="/custom-kpi" className="listBtn">
+          <ListItemButton component={Link} to="#" className="listBtn disabled">
             <ListItemIcon>
               <DashboardIcon className="iconStyle" />
             </ListItemIcon>
@@ -86,13 +86,14 @@ const MainListItems = () => {
         </div>
   
         <div className={`listItem ${location.pathname === "/reports" && "active"}`}>
-          <ListItemButton component={Link} to="/reports" className="listBtn">
+          <ListItemButton component={Link} to="#" className="listBtn">
             <ListItemIcon>
               <QueryStatsIcon className="iconStyle" />
             </ListItemIcon>
             <ListItemText primary="Reports" />
           </ListItemButton>
         </div>
+
       </div>
     </React.Fragment>
   );

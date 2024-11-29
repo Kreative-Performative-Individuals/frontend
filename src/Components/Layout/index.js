@@ -11,6 +11,10 @@ import IconButton from "@mui/material/IconButton"; // Import Material-UI IconBut
 import DehazeIcon from '@mui/icons-material/Dehaze'; // Import Dehaze icon for the menu button
 import { MainListItems, secondaryListItems } from "./listItems"; // Import main and secondary list items for the sidebar
 import Copyright from "../Authentication/Copyright"; // Import Copyright component
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import PersonIcon from '@mui/icons-material/Person';
+import { getLocal } from "../../constants/localstorage";
+import Chatbot from "./ChatUI";
 
 // import setDefaultToken, { getLocal } from "../../constants/localstorage"; // Import local storage utility functions
 // import { useNavigate } from "react-router-dom"; // Import useNavigate hook from react-router-dom
@@ -73,6 +77,16 @@ const Layout = ({ children }) => {
         setOpen(!open); // Toggle the drawer open/close state
     };
 
+    const [smoView, setSmoView] = React.useState(false);
+
+    React.useEffect(() => {
+        const user = getLocal("authUser");
+        const userData = JSON.parse(user);
+        if (userData && userData.email.includes("smo")) {
+            setSmoView(true);
+        }
+    }, [])
+
     // const navigate = useNavigate(); // Initialize navigate function for routing
     // useEffect(() => {
     //   const token = getLocal("token"); // Retrieve token from local storage
@@ -85,9 +99,12 @@ const Layout = ({ children }) => {
     //   // eslint-disable-next-line
     // }, []);
 
+
+
     return (
         <React.Fragment>
             <ThemeProvider theme={defaultTheme}> {/* Provide the default theme to the component */}
+            <Chatbot />
                 <Box sx={{ display: "flex" }}>
                     {/* <Css Baseline /> */}
                     <AppBar position="absolute" open={open} style={{ backgroundColor: "#fff", color: "#202224" }}>
@@ -109,7 +126,19 @@ const Layout = ({ children }) => {
                             </IconButton>
                             <Typography sx={{ flexGrow: 1 }} ></Typography>
                             <div>
-                                Username {/* Placeholder for username display */}
+                                <Box sx={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+
+                                    <NotificationsNoneIcon sx={{ fontSize: "35px" }} />
+
+                                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                                        <div><PersonIcon sx={{ fontSize: "40px" }} /></div>
+                                        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                                            <Typography sx={{ margin: 0, fontSize: "14px", fontWeight: "bold" }}>Username</Typography>
+                                            <Typography sx={{ color: "#565656", fontSize: "12px", marginTop: "-4px" }}>{smoView ? "SMO" : "FFM"}</Typography>
+                                        </Box>
+                                    </Box>
+
+                                </Box>
                             </div>
                         </Toolbar>
                     </AppBar>
@@ -143,10 +172,6 @@ const Layout = ({ children }) => {
                     <Box
                         component="main"
                         sx={{
-                            // backgroundColor: theme =>
-                            //     theme.palette.mode === "light"
-                            //         ? theme.palette.grey[100]
-                            //         : theme.palette.grey[900],
                             backgroundColor: "#F5F6FA", // Main content background color
                             flexGrow: 1,
                             // height: "95vh", // Set height for the main content area

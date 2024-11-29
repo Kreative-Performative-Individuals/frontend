@@ -1,10 +1,7 @@
 import * as React from "react";
-import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import AuthLayout from "..";
 import { Link } from "react-router-dom";
@@ -12,6 +9,7 @@ import Copyright from "../Copyright";
 import { useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { userLogin } from "../../../store/main/actions";
+import "../style.scss";
 
 function SignIn({ userLogin, loading, loginError, isAuth, errMsg }) {
 
@@ -27,22 +25,14 @@ function SignIn({ userLogin, loading, loginError, isAuth, errMsg }) {
   };
   return (
     <AuthLayout>
-      <Box
-        sx={{
-          my: 8,
-          mx: 4,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center"
-        }}
-      >
-        <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Sign in
-        </Typography>
+      <Box className="authContainer" >
+
+        <Typography className="heading"> Login to account </Typography>
+        <Typography className="subHeading"> Please enter your email and password to continue </Typography>
+
         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+
+
           <TextField
             margin="normal"
             required
@@ -63,28 +53,31 @@ function SignIn({ userLogin, loading, loginError, isAuth, errMsg }) {
             id="password"
             autoComplete="current-password"
           />
-          {!loading && (
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Sign In
-            </Button>
-          )}
-          <Grid container>
-            <Grid item xs>
+          
+          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+            <Box item xs>
               <Link href="#" variant="body2">
                 Forgot password?
               </Link>
-            </Grid>
-            <Grid item>
+            </Box>
+            <Box item>
               <Link to="/signup" variant="body2">
                 {"Don't have an account? Sign Up"}
               </Link>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
+          {!loading && (
+            <Box sx={{ textAlign: "center" }}>
+              <Button
+                type="submit"
+                variant="contained"
+                fullWidth
+                sx={{ mt: 1, mb: 2 }}
+              >
+                Sign In
+              </Button>
+            </Box>
+          )}
           <Copyright sx={{ mt: 5 }} />
         </Box>
       </Box>

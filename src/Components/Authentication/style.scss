@@ -1,0 +1,21 @@
+.authContainer {
+    padding: 3rem 2rem;
+    border-radius: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff;
+    width: 500px;
+
+    .heading {
+        color: #202224;
+        font-size: 32px;
+        font-weight: bold;
+    }
+    .subHeading {
+        color: #202224;
+        font-size: 16px;
+        font-weight: 400;
+        text-align: center;
+    }
+}

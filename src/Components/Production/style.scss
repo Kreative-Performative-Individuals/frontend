@@ -1,4 +1,4 @@
-.machines {
+.production {
     display: flex; // Flexbox layout for the main container
     flex-direction: column; // Stack children vertically
 
@@ -10,7 +10,6 @@
     }
 
     .machinesHeader {
-        margin-top: 30px; // Space above the header
         margin-bottom: 15px; // Space below the header
         display: flex; // Flexbox layout for the header
         align-items: center; // Center items vertically
@@ -18,6 +17,7 @@
 
         .headerHeading {
             font-size: 16px; // Font size for the header text
+            margin-bottom: -30px;
         }
 
         .headerFilters {
