@@ -8,14 +8,12 @@ import {
   USER_REGISTER,
   FORGET_PASSWORD,
   RESET_PASSWORD,
-  GET_ALL_USER_ASSETS,
+  CHAT_RAG,
   UPLOAD_ASSET
 } from "../types";
 
-import setDefaultToken, {
-  // setLocal,
-  clearLocal
-} from "../../constants/localstorage";
+import setDefaultToken, { clearLocal } from "../../constants/localstorage";
+// setLocal,
 
 import {
   userLoginError,
@@ -28,8 +26,8 @@ import {
   forgetPasswordError,
   resetPasswordSuccess,
   resetPasswordError,
-  getAllUserAssetsSuccess,
-  getAllUserAssetsError,
+  chatRagSuccess,
+  chatRagError,
   uploadAssetSuccess,
   uploadAssetError
 } from "./actions";
@@ -39,7 +37,7 @@ import {
   RegisterUserAPI,
   ForgetPasswordAPI,
   ResetPasswordAPI,
-  GetAllAssetsAPI,
+  ChatRagAPI,
   UploadAssetAPI
 } from "../../constants/apiRoutes";
 
@@ -55,8 +53,8 @@ const forgetPasswordAPI = async data => {
 const resetPasswordAPI = async data => {
   return await axios.post(ResetPasswordAPI, data);
 };
-const getAllUserAssetsAPI = async () => {
-  return await axios.get(GetAllAssetsAPI);
+const chatWithRagAPI = async data => {
+  return await axios.get(`${ChatRagAPI}/?message=${data.message}`);
 };
 const uploadAssetAPI = async (data) => {
   return await axios.post(UploadAssetAPI, data);
@@ -121,12 +119,12 @@ function* resetPasswordSaga({ payload, history }) {
   }
 }
 
-function* getAllUserAssetsSaga() {
+function* chatWithRagSaga({ payload }) {
   try {
-    const { data } = yield call(getAllUserAssetsAPI);
-    yield put(getAllUserAssetsSuccess(data.result));
+    const { data } = yield call(chatWithRagAPI, { ...payload });
+    yield put(chatRagSuccess(data));
   } catch (error) {
-    yield put(getAllUserAssetsError(error));
+    yield put(chatRagError(error));
   }
 }
 
@@ -157,7 +155,7 @@ export function* watchResetPassword() {
   yield takeEvery(RESET_PASSWORD, resetPasswordSaga);
 }
 export function* watchGetAllUserAssets() {
-  yield takeEvery(GET_ALL_USER_ASSETS, getAllUserAssetsSaga);
+  yield takeEvery(CHAT_RAG, chatWithRagSaga);
 }
 export function* watchUploadAsset() {
   yield takeEvery(UPLOAD_ASSET, uploadAssetSaga);

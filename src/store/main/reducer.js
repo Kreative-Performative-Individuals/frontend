@@ -15,9 +15,9 @@ import {
   RESET_PASSWORD,
   RESET_PASSWORD_SUCCESS,
   RESET_PASSWORD_ERROR,
-  GET_ALL_USER_ASSETS,
-  GET_ALL_USER_ASSETS_SUCCESS,
-  GET_ALL_USER_ASSETS_ERROR,
+  CHAT_RAG,
+  CHAT_RAG_SUCCESS,
+  CHAT_RAG_ERROR,
   UPLOAD_ASSET,
   UPLOAD_ASSET_SUCCESS,
   UPLOAD_ASSET_ERROR
@@ -33,7 +33,7 @@ const initialState = {
   role: getLocal("authUser") ? JSON.parse(getLocal("authUser")).role : "",
   errMsg: "",
   successMsg: "",
-  allAssets: []
+  ragResponse: ""
 };
 
 const MyReducer = (state = initialState, action) => {
@@ -175,28 +175,30 @@ const MyReducer = (state = initialState, action) => {
               errMsg: action.payload?.response?.data?.error
           };
       
-      case GET_ALL_USER_ASSETS:
+      case CHAT_RAG:
           return {
               ...state,
               error: false,
               loading: true,
-              errMsg: ""
+              errMsg: "",
+              ragResponse: ""
           };
 
-      case GET_ALL_USER_ASSETS_SUCCESS:
+      case CHAT_RAG_SUCCESS:
           return {
               ...state,
               error: false,
               loading: false,
               errMsg: "",
-              allAssets: action.payload
+              ragResponse: action.payload.response ? action.payload.response : "No Response"
           };
-      case GET_ALL_USER_ASSETS_ERROR:
+      case CHAT_RAG_ERROR:
           return {
               ...state,
               error: true,
               loading: false,
-              errMsg: action.payload?.response?.data?.error
+              errMsg: action.payload?.response?.data?.error,
+              ragResponse: "Error. Please try again later."
           };
       
       case UPLOAD_ASSET:

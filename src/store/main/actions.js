@@ -14,9 +14,9 @@ import {
   RESET_PASSWORD,
   RESET_PASSWORD_SUCCESS,
   RESET_PASSWORD_ERROR,
-  GET_ALL_USER_ASSETS,
-  GET_ALL_USER_ASSETS_SUCCESS,
-  GET_ALL_USER_ASSETS_ERROR,
+  CHAT_RAG,
+  CHAT_RAG_SUCCESS,
+  CHAT_RAG_ERROR,
   UPLOAD_ASSET,
   UPLOAD_ASSET_SUCCESS,
   UPLOAD_ASSET_ERROR
@@ -98,17 +98,18 @@ export const resetPasswordError = payload => ({
   payload
 });
 
-export const getAllUserAssets = () => ({
-  type: GET_ALL_USER_ASSETS
-});
-
-export const getAllUserAssetsSuccess = (payload) => ({
-  type: GET_ALL_USER_ASSETS_SUCCESS,
+export const chatRag = (payload) => ({
+  type: CHAT_RAG,
   payload
 });
 
-export const getAllUserAssetsError = payload => ({
-  type: GET_ALL_USER_ASSETS_ERROR,
+export const chatRagSuccess = (payload) => ({
+  type: CHAT_RAG_SUCCESS,
+  payload
+});
+
+export const chatRagError = payload => ({
+  type: CHAT_RAG_ERROR,
   payload
 });
 
