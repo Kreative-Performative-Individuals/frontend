@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import BasicCard from "../Common/BasicCard";
 import Layout from "../Layout";
 import "./style.scss";
@@ -11,17 +11,24 @@ import { useNavigate } from "react-router-dom";
 import { Typography } from "@mui/material";
 import ProductionCard from "../Common/ProductionCard";
 import EnergyCard from "../Common/EnergyCard";
+import { connect } from "react-redux";
+import { getMachineList } from "../../store/main/actions";
 
-function Dashboard() {
+function Dashboard( { getMachineList, loading, machineList } ) {
 
-  const navigate = useNavigate(); // Initialize the navigate function for routing
-  // Define an array of card data for mapping
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    getMachineList();
+    // eslint-disable-next-line
+  }, []);
+  
   const cardData = [
     {
       id: 1,
       heading: "Total Machines",
       durationPresent: false,
-      value: "16",
+      value: !loading && machineList && machineList.length,
       isStat: false,
       icon: TotalMachineIcon,
       iconBackground: "rgba(130, 128, 255, 0.25)",
@@ -57,7 +64,7 @@ function Dashboard() {
       iconBackground: "rgba(254, 144, 102, 0.25)",
     },
   ];
-
+  
   const machines = [
     { machineId: "010001", machineName: "Assembly Machine 1", machineType: "Metal Cutting", machineStatus: "Working", chartData: [9, 6, 8, 1], efficiency: "90", density: "80", success_rate: "92", failure_rate: "8" },
     { machineId: "010002", machineName: "Assembly Machine 2", machineType: "Laser Cutting", machineStatus: "Offline", chartData: [14, 2, 4, 4], efficiency: "90", density: "80", success_rate: "92", failure_rate: "8" },
@@ -129,4 +136,9 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+const mapStatetoProps = ({ main }) => ({
+  machineList: main.machines,
+  loading: main.loading
+});
+
+export default connect(mapStatetoProps, { getMachineList })(Dashboard);

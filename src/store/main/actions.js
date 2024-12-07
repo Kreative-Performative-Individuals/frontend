@@ -17,9 +17,9 @@ import {
   CHAT_RAG,
   CHAT_RAG_SUCCESS,
   CHAT_RAG_ERROR,
-  UPLOAD_ASSET,
-  UPLOAD_ASSET_SUCCESS,
-  UPLOAD_ASSET_ERROR
+  GET_MACHINE_LIST,
+  GET_MACHINE_LIST_SUCCESS,
+  GET_MACHINE_LIST_ERROR
 } from "../types";
 
 export const registerUser = (payload, navigate) => ({
@@ -113,17 +113,16 @@ export const chatRagError = payload => ({
   payload
 });
 
-export const uploadAsset = (payload) => ({
-  type: UPLOAD_ASSET,
+export const getMachineList = () => ({
+  type: GET_MACHINE_LIST
+});
+
+export const getMachineListSuccess = (payload) => ({
+  type: GET_MACHINE_LIST_SUCCESS,
   payload
 });
 
-export const uploadAssetSuccess = (payload) => ({
-  type: UPLOAD_ASSET_SUCCESS,
-  payload
-});
-
-export const uploadAssetError = payload => ({
-  type: UPLOAD_ASSET_ERROR,
+export const getMachineListError = payload => ({
+  type: GET_MACHINE_LIST_ERROR,
   payload
 });

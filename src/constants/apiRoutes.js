@@ -1,4 +1,5 @@
 const baseUrl = "http://localhost:8000";
+const dbUrl = "http://localhost:8002";
 const ragUrl = "http://localhost:8005";
 
 // Auth
@@ -8,8 +9,10 @@ export const ForgetPasswordAPI = `${baseUrl}/users/forgetPassword`; // POST { em
 export const ResetPasswordAPI = `${baseUrl}/users/resetPassword`; // POST { password, confirmPassword, token }
 export const GetAllUserAPI = `${baseUrl}/users/registered`; // GET add /:userType
 
+// Database (Group 2)
+export const GetMachineListAPI = `${dbUrl}/machines`; // GET
 
+// RAG (Group 5)
 export const ChatRagAPI = `${ragUrl}/chat`; // GET Add ?message=""
-export const UploadAssetAPI = `${baseUrl}/assets/add`; // POST
 
 export { baseUrl };

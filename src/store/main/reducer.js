@@ -1,3 +1,4 @@
+import { transformMachineList } from "../../constants/_helper";
 import { getLocal, setLocal } from "../../constants/localstorage";
 import {
   USER_REGISTER,
@@ -18,9 +19,9 @@ import {
   CHAT_RAG,
   CHAT_RAG_SUCCESS,
   CHAT_RAG_ERROR,
-  UPLOAD_ASSET,
-  UPLOAD_ASSET_SUCCESS,
-  UPLOAD_ASSET_ERROR
+  GET_MACHINE_LIST,
+  GET_MACHINE_LIST_SUCCESS,
+  GET_MACHINE_LIST_ERROR
 } from "../types";
 
 const initialState = {
@@ -33,7 +34,8 @@ const initialState = {
   role: getLocal("authUser") ? JSON.parse(getLocal("authUser")).role : "",
   errMsg: "",
   successMsg: "",
-  ragResponse: ""
+  ragResponse: "",
+  machines: [],
 };
 
 const MyReducer = (state = initialState, action) => {
@@ -201,29 +203,35 @@ const MyReducer = (state = initialState, action) => {
               ragResponse: "Error. Please try again later."
           };
       
-      case UPLOAD_ASSET:
+      case GET_MACHINE_LIST:
           return {
               ...state,
               error: false,
               loading: true,
-              errMsg: ""
+              errMsg: "",
+              ragResponse: "",
+              machines: []
           };
 
-      case UPLOAD_ASSET_SUCCESS:
+      case GET_MACHINE_LIST_SUCCESS:
+        const formattedData = transformMachineList(action.payload.data);
           return {
               ...state,
               error: false,
               loading: false,
-              errMsg: ""
+              errMsg: "",
+              machines: formattedData
           };
-      case UPLOAD_ASSET_ERROR:
+      case GET_MACHINE_LIST_ERROR:
           return {
               ...state,
               error: true,
               loading: false,
-              errMsg: action.payload?.response?.data?.error
+              errMsg: action.payload?.response?.data?.error,
+              machines: []
           };
-
+      
+      
       default:
           return { ...state };
   }

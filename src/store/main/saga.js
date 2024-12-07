@@ -9,7 +9,7 @@ import {
   FORGET_PASSWORD,
   RESET_PASSWORD,
   CHAT_RAG,
-  UPLOAD_ASSET
+  GET_MACHINE_LIST
 } from "../types";
 
 import setDefaultToken, { clearLocal } from "../../constants/localstorage";
@@ -28,8 +28,8 @@ import {
   resetPasswordError,
   chatRagSuccess,
   chatRagError,
-  uploadAssetSuccess,
-  uploadAssetError
+  getMachineListSuccess,
+  getMachineListError
 } from "./actions";
 
 import {
@@ -38,7 +38,7 @@ import {
   ForgetPasswordAPI,
   ResetPasswordAPI,
   ChatRagAPI,
-  UploadAssetAPI
+  GetMachineListAPI
 } from "../../constants/apiRoutes";
 
 // const userLoginAPI = async data => {
@@ -56,8 +56,8 @@ const resetPasswordAPI = async data => {
 const chatWithRagAPI = async data => {
   return await axios.get(`${ChatRagAPI}/?message=${data.message}`);
 };
-const uploadAssetAPI = async (data) => {
-  return await axios.post(UploadAssetAPI, data);
+const getMachineListAPI = async () => {
+  return await axios.get(`${GetMachineListAPI}`);
 };
 
 function* userRegisterSaga({ payload, navigate }) {
@@ -128,16 +128,15 @@ function* chatWithRagSaga({ payload }) {
   }
 }
 
-function* uploadAssetSaga({payload}) {
+function* getMachineListSaga() {
   try {
-    const formData = new FormData();
-    formData.append("files", payload);
-    const { data } = yield call(uploadAssetAPI, formData);
-    yield put(uploadAssetSuccess(data.result));
+    const { data } = yield call(getMachineListAPI);
+    yield put(getMachineListSuccess(data));
   } catch (error) {
-    yield put(uploadAssetError(error));
+    yield put(getMachineListError(error));
   }
 }
+
 
 export function* watchUserRegister() {
   yield takeEvery(USER_REGISTER, userRegisterSaga);
@@ -154,11 +153,11 @@ export function* watchForgetPassword() {
 export function* watchResetPassword() {
   yield takeEvery(RESET_PASSWORD, resetPasswordSaga);
 }
-export function* watchGetAllUserAssets() {
+export function* watchChatWithRag() {
   yield takeEvery(CHAT_RAG, chatWithRagSaga);
 }
-export function* watchUploadAsset() {
-  yield takeEvery(UPLOAD_ASSET, uploadAssetSaga);
+export function* watchGetMachineList() {
+  yield takeEvery(GET_MACHINE_LIST, getMachineListSaga);
 }
 
 export default function* rootSaga() {
@@ -168,7 +167,7 @@ export default function* rootSaga() {
     fork(watchUserRegister),
     fork(watchForgetPassword),
     fork(watchResetPassword),
-    fork(watchGetAllUserAssets),
-    fork(watchUploadAsset)
+    fork(watchChatWithRag),
+    fork(watchGetMachineList),
   ]);
 }
