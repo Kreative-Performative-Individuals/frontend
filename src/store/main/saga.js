@@ -9,7 +9,8 @@ import {
   FORGET_PASSWORD,
   RESET_PASSWORD,
   CHAT_RAG,
-  GET_MACHINE_LIST
+  GET_MACHINE_LIST,
+  GET_DASHBOARD_PARAMS
 } from "../types";
 
 import setDefaultToken, { clearLocal } from "../../constants/localstorage";
@@ -29,7 +30,9 @@ import {
   chatRagSuccess,
   chatRagError,
   getMachineListSuccess,
-  getMachineListError
+  getMachineListError,
+  getDashboardParamsSuccess,
+  getDashboardParamsError
 } from "./actions";
 
 import {
@@ -38,8 +41,10 @@ import {
   ForgetPasswordAPI,
   ResetPasswordAPI,
   ChatRagAPI,
-  GetMachineListAPI
+  GetDashboardParamsAPI,
+  GetMachineListAPI,
 } from "../../constants/apiRoutes";
+import { getLast24Hours } from "../../constants/_helper";
 
 // const userLoginAPI = async data => {
 //   return await axios.post(LoginUserAPI, data);
@@ -58,6 +63,10 @@ const chatWithRagAPI = async data => {
 };
 const getMachineListAPI = async () => {
   return await axios.get(`${GetMachineListAPI}`);
+};
+const getDashboardParamsAPI = async () => {
+  const { init_date, end_date } = getLast24Hours();
+  return await axios.get(`${GetDashboardParamsAPI}?init_date=${init_date}&end_date=${end_date}`);
 };
 
 function* userRegisterSaga({ payload, navigate }) {
@@ -128,6 +137,15 @@ function* chatWithRagSaga({ payload }) {
   }
 }
 
+function* getDashboardParamsSaga() {
+  try {
+    const { data } = yield call(getDashboardParamsAPI);
+    yield put(getDashboardParamsSuccess(data));
+  } catch (error) {
+    yield put(getDashboardParamsError(error));
+  }
+}
+
 function* getMachineListSaga() {
   try {
     const { data } = yield call(getMachineListAPI);
@@ -156,6 +174,9 @@ export function* watchResetPassword() {
 export function* watchChatWithRag() {
   yield takeEvery(CHAT_RAG, chatWithRagSaga);
 }
+export function* watchGetDashboardParams() {
+  yield takeEvery(GET_DASHBOARD_PARAMS, getDashboardParamsSaga);
+}
 export function* watchGetMachineList() {
   yield takeEvery(GET_MACHINE_LIST, getMachineListSaga);
 }
@@ -168,6 +189,7 @@ export default function* rootSaga() {
     fork(watchForgetPassword),
     fork(watchResetPassword),
     fork(watchChatWithRag),
+    fork(watchGetDashboardParams),
     fork(watchGetMachineList),
   ]);
 }

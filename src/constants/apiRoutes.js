@@ -10,6 +10,7 @@ export const ResetPasswordAPI = `${baseUrl}/users/resetPassword`; // POST { pass
 export const GetAllUserAPI = `${baseUrl}/users/registered`; // GET add /:userType
 
 // Database (Group 2)
+export const GetDashboardParamsAPI = `${dbUrl}/get_machines`; // GET add ?init_date=yy-mm-dd hh:mm:ss & end_date=yy-mm-dd hh:mm:ss
 export const GetMachineListAPI = `${dbUrl}/machines`; // GET
 
 // RAG (Group 5)

@@ -12,14 +12,14 @@ import { Typography } from "@mui/material";
 import ProductionCard from "../Common/ProductionCard";
 import EnergyCard from "../Common/EnergyCard";
 import { connect } from "react-redux";
-import { getMachineList } from "../../store/main/actions";
+import { getDashboardParams } from "../../store/main/actions";
 
-function Dashboard( { getMachineList, loading, machineList } ) {
+function Dashboard( { getDashboardParams, loading, dashboardParams } ) {
 
   const navigate = useNavigate();
   
   useEffect(() => {
-    getMachineList();
+    getDashboardParams();
     // eslint-disable-next-line
   }, []);
   
@@ -28,7 +28,7 @@ function Dashboard( { getMachineList, loading, machineList } ) {
       id: 1,
       heading: "Total Machines",
       durationPresent: false,
-      value: !loading && machineList && machineList.length,
+      value: !loading && dashboardParams && dashboardParams.totalMachines,
       isStat: false,
       icon: TotalMachineIcon,
       iconBackground: "rgba(130, 128, 255, 0.25)",
@@ -37,7 +37,8 @@ function Dashboard( { getMachineList, loading, machineList } ) {
       id: 2,
       heading: "Total Consumption",
       duration: "per day",
-      value: "540 kWH",
+      value: `${!loading && dashboardParams && dashboardParams.totalConsumptionPerDay} kWH`,
+      isStat: false,
       statUpOrDown: "Up",
       statPercent: "1.3%",
       statText: "Up from yesterday",
@@ -48,7 +49,8 @@ function Dashboard( { getMachineList, loading, machineList } ) {
       id: 3,
       heading: "Total Cost",
       duration: "per day",
-      value: "550.13€",
+      value: `${!loading && dashboardParams && dashboardParams.totalCostPerDay} €`,
+      isStat: false,
       statPercent: "4.3%",
       statText: "Down from yesterday",
       icon: TotalCost,
@@ -58,7 +60,7 @@ function Dashboard( { getMachineList, loading, machineList } ) {
       id: 4,
       heading: "Total Alerts",
       duration: "per day",
-      value: "0",
+      value: !loading && dashboardParams && dashboardParams.totalAlarm,
       isStat: false,
       icon: TotalAlerts,
       iconBackground: "rgba(254, 144, 102, 0.25)",
@@ -137,8 +139,8 @@ function Dashboard( { getMachineList, loading, machineList } ) {
 }
 
 const mapStatetoProps = ({ main }) => ({
-  machineList: main.machines,
+  dashboardParams: main.dashboardParams,
   loading: main.loading
 });
 
-export default connect(mapStatetoProps, { getMachineList })(Dashboard);
+export default connect(mapStatetoProps, { getDashboardParams })(Dashboard);

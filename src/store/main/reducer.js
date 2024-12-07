@@ -21,7 +21,10 @@ import {
   CHAT_RAG_ERROR,
   GET_MACHINE_LIST,
   GET_MACHINE_LIST_SUCCESS,
-  GET_MACHINE_LIST_ERROR
+  GET_MACHINE_LIST_ERROR,
+  GET_DASHBOARD_PARAMS,
+  GET_DASHBOARD_PARAMS_SUCCESS,
+  GET_DASHBOARD_PARAMS_ERROR,
 } from "../types";
 
 const initialState = {
@@ -36,6 +39,7 @@ const initialState = {
   successMsg: "",
   ragResponse: "",
   machines: [],
+  dashboardParams: {}
 };
 
 const MyReducer = (state = initialState, action) => {
@@ -203,13 +207,38 @@ const MyReducer = (state = initialState, action) => {
               ragResponse: "Error. Please try again later."
           };
       
+      case GET_DASHBOARD_PARAMS:
+          return {
+              ...state,
+              error: false,
+              loading: true,
+              errMsg: "",
+              dashboardParams: {}
+          };
+
+      case GET_DASHBOARD_PARAMS_SUCCESS:
+          return {
+              ...state,
+              error: false,
+              loading: false,
+              errMsg: "",
+              dashboardParams: action.payload.data
+          };
+      case GET_DASHBOARD_PARAMS_ERROR:
+          return {
+              ...state,
+              error: true,
+              loading: false,
+              errMsg: action.payload?.response?.data?.error,
+              dashboardParams: {}
+          };
+      
       case GET_MACHINE_LIST:
           return {
               ...state,
               error: false,
               loading: true,
               errMsg: "",
-              ragResponse: "",
               machines: []
           };
 

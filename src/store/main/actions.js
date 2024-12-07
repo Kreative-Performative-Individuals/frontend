@@ -19,7 +19,10 @@ import {
   CHAT_RAG_ERROR,
   GET_MACHINE_LIST,
   GET_MACHINE_LIST_SUCCESS,
-  GET_MACHINE_LIST_ERROR
+  GET_MACHINE_LIST_ERROR,
+  GET_DASHBOARD_PARAMS,
+  GET_DASHBOARD_PARAMS_SUCCESS,
+  GET_DASHBOARD_PARAMS_ERROR,
 } from "../types";
 
 export const registerUser = (payload, navigate) => ({
@@ -124,5 +127,19 @@ export const getMachineListSuccess = (payload) => ({
 
 export const getMachineListError = payload => ({
   type: GET_MACHINE_LIST_ERROR,
+  payload
+});
+
+export const getDashboardParams = () => ({
+  type: GET_DASHBOARD_PARAMS
+});
+
+export const getDashboardParamsSuccess = (payload) => ({
+  type: GET_DASHBOARD_PARAMS_SUCCESS,
+  payload
+});
+
+export const getDashboardParamsError = payload => ({
+  type: GET_DASHBOARD_PARAMS_ERROR,
   payload
 });
