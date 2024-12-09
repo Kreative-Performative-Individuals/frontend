@@ -1,21 +1,27 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./Chatbot.css"; // Import the CSS for styling
-import SmartToyIcon from '@mui/icons-material/SmartToy';
+import SmartToyIcon from "@mui/icons-material/SmartToy";
+import { chatRag } from "../../store/main/actions";
+import { connect } from "react-redux";
 
-const Chatbot = () => {
+const Chatbot = ({ chatRag, ragResponse }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
       sender: "bot",
-      text: `Hello, good to see you. I'm an AI chatbot. Do you have any questions for me?`,
+      text: `Hello, good to see you. I'm an AI chatbot. Do you have any questions for me?`
     },
     {
       sender: "user",
-      text: "Tell me what is the monthly energy consumption KPI for the Large Capacity Cutting Machine from 19th February 2020 to half of March 2020.",
+      text:
+        "Tell me what is the monthly energy consumption KPI for the Large Capacity Cutting Machine from 19th February 2020 to half of March 2020."
     },
     { sender: "processing", text: `Retrieving data of _List of machines_` },
     { sender: "processing", text: `Selecting dates from _begin_ to _end_` },
-    { sender: "processing", text: `Using KPI calculation engine to compute _Nome KPI_` },
+    {
+      sender: "processing",
+      text: `Using KPI calculation engine to compute _Nome KPI_`
+    },
     { sender: "processing", text: `Formulating textual response…` },
     {
       sender: "bot",
@@ -51,8 +57,8 @@ const Chatbot = () => {
           <li><strong>Peak Usage Date:</strong> 27th February 2020 with 450 kWh consumption</li>
           <li><strong>Comparison:</strong> Energy consumption reduced by ~5% in March compared to the last 10 days of February</li>
         </ul>
-      </div>`,
-    },
+      </div>`
+    }
   ]);
   const [inputMessage, setInputMessage] = useState("");
 
@@ -62,51 +68,67 @@ const Chatbot = () => {
     setIsOpen(!isOpen);
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (inputMessage.trim()) {
-      // Add user message
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { sender: "user", text: inputMessage },
-      ]);
+      
+      try {
+        // Add user message
+        setMessages(prevMessages => [
+          ...prevMessages,
+          { sender: "user", text: inputMessage }
+        ]);
+        // API Request
+        await chatRag({ message: inputMessage });
+      } catch (error) {
+        console.log(error);
+      }
 
-      // Simulated bot response sequence
-      setTimeout(() => {
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { sender: "processing", text: `Retrieving data of _List of machines_` },
-        ]);
-      }, 1500);
-      setTimeout(() => {
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { sender: "processing", text: `Selecting dates from _begin_ to _end_` },
-        ]);
-      }, 2500);
-      setTimeout(() => {
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { sender: "processing", text: `Using KPI calculation engine to compute _Nome KPI_` },
-        ]);
-      }, 4000);
-      setTimeout(() => {
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { sender: "processing", text: `Formulating textual response…` },
-        ]);
-      }, 6000);
-      setTimeout(() => {
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { sender: "bot", text: `You said: ${inputMessage}` },
-        ]);
-      }, 9000);
+      // // Simulated bot response sequence
+      // setTimeout(() => {
+      //   setMessages(prevMessages => [
+      //     ...prevMessages,
+      //     {
+      //       sender: "processing",
+      //       text: `Retrieving data of _List of machines_`
+      //     }
+      //   ]);
+      // }, 1500);
+      // setTimeout(() => {
+      //   setMessages(prevMessages => [
+      //     ...prevMessages,
+      //     {
+      //       sender: "processing",
+      //       text: `Selecting dates from _begin_ to _end_`
+      //     }
+      //   ]);
+      // }, 2500);
+      // setTimeout(() => {
+      //   setMessages(prevMessages => [
+      //     ...prevMessages,
+      //     {
+      //       sender: "processing",
+      //       text: `Using KPI calculation engine to compute _Nome KPI_`
+      //     }
+      //   ]);
+      // }, 4000);
+      // setTimeout(() => {
+      //   setMessages(prevMessages => [
+      //     ...prevMessages,
+      //     { sender: "processing", text: `Formulating textual response…` }
+      //   ]);
+      // }, 6000);
+      // setTimeout(() => {
+      //   setMessages(prevMessages => [
+      //     ...prevMessages,
+      //     { sender: "bot", text: `You said: ${inputMessage}` }
+      //   ]);
+      // }, 9000);
 
       setInputMessage("");
     }
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = e => {
     if (e.key === "Enter") {
       handleSendMessage();
     }
@@ -119,6 +141,13 @@ const Chatbot = () => {
     }
   }, [messages]);
 
+  useEffect(() => {
+      setMessages(prevMessages => [
+        ...prevMessages,
+        { sender: "bot", text: `Bot: ${ragResponse}` }
+      ]);
+  }, [ragResponse]);
+
   return (
     <div className="chatbot">
       {/* Floating Button */}
@@ -127,7 +156,7 @@ const Chatbot = () => {
       </div>
 
       {/* Chat Panel */}
-      {isOpen && (
+      {isOpen &&
         <div className="chat-panel">
           <div className="chat-header">
             <h4>Kreative Chatbot</h4>
@@ -136,34 +165,37 @@ const Chatbot = () => {
             </button>
           </div>
           <div className="chat-body" ref={chatBodyRef}>
-            {messages.map((message, index) => (
+            {messages.map((message, index) =>
               <div
                 key={index}
-                className={`chat-message ${
-                  message.sender === "user"
-                    ? "user-message"
-                    : message.sender === "bot"
+                className={`chat-message ${message.sender === "user"
+                  ? "user-message"
+                  : message.sender === "bot"
                     ? "bot-message"
-                    : "processing-message"
-                }`}
+                    : "processing-message"}`}
                 dangerouslySetInnerHTML={{ __html: message.text }}
               />
-            ))}
+            )}
           </div>
           <div className="chat-footer">
             <input
               type="text"
               value={inputMessage}
               placeholder="Type your message..."
-              onChange={(e) => setInputMessage(e.target.value)}
+              onChange={e => setInputMessage(e.target.value)}
               onKeyDown={handleKeyDown}
             />
             <button onClick={handleSendMessage}>Send</button>
           </div>
         </div>
-      )}
+      }
     </div>
   );
 };
 
-export default Chatbot;
+const mapStatetoProps = ({ main }) => ({
+  ragResponse: main.ragResponse,
+  loading: main.loading
+});
+
+export default connect(mapStatetoProps, { chatRag })(Chatbot);

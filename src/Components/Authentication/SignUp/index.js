@@ -65,7 +65,7 @@ function SignUp({ registerUser, isLoading, isError }) {
           )}
 
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <Box item>
+            <Box>
               <Link to="/signin" variant="body2">
                 {"Already have an account? Signin"}
               </Link>

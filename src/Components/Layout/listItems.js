@@ -8,7 +8,6 @@ import BusinessIcon from '@mui/icons-material/Business'; // Import Business icon
 import BoltIcon from '@mui/icons-material/Bolt'; // Import Bolt icon
 import EuroIcon from '@mui/icons-material/Euro'; // Import Euro icon
 import QueryStatsIcon from '@mui/icons-material/QueryStats'; // Import QueryStats icon
-import LogoutIcon from '@mui/icons-material/Logout'; // Import Logout icon
 import { Link, useLocation } from 'react-router-dom'; // Import Link and useLocation from react-router-dom
 import "./style.scss"; // Import custom styles
 import { getLocal } from "../../constants/localstorage";
@@ -76,17 +75,17 @@ const MainListItems = () => {
           </div>
         )}
   
-        <div className={`listItem ${location.pathname === "/custom-kpi" && "active"}`}>
+        {/* <div className={`listItem ${location.pathname === "/custom-kpi" && "active"}`}>
           <ListItemButton component={Link} to="#" className="listBtn disabled">
             <ListItemIcon>
               <DashboardIcon className="iconStyle" />
             </ListItemIcon>
             <ListItemText primary="Custom KPIs" />
           </ListItemButton>
-        </div>
+        </div> */}
   
         <div className={`listItem ${location.pathname === "/reports" && "active"}`}>
-          <ListItemButton component={Link} to="#" className="listBtn">
+          <ListItemButton component={Link} to="/reports" className="listBtn">
             <ListItemIcon>
               <QueryStatsIcon className="iconStyle" />
             </ListItemIcon>
@@ -99,17 +98,5 @@ const MainListItems = () => {
   );
 }
 
-// Secondary list items (e.g., Logout button)
-const secondaryListItems = (
-  <React.Fragment>
-    <ListItemButton component={Link} to="/logout">
-      <ListItemIcon>
-        <LogoutIcon />
-      </ListItemIcon>
-      <ListItemText primary="Logout" />
-    </ListItemButton>
-  </React.Fragment>
-);
-
 // Export the main and secondary list items
-export { MainListItems, secondaryListItems };
+export { MainListItems };

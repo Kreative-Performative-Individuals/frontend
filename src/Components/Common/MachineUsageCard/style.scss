@@ -2,7 +2,7 @@
     padding: 1rem; // Padding inside the card
     background-color: #fff; // Background color of the card
     border-radius: 15px; // Rounded corners for the card
-    width: 325px; // Fixed width for the card
+    width: 350px; // Fixed width for the card
     
     .cardHead {
         display: flex; // Use flexbox for layout
@@ -11,7 +11,7 @@
 
         .machineName {
             font-weight: 600; // Bold font for machine name
-            font-size: 16px; // Font size for machine name
+            font-size: 15px; // Font size for machine name
             color: #202224; // Text color for machine name
         }
         .machineType {

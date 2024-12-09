@@ -20,7 +20,7 @@ const FinancialReport = () => {
     const cardData = [
         {
             id: 1,
-            heading: "Gross Margin %",
+            heading: "Cost Sum",
             value: "37%",
             isStat: false,
             icon: GroupIcon,
@@ -28,19 +28,21 @@ const FinancialReport = () => {
         },
         {
             id: 2,
-            heading: "ROI %",
+            heading: "Cost Mean",
             value: "12%",
             statUpOrDown: "Up",
             statPercent: "1.3%",
             statText: "Up from prev quarter",
+            isStat: false,
             icon: WorkingIcon,
             iconBackground: "rgba(254, 197, 61, 0.25)",
         },
         {
             id: 3,
-            heading: "Revenue / Employee",
+            heading: "Cost Min",
             value: "6300€",
             statUpOrDown: "Down",
+            isStat: false,
             statPercent: "4%",
             statText: "Down from prev quarter",
             icon: CostIcon,
@@ -48,8 +50,9 @@ const FinancialReport = () => {
         },
         {
             id: 4,
-            heading: "Sales growth Rate %",
+            heading: "Cost Max",
             value: "12%",
+            isStat: false,
             statUpOrDown: "Up",
             statPercent: "1.3%",
             statText: "Up from prev quarter",
@@ -140,9 +143,7 @@ const FinancialReport = () => {
                 <Box className="financialDetails">
                     <Box><FinancialLineChart /></Box>
                     <Box className="additionalDetails">
-                        <BasicCard heading={"Total Operational Cost"} duration={"Today"} value={"6300€"} isIcon={false} />
-                        <BasicCard heading={"Cost Per Unit"} value={"650€"} isIcon={false} />
-                        <BasicCard heading={"Cost per Cycle"} value={"65000€"} isIcon={false} />
+                        <BasicCard heading={"Cost Per Cycle"} duration={"Today"} value={"6300€"} isIcon={false} />
                         <BasicCard heading={"Total Energy Cost"} duration={"Today"} value={"500€"} isIcon={false} />
                     </Box>
                 </Box>

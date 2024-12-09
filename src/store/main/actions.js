@@ -14,12 +14,20 @@ import {
   RESET_PASSWORD,
   RESET_PASSWORD_SUCCESS,
   RESET_PASSWORD_ERROR,
-  GET_ALL_USER_ASSETS,
-  GET_ALL_USER_ASSETS_SUCCESS,
-  GET_ALL_USER_ASSETS_ERROR,
-  UPLOAD_ASSET,
-  UPLOAD_ASSET_SUCCESS,
-  UPLOAD_ASSET_ERROR
+  CHAT_RAG,
+  CHAT_RAG_SUCCESS,
+  CHAT_RAG_ERROR,
+  GET_DASHBOARD_PARAMS,
+  GET_DASHBOARD_PARAMS_SUCCESS,
+  GET_DASHBOARD_PARAMS_ERROR,
+  GET_MACHINE_LIST,
+  GET_MACHINE_LIST_SUCCESS,
+  GET_MACHINE_LIST_ERROR,
+  GET_MACHINE_DETAIL,
+  GET_MACHINE_DETAIL_SUCCESS,
+  GET_MACHINE_DETAIL_ERROR,
+  REPORT_LIST,
+  ADD_REPORT_TO_LIST,
 } from "../types";
 
 export const registerUser = (payload, navigate) => ({
@@ -98,31 +106,68 @@ export const resetPasswordError = payload => ({
   payload
 });
 
-export const getAllUserAssets = () => ({
-  type: GET_ALL_USER_ASSETS
-});
-
-export const getAllUserAssetsSuccess = (payload) => ({
-  type: GET_ALL_USER_ASSETS_SUCCESS,
+export const chatRag = (payload) => ({
+  type: CHAT_RAG,
   payload
 });
 
-export const getAllUserAssetsError = payload => ({
-  type: GET_ALL_USER_ASSETS_ERROR,
+export const chatRagSuccess = (payload) => ({
+  type: CHAT_RAG_SUCCESS,
   payload
 });
 
-export const uploadAsset = (payload) => ({
-  type: UPLOAD_ASSET,
+export const chatRagError = payload => ({
+  type: CHAT_RAG_ERROR,
   payload
 });
 
-export const uploadAssetSuccess = (payload) => ({
-  type: UPLOAD_ASSET_SUCCESS,
+export const getDashboardParams = () => ({
+  type: GET_DASHBOARD_PARAMS
+});
+
+export const getDashboardParamsSuccess = (payload) => ({
+  type: GET_DASHBOARD_PARAMS_SUCCESS,
   payload
 });
 
-export const uploadAssetError = payload => ({
-  type: UPLOAD_ASSET_ERROR,
+export const getDashboardParamsError = payload => ({
+  type: GET_DASHBOARD_PARAMS_ERROR,
+  payload
+});
+
+export const getMachineList = () => ({
+  type: GET_MACHINE_LIST
+});
+
+export const getMachineListSuccess = (payload) => ({
+  type: GET_MACHINE_LIST_SUCCESS,
+  payload
+});
+
+export const getMachineListError = payload => ({
+  type: GET_MACHINE_LIST_ERROR,
+  payload
+});
+
+export const getMachineDetail = (payload) => ({
+  type: GET_MACHINE_DETAIL,
+  payload
+});
+
+export const getMachineDetailSuccess = (payload) => ({
+  type: GET_MACHINE_DETAIL_SUCCESS,
+  payload
+});
+
+export const getMachineDetailError = payload => ({
+  type: GET_MACHINE_DETAIL_ERROR,
+  payload
+});
+
+export const getReportList = () => ({
+  type: REPORT_LIST
+});
+export const addReportToList = (payload) => ({
+  type: ADD_REPORT_TO_LIST,
   payload
 });

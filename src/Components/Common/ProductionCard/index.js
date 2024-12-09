@@ -39,19 +39,15 @@ const ProductionCard = ({ machineName, machineType = "Metal Cutting", machineSta
 
                 <Box className="productionCardFooter">
                     <Box className="gaugeContainer">
-                        <Gauge width={75} height={75} value={efficiency} startAngle={-90} endAngle={90} sx={(theme) => ({ [`& .${gaugeClasses.valueArc}`]: { fill: '#4AD991' }, [`& .${gaugeClasses.valueText}`]: { display: 'none' } })} />
+                        <Gauge width={100} height={100} value={efficiency} startAngle={-90} endAngle={90} sx={(theme) => ({ [`& .${gaugeClasses.valueArc}`]: { fill: '#4AD991' }, [`& .${gaugeClasses.valueText}`]: { display: 'none' } })} />
                         <Typography className='gaugeLegend'>Efficiency</Typography>
                     </Box>
                     <Box className="gaugeContainer">
-                        <Gauge width={75} height={75} value={density} startAngle={-90} endAngle={90} sx={(theme) => ({ [`& .${gaugeClasses.valueArc}`]: { fill: '#4AD991' }, [`& .${gaugeClasses.valueText}`]: { display: 'none' } })} />
-                        <Typography className='gaugeLegend'>Density</Typography>
-                    </Box>
-                    <Box className="gaugeContainer">
-                        <Gauge width={75} height={75} value={success_rate} startAngle={-90} endAngle={90} sx={(theme) => ({ [`& .${gaugeClasses.valueArc}`]: { fill: '#4AD991' }, [`& .${gaugeClasses.valueText}`]: { display: 'none' } })} />
+                        <Gauge width={100} height={100} value={success_rate} startAngle={-90} endAngle={90} sx={(theme) => ({ [`& .${gaugeClasses.valueArc}`]: { fill: '#4AD991' }, [`& .${gaugeClasses.valueText}`]: { display: 'none' } })} />
                         <Typography className='gaugeLegend'>Success Rate</Typography>
                     </Box>
                     <Box className="gaugeContainer">
-                        <Gauge width={75} height={75} value={failure_rate} startAngle={-90} endAngle={90} sx={(theme) => ({ [`& .${gaugeClasses.valueArc}`]: { fill: '#4AD991' }, [`& .${gaugeClasses.valueText}`]: { display: 'none' } })} />
+                        <Gauge width={100} height={100} value={failure_rate} startAngle={-90} endAngle={90} sx={(theme) => ({ [`& .${gaugeClasses.valueArc}`]: { fill: '#4AD991' }, [`& .${gaugeClasses.valueText}`]: { display: 'none' } })} />
                         <Typography className='gaugeLegend'>Failure Rate</Typography>
                     </Box>
 

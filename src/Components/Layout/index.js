@@ -9,15 +9,16 @@ import Typography from "@mui/material/Typography"; // Import Material-UI Typogra
 import Divider from "@mui/material/Divider"; // Import Material-UI Divider component
 import IconButton from "@mui/material/IconButton"; // Import Material-UI IconButton component
 import DehazeIcon from '@mui/icons-material/Dehaze'; // Import Dehaze icon for the menu button
-import { MainListItems, secondaryListItems } from "./listItems"; // Import main and secondary list items for the sidebar
+import { MainListItems } from "./listItems"; // Import main and secondary list items for the sidebar
 import Copyright from "../Authentication/Copyright"; // Import Copyright component
-import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+// import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import PersonIcon from '@mui/icons-material/Person';
 import { getLocal } from "../../constants/localstorage";
 import Chatbot from "./ChatUI";
+import LogoutIcon from '@mui/icons-material/Logout'; // Import Logout icon
+import { useNavigate } from "react-router-dom"; // Import useNavigate hook from react-router-dom
 
 // import setDefaultToken, { getLocal } from "../../constants/localstorage"; // Import local storage utility functions
-// import { useNavigate } from "react-router-dom"; // Import useNavigate hook from react-router-dom
 
 const drawerWidth = 220; // Set the width of the drawer
 
@@ -78,16 +79,23 @@ const Layout = ({ children }) => {
     };
 
     const [smoView, setSmoView] = React.useState(false);
+    const [userMail, setUserMail] = React.useState("");
 
     React.useEffect(() => {
         const user = getLocal("authUser");
         const userData = JSON.parse(user);
-        if (userData && userData.email.includes("smo")) {
-            setSmoView(true);
+        if (userData) {
+            setUserMail(userData.email);
+            if (userData.email.includes("smo")) {
+                setSmoView(true);
+            }
+        } else {
+            navigate("/signin")
         }
+        // eslint-disable-next-line
     }, [])
 
-    // const navigate = useNavigate(); // Initialize navigate function for routing
+    const navigate = useNavigate(); // Initialize navigate function for routing
     // useEffect(() => {
     //   const token = getLocal("token"); // Retrieve token from local storage
     //   if (token) {
@@ -98,6 +106,10 @@ const Layout = ({ children }) => {
     //   }
     //   // eslint-disable-next-line
     // }, []);
+
+    const handleLogout = () => {
+        navigate("/logout");
+    }
 
 
 
@@ -128,14 +140,18 @@ const Layout = ({ children }) => {
                             <div>
                                 <Box sx={{ display: "flex", alignItems: "center", gap: "1rem" }}>
 
-                                    <NotificationsNoneIcon sx={{ fontSize: "35px" }} />
+                                    {/* <NotificationsNoneIcon sx={{ fontSize: "35px" }} /> */}
 
                                     <Box sx={{ display: "flex", alignItems: "center" }}>
                                         <div><PersonIcon sx={{ fontSize: "40px" }} /></div>
                                         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-                                            <Typography sx={{ margin: 0, fontSize: "14px", fontWeight: "bold" }}>Username</Typography>
+                                            <Typography sx={{ margin: 0, fontSize: "14px", fontWeight: "bold" }}>{userMail}</Typography>
                                             <Typography sx={{ color: "#565656", fontSize: "12px", marginTop: "-4px" }}>{smoView ? "SMO" : "FFM"}</Typography>
                                         </Box>
+                                    </Box>
+
+                                    <Box onClick={handleLogout} style={{ cursor: "pointer" }}>
+                                        <LogoutIcon />
                                     </Box>
 
                                 </Box>
@@ -162,10 +178,10 @@ const Layout = ({ children }) => {
                                 <Divider sx={{ my: 1 }} />
                             </List>
 
-                            <List component="nav" style={{ marginTop: "12rem" }}>
+                            {/* <List component="nav" style={{ marginTop: "12rem" }}>
                                 <Divider sx={{ my: 1 }} />
-                                {secondaryListItems} {/* Secondary sidebar items (e.g., Logout) */}
-                            </List>
+                                {secondaryListItems}
+                            </List> */}
                         </div>
                     </Drawer>
 

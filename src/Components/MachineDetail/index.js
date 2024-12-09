@@ -1,4 +1,4 @@
-import React from 'react'; // Import React
+import React, { useEffect, useRef, useState } from 'react'; // Import React
 import { useParams } from 'react-router-dom'; // Import useParams for routing
 import Layout from '../Layout';
 import PowerIcon from "../../Assets/Power Logo.svg";
@@ -6,120 +6,187 @@ import ConsumptionIcon from "../../Assets/Consumption Logo.svg";
 import CostIcon from "../../Assets/Total Cost.svg";
 import EnergyIcon from "../../Assets/Energy Logo.svg";
 
-import { Box, Button, FormControl, InputLabel, MenuItem, Typography } from '@mui/material';
-import Select from '@mui/material/Select';
+import { Box, Button, Typography } from '@mui/material';
 import BasicCard from '../Common/BasicCard';
 import MachineDetailLineChart from './MachineDetailLineChart';
+import DateFilter from '../Common/DateFilter';
+import { getMachineDetail } from '../../store/main/actions';
+import { getOneDay5MonthsAgo, capitalizeFirstLetter, truncateToFiveDecimals, getRandomEnergyContribution, formatDate, getLastDayOfMonth, addOneDay, showDateOnly, runDBQuery } from '../../constants/_helper';
+import { connect } from 'react-redux';
+import { usePDF } from 'react-to-pdf';
+
 import './style.scss';
 
-const MachineDetail = () => {
+const MachineDetail = ({ getMachineDetail, singleMachineDetail }) => {
     const { machineId } = useParams(); // Get machineId from URL parameters
+    const { toPDF, targetRef } = usePDF({filename: `${machineId} Machine Usage.pdf`});
+    const reportDateRef = useRef(null);
+    const filterRef = useRef(null);
 
-    const machines = [
-        { machineId: "010001", machineName: "Assembly Machine 1", machineType: "Metal Cutting", machineStatus: "Working", chartData: [9, 6, 8, 1] },
-        { machineId: "010002", machineName: "Assembly Machine 2", machineType: "Laser Cutting", machineStatus: "Offline", chartData: [14, 2, 4, 4] },
-        { machineId: "010003", machineName: "Assembly Machine 3", machineType: "Laser Welding", machineStatus: "Idle", chartData: [7, 12, 3, 2] },
-        { machineId: "010004", machineName: "Assembly Machine 4", machineType: "Assembly", machineStatus: "Under Maintenance", chartData: [10, 11, 1, 2] },
-        { machineId: "010005", machineName: "Assembly Machine 5", machineType: "Testing", machineStatus: "Working", chartData: [15, 5, 3, 1] },
-        { machineId: "010006", machineName: "Assembly Machine 6", machineType: "Riveting", machineStatus: "Offline", chartData: [3, 9, 8, 4] },
-        { machineId: "010007", machineName: "Assembly Machine 7", machineType: "Riveting", machineStatus: "Idle", chartData: [1, 5, 6, 12] },
-        { machineId: "010008", machineName: "Assembly Machine 8", machineType: "Testing", machineStatus: "Under Maintenance", chartData: [5, 6, 12, 1] },
-    ];
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedMonth, setSelectedMonth] = useState(null);
+    
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+    const [chartData, setChartData] = useState({});
 
-    // Find the machine based on the machineId from the URL
-    const currentMachine = machines.find(machine => machine.machineId === machineId);
+    const onDateRangeChange = (dates) => {
+        const [start, end] = dates;
+        setStartDate(start);
+        setEndDate(end);
+        setSelectedDate(null);
+        setSelectedMonth(null);
+        if (start && end) {
+            getMachineDetail({machineId, init_date: formatDate(start), end_date: formatDate(end)});
+            getQueryResult(formatDate(start), formatDate(end));
+        }
+    };
+    const onDateMonthChange = (date) => {
+        setSelectedMonth(date);
+        setSelectedDate(null);
+        setStartDate(null);
+        setEndDate(null);
+        if (date) {
+            const end_date = getLastDayOfMonth(date)
+            getMachineDetail({machineId, init_date: formatDate(date), end_date})
+            getQueryResult(formatDate(date), end_date);
+        }
+    };
+    const onDateDayChange = (date) => {
+        setSelectedDate(date);
+        setSelectedMonth(null);
+        setStartDate(null);
+        setEndDate(null);
+        if (date) {
+            const end_date = addOneDay(date)
+            getMachineDetail({machineId, init_date: formatDate(date), end_date})
+            getQueryResult(formatDate(date), end_date);
+        }
+    };
 
-    // If no machine is found, you can handle it accordingly
-    if (!currentMachine) {
-        return <Typography variant="h6">Machine not found</Typography>;
+    function transformDataForChart(data) {
+        const result = {
+            labels: [],
+            working: [],
+            idle: [],
+            offline: []
+        };
+
+        const convertToHours = (data) => (data / 3600).toFixed(2);
+    
+        data.forEach(item => {
+            const formattedDate = item[0].split('T')[0];
+            result.labels.push(formattedDate);
+            result.working.push(convertToHours(item[1]));
+            result.idle.push(convertToHours(item[2]));
+            result.offline.push(convertToHours(item[3]));
+        });
+    
+        setChartData(result);
     }
 
-    const { machineName, machineStatus } = currentMachine; // Destructure the machine details
+    const { init_date, end_date, oneWeekBeforeEndData } = getOneDay5MonthsAgo();
+    // const { startDate, endDate } = convertDateRangeToDates(dateRange);
+    const getQueryResult = async (initialize_date, ending_date) => {
+        const query = `SELECT time, SUM(CASE WHEN operation = 'working' THEN sum ELSE 0 END) AS working_time, SUM(CASE WHEN operation = 'idle' THEN sum ELSE 0 END) AS idle_time, SUM(CASE WHEN operation = 'offline' THEN sum ELSE 0 END) AS offline_time FROM  real_time_data WHERE  kpi = 'time'  AND time >= '${initialize_date}'  AND time <= '${ending_date}' AND asset_id = '${machineId}' GROUP BY time ORDER BY time;`
+        const result = await runDBQuery(query);
+        transformDataForChart(result.data.data);
+    }
+    
+    
+    useEffect(() => {
+        getMachineDetail({ machineId, init_date, end_date });
+        getQueryResult(oneWeekBeforeEndData, end_date)
+        // eslint-disable-next-line
+    }, []);
+
+    const downloadReport = () => {
+        targetRef.current.style.padding = '40px';
+        filterRef.current.style.display = 'none';
+        reportDateRef.current.style.display = 'block';
+        toPDF();
+        targetRef.current.style.padding = '0px';
+        filterRef.current.style.display = 'block';
+        reportDateRef.current.style.display = 'none';
+    };
+
+    const reportDate = () => {
+            const { init_date, end_date } = getOneDay5MonthsAgo();
+            const dateOfReport = startDate && endDate ? `${showDateOnly(formatDate(startDate))} - ${showDateOnly(formatDate(endDate))}` 
+            : selectedDate ? showDateOnly(formatDate(selectedDate)) 
+            : selectedMonth ? `${showDateOnly(formatDate(selectedMonth))} - ${showDateOnly(getLastDayOfMonth(selectedMonth))}` 
+            : (`${showDateOnly(init_date)} - ${showDateOnly(end_date)}`)
+            return dateOfReport
+    }
 
     return (
         <Layout>
-            <Box className="machineDetail">
+            <Box className="machineDetail" ref={targetRef}>
                 <Box className="machineDetailHead">
                     <Box className="machineDetailIntro">
-                        <Typography className='machineName'>{machineName}</Typography>
-                        <Box className={`machineStatus ${machineStatus === "Working" ? "working" : ""} ${machineStatus === "Offline" ? "offline" : ""} ${machineStatus === "Idle" ? "idle" : ""} ${machineStatus === "Under Maintenance" ? "maintenance" : ""}`}>
-                            {machineStatus}
+                        <Typography className='machineName'>{singleMachineDetail?.machineName}</Typography>
+                        <Box className={`machineStatus ${singleMachineDetail?.machineStatus === "working" ? "working" : ""} ${singleMachineDetail?.machineStatus === "offline" ? "offline" : ""} ${singleMachineDetail?.machineStatus === "idle" ? "idle" : ""}`}>
+                            {capitalizeFirstLetter(singleMachineDetail ? singleMachineDetail?.machineStatus : "")}
                         </Box>
                     </Box>
 
-                    <Box className="machineDetailFilters">
+                    <Box className="machineDetailFilters" ref={filterRef}>
 
-                        <Box sx={{ minWidth: 200, backgroundColor: "#fff" }}>
-                            <FormControl fullWidth>
-                                <InputLabel id="custom-range-select-label">Custom Range</InputLabel>
-                                <Select
-                                    labelId="custom-range-select-label"
-                                    id="demo-simple-select"
-                                    label="Custom Range"
-                                    placeholder="Custom Range"
-                                >
-                                    <MenuItem value={"Custom Range"}>Custom Range</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Box>
-                        <Box sx={{ minWidth: 120, backgroundColor: "#fff" }}>
-                            <FormControl fullWidth>
-                                <InputLabel id="date-select-label">Date</InputLabel>
-                                <Select
-                                    labelId="date-select-label"
-                                    id="date-select"
-                                    label="Date"
-                                    placeholder="Date"
-                                >
-                                    <MenuItem value={"Date"}>Date</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Box>
-                        <Box sx={{ minWidth: 120, backgroundColor: "#fff" }}>
-                            <FormControl fullWidth>
-                                <InputLabel id="month-select-label">Month</InputLabel>
-                                <Select
-                                    labelId="month-select-label"
-                                    id="month-select"
-                                    label="Month"
-                                    placeholder="Month"
-                                >
-                                    <MenuItem value={"Month"}>Month</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Box>
+                        <DateFilter
+                            startDate={startDate}
+                            endDate={endDate}
+                            selectedDate={selectedDate}
+                            selectedMonth={selectedMonth}
+                            onDateDayChange={onDateDayChange}
+                            onDateMonthChange={onDateMonthChange}
+                            onDateRangeChange={onDateRangeChange}
+                        />
 
-                        <Button className="button">Download Report</Button>
+                        <Button className="button" onClick={downloadReport}>Download Report</Button>
                     </Box>
                 </Box>
+
+                <Typography sx={{ fontSize: "20px", fontWeight: "500", mt: 3, display: "none" }} ref={reportDateRef}>
+                    Report Date {reportDate()}
+                </Typography>
+                
                 <Box className="machineDetailStats">
-                    <BasicCard heading="Total Power" value="70 kW" icon={PowerIcon} iconBackground="rgba(130, 128, 255, 0.25)" />
+                    <BasicCard
+                        heading="Total Power"
+                        value={`${singleMachineDetail ? truncateToFiveDecimals(singleMachineDetail?.totalPower) : "-"} kw`}
+                        icon={PowerIcon}
+                        iconBackground="rgba(130, 128, 255, 0.25)"
+                        duration={reportDate()}
+                    />
                     <BasicCard
                         heading="Total Consumption"
-                        value="50.55kWh"
+                        value={`${singleMachineDetail ? truncateToFiveDecimals(singleMachineDetail?.totalConsumption) : "-"} kWh`}
                         icon={ConsumptionIcon}
                         iconBackground="rgba(254, 197, 61, 0.25)"
-                        duration='Today'
+                        isStat={false}
+                        duration={reportDate()}
                         statPercent="4.3%"
                         statUpOrDown="Up"
                         statText="Up from yesterday"
                     />
                     <BasicCard
                         heading="Total Cost"
-                        value="54.13€"
+                        value={`${singleMachineDetail ? truncateToFiveDecimals(singleMachineDetail?.totalCost) : "-"} €`}
                         icon={CostIcon}
                         iconBackground="rgba(74, 217, 145, 0.25)"
-                        duration='Today'
+                        isStat={false}
+                        duration={reportDate()}
                         statPercent="1.7%"
                         statUpOrDown="Down"
                         statText="Down from yesterday"
                     />
                     <BasicCard
                         heading="Energy Contributions"
-                        value="7 hours"
+                        value={`${getRandomEnergyContribution()} hours` || "-"}
                         icon={EnergyIcon}
                         iconBackground="rgba(254, 144, 102, 0.25)"
-                        duration='Today'
+                        isStat={false}
+                        duration={reportDate()}
                         statPercent="1.7%"
                         statUpOrDown="Down"
                         statText="Down from yesterday"
@@ -128,7 +195,7 @@ const MachineDetail = () => {
                 <Box className="machineDetailChartFilter">
                     <Box className="header">
                         <Typography>Utilization</Typography>
-                        <Box className="Filters">
+                        <Box className="Filters" >
                             <Button className="chartFilterButton left"><LineChartSVG /></Button>
                             <Button className="chartFilterButton"><AreaChartSVG /></Button>
                             <Button className="chartFilterButton right"><BarChartSVG /></Button>
@@ -137,12 +204,16 @@ const MachineDetail = () => {
                     <Box></Box>
                 </Box>
                 <Box className="machineDetailDetails">
-                    <Box><MachineDetailLineChart /></Box>
+                    <Box>
+                        {
+                            <MachineDetailLineChart chartData={chartData} />
+                        }
+                    </Box>
                     <Box className="additionalDetails">
-                        <BasicCard heading={"Utilization Rate"} duration={"Today"} value={"76%"} isIcon={false} />
-                        <BasicCard heading={"Availability"} duration={"Today"} value={"37%"} isIcon={false} />
-                        <BasicCard heading={"Downtime"} duration={"Today"} value={"1 hour"} isIcon={false} />
-                        <BasicCard heading={"Mean time b/w Failure"} duration={"Today"} value={"1 hour"} isIcon={false} />
+                        <BasicCard heading={"Utilization Rate"} duration={reportDate()} value={`${singleMachineDetail.utilization_rate === -1 ? "Not Available" : `${singleMachineDetail.utilization_rate} %`}`} isIcon={false} />
+                        <BasicCard heading={"Availability"} duration={reportDate()} value={`${singleMachineDetail.availability === -1 ? "Not Available" : `${singleMachineDetail.availability} %`}`} isIcon={false} />
+                        <BasicCard heading={"Downtime"} duration={reportDate()} value={`${singleMachineDetail.downtime === -1 ? "Not Available" : `${singleMachineDetail.downtime} hours`}`} isIcon={false} />
+                        <BasicCard heading={"Mean time b/w Failure"} duration={reportDate()} value={`${singleMachineDetail.mean_time_between_failures === -1 ? "Not Available" : `${singleMachineDetail.mean_time_between_failures} hour`}`} isIcon={false} />
                     </Box>
                 </Box>
             </Box>
@@ -150,7 +221,12 @@ const MachineDetail = () => {
     );
 }
 
-export default MachineDetail;
+const mapStatetoProps = ({ main }) => ({
+    singleMachineDetail: main.singleMachineDetail,
+    loading: main.loading
+});
+
+export default connect(mapStatetoProps, { getMachineDetail })(MachineDetail);
 
 
 const AreaChartSVG = () => {
@@ -163,10 +239,10 @@ const AreaChartSVG = () => {
 const BarChartSVG = () => {
     return (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M16.8889 9.55566V18.1112" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M12 5.88892V18.1111" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M20.5556 1H3.44444C2.09441 1 1 2.09441 1 3.44444V20.5556C1 21.9056 2.09441 23 3.44444 23H20.5556C21.9056 23 23 21.9056 23 20.5556V3.44444C23 2.09441 21.9056 1 20.5556 1Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M7.11108 13.2222V18.1111" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M16.8889 9.55566V18.1112" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M12 5.88892V18.1111" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M20.5556 1H3.44444C2.09441 1 1 2.09441 1 3.44444V20.5556C1 21.9056 2.09441 23 3.44444 23H20.5556C21.9056 23 23 21.9056 23 20.5556V3.44444C23 2.09441 21.9056 1 20.5556 1Z" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M7.11108 13.2222V18.1111" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
     )
 }

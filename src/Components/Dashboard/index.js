@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import BasicCard from "../Common/BasicCard";
 import Layout from "../Layout";
 import "./style.scss";
@@ -11,17 +11,25 @@ import { useNavigate } from "react-router-dom";
 import { Typography } from "@mui/material";
 import ProductionCard from "../Common/ProductionCard";
 import EnergyCard from "../Common/EnergyCard";
+import { connect } from "react-redux";
+import { getDashboardParams } from "../../store/main/actions";
+import { truncateToFiveDecimals } from "../../constants/_helper";
 
-function Dashboard() {
+function Dashboard( { getDashboardParams, loading, dashboardParams } ) {
 
-  const navigate = useNavigate(); // Initialize the navigate function for routing
-  // Define an array of card data for mapping
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    getDashboardParams();
+    // eslint-disable-next-line
+  }, []);
+  
   const cardData = [
     {
       id: 1,
       heading: "Total Machines",
       durationPresent: false,
-      value: "16",
+      value: !loading && dashboardParams && dashboardParams.totalMachines,
       isStat: false,
       icon: TotalMachineIcon,
       iconBackground: "rgba(130, 128, 255, 0.25)",
@@ -30,7 +38,8 @@ function Dashboard() {
       id: 2,
       heading: "Total Consumption",
       duration: "per day",
-      value: "540 kWH",
+      value: `${!loading && dashboardParams && truncateToFiveDecimals(dashboardParams.totalConsumptionPerDay)} kWH`,
+      isStat: false,
       statUpOrDown: "Up",
       statPercent: "1.3%",
       statText: "Up from yesterday",
@@ -41,7 +50,8 @@ function Dashboard() {
       id: 3,
       heading: "Total Cost",
       duration: "per day",
-      value: "550.13€",
+      value: `${!loading && dashboardParams && truncateToFiveDecimals(dashboardParams.totalCostPerDay)} €`,
+      isStat: false,
       statPercent: "4.3%",
       statText: "Down from yesterday",
       icon: TotalCost,
@@ -51,13 +61,13 @@ function Dashboard() {
       id: 4,
       heading: "Total Alerts",
       duration: "per day",
-      value: "0",
+      value: !loading && dashboardParams && dashboardParams.totalAlarm,
       isStat: false,
       icon: TotalAlerts,
       iconBackground: "rgba(254, 144, 102, 0.25)",
     },
   ];
-
+  
   const machines = [
     { machineId: "010001", machineName: "Assembly Machine 1", machineType: "Metal Cutting", machineStatus: "Working", chartData: [9, 6, 8, 1], efficiency: "90", density: "80", success_rate: "92", failure_rate: "8" },
     { machineId: "010002", machineName: "Assembly Machine 2", machineType: "Laser Cutting", machineStatus: "Offline", chartData: [14, 2, 4, 4], efficiency: "90", density: "80", success_rate: "92", failure_rate: "8" },
@@ -129,4 +139,9 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+const mapStatetoProps = ({ main }) => ({
+  dashboardParams: main.dashboardParams,
+  loading: main.loading
+});
+
+export default connect(mapStatetoProps, { getDashboardParams })(Dashboard);
