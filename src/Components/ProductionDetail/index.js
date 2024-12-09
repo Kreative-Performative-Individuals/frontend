@@ -168,10 +168,9 @@ const ProductionDetail = () => {
                 <Box className="machineDetailDetails">
                     <Box><ProductionDetailLineChart /></Box>
                     <Box className="additionalDetails">
-                        <BasicCard heading={"Efficiency"} duration={"Today"} value={"96%"} isIcon={false} />
-                        <BasicCard heading={"Density"} duration={"Today"} value={"74%"} isIcon={false} />
-                        <BasicCard heading={"Failure Rate"} duration={"Today"} value={"8%"} isIcon={false} />
-                        <BasicCard heading={"Success Rate"} duration={"Today"} value={"92%"} isIcon={false} />
+                        <BasicCard heading={"Efficiency"} duration={"Today"} value={"100%"} isIcon={false} />
+                        <BasicCard heading={"Success Rate"} duration={"Today"} value={"99.99%"} isIcon={false} />
+                        <BasicCard heading={"Failure Rate"} duration={"Today"} value={"0%"} isIcon={false} />
                     </Box>
                 </Box>
             </Box>
