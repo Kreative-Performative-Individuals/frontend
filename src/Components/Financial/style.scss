@@ -55,11 +55,13 @@
                 align-items: center;
                 justify-content: center;
                 background-color: #FAFBFD;
+            
 
                 .chartFilterButton {
                     height: 40px;
                     border: 1px solid #979797;
                     border-radius: 0;
+                    margin-bottom: 10px;
 
                     &.left {
                         border-top-left-radius: 10px;
@@ -84,7 +86,7 @@
         display: grid;
         grid-template-columns: 3fr 1fr;
         gap: 1.5rem;
-        align-items: center;
+        align-items: flex-start;
         justify-content: flex-start;
 
         .additionalDetails {
