@@ -13,6 +13,7 @@ import ProductionCard from "../Common/ProductionCard";
 import EnergyCard from "../Common/EnergyCard";
 import { connect } from "react-redux";
 import { getDashboardParams } from "../../store/main/actions";
+import { truncateToFiveDecimals } from "../../constants/_helper";
 
 function Dashboard( { getDashboardParams, loading, dashboardParams } ) {
 
@@ -37,7 +38,7 @@ function Dashboard( { getDashboardParams, loading, dashboardParams } ) {
       id: 2,
       heading: "Total Consumption",
       duration: "per day",
-      value: `${!loading && dashboardParams && dashboardParams.totalConsumptionPerDay} kWH`,
+      value: `${!loading && dashboardParams && truncateToFiveDecimals(dashboardParams.totalConsumptionPerDay)} kWH`,
       isStat: false,
       statUpOrDown: "Up",
       statPercent: "1.3%",
@@ -49,7 +50,7 @@ function Dashboard( { getDashboardParams, loading, dashboardParams } ) {
       id: 3,
       heading: "Total Cost",
       duration: "per day",
-      value: `${!loading && dashboardParams && dashboardParams.totalCostPerDay} €`,
+      value: `${!loading && dashboardParams && truncateToFiveDecimals(dashboardParams.totalCostPerDay)} €`,
       isStat: false,
       statPercent: "4.3%",
       statText: "Down from yesterday",

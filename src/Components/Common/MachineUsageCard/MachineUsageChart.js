@@ -10,7 +10,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 const MachineUsageChart = ({ chartData }) => {
     // Data for the doughnut chart
     const data = {
-        labels: ['Working Time', 'Idle Time', 'Offline Time', 'Maintenance'], // Labels for the chart segments
+        labels: ['Working Time', 'Idle Time', 'Offline Time'], // Labels for the chart segments
         datasets: [
             {
                 label: 'Usage', // Label for the dataset

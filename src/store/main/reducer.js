@@ -25,6 +25,9 @@ import {
   GET_DASHBOARD_PARAMS,
   GET_DASHBOARD_PARAMS_SUCCESS,
   GET_DASHBOARD_PARAMS_ERROR,
+  GET_MACHINE_DETAIL,
+  GET_MACHINE_DETAIL_SUCCESS,
+  GET_MACHINE_DETAIL_ERROR,
 } from "../types";
 
 const initialState = {
@@ -39,7 +42,8 @@ const initialState = {
   successMsg: "",
   ragResponse: "",
   machines: [],
-  dashboardParams: {}
+  dashboardParams: {},
+  singleMachineDetail: {},
 };
 
 const MyReducer = (state = initialState, action) => {
@@ -258,6 +262,32 @@ const MyReducer = (state = initialState, action) => {
               loading: false,
               errMsg: action.payload?.response?.data?.error,
               machines: []
+          };
+      
+      case GET_MACHINE_DETAIL:
+          return {
+              ...state,
+              error: false,
+              loading: true,
+              errMsg: "",
+              singleMachineDetail: []
+          };
+
+      case GET_MACHINE_DETAIL_SUCCESS:
+          return {
+              ...state,
+              error: false,
+              loading: false,
+              errMsg: "",
+              singleMachineDetail: action.payload.data
+          };
+      case GET_MACHINE_DETAIL_ERROR:
+          return {
+              ...state,
+              error: true,
+              loading: false,
+              errMsg: action.payload,
+              singleMachineDetail: []
           };
       
       

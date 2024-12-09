@@ -11,6 +11,8 @@ import OutlinedInput from '@mui/material/OutlinedInput'; // Import outlined inpu
 import Chip from '@mui/material/Chip'; // Import Chip component for displaying selected items
 import MachineUsageCard from '../Common/MachineUsageCard'; // Import MachineUsageCard component for displaying individual machine details
 import { useNavigate } from 'react-router-dom'; // Import useNavigate hook for navigation between routes
+import { connect } from 'react-redux';
+import { getMachineList } from '../../store/main/actions';
 
 // Constants for dropdown menu styling
 const ITEM_HEIGHT = 48; // Height of each item in the dropdown
@@ -25,7 +27,7 @@ const MenuProps = {
 };
 
 // Main MachineUsage component
-const MachineUsage = () => {
+const MachineUsage = ({ getMachineList, machineList }) => {
 
     const navigate = useNavigate(); // Initialize the navigate function for routing
     const [machineType, setMachineType] = useState([]); // State for selected machine types
@@ -70,23 +72,14 @@ const MachineUsage = () => {
 
     // Predefined machine types and statuses for filtering
     const machineTypes = ["Metal Cutting", "Laser Cutting", "Laser Welding", "Assembly", "Testing", "Riveting"];
-    const machineStatuses = ["Working", "Offline", "Idle", "Under Maintenance"];
+    const machineStatuses = ["Active", "Offline", "Idle"];
 
     // Sample machine data for demonstration
-    const machines = [
-        { machineId: "010001", machineName: "Assembly Machine 1", machineType: "Metal Cutting", machineStatus: "Working", chartData: [9, 6, 8, 1] },
-        { machineId: "010002", machineName: "Assembly Machine 2", machineType: "Laser Cutting", machineStatus: "Offline", chartData: [14, 2, 4, 4] },
-        { machineId: "010003", machineName: "Assembly Machine 3", machineType: "Laser Welding", machineStatus: "Idle", chartData: [7, 12, 3, 2] },
-        { machineId: "010004", machineName: "Assembly Machine 4", machineType: "Assembly", machineStatus: "Under Maintenance", chartData: [10, 11, 1, 2] },
-        { machineId: "010005", machineName: "Assembly Machine 5", machineType: "Testing", machineStatus: "Working", chartData: [15, 5, 3, 1] },
-        { machineId: "010006", machineName: "Assembly Machine 6", machineType: "Riveting", machineStatus: "Offline", chartData: [3, 9, 8, 4] },
-        { machineId: "010007", machineName: "Assembly Machine 7", machineType: "Riveting", machineStatus: "Idle", chartData: [1, 5, 6, 12] },
-        { machineId: "010008", machineName: "Assembly Machine 8", machineType: "Testing", machineStatus: "Under Maintenance", chartData: [5, 6, 12, 1] },
-    ];
+    const machines = [ { machineId: "010001", machineName: "Assembly Machine 1", machineType: "Metal Cutting", machineStatus: "Working", chartData: [9, 6, 8] } ];
 
     // Effect to set initial machine view when the component mounts
     useEffect(() => {
-        setMachineInView(machines); // Set all machines to be visible initially
+        getMachineList();
         // eslint-disable-next-line
     }, []);
 
@@ -95,12 +88,18 @@ const MachineUsage = () => {
         navigate(`/machines/${machineId}`); // Navigate to the machine detail page using the machineId
     };
 
+    useEffect(() => {
+        console.log(machineList)
+        setMachineInView(machineList); // Set all machines to be visible initially
+    }, [machineList])
+
+
     return (
         <Layout>
             <Box className="machines">
                 <Box className="machineStatsConatiner">
                     {/* Display statistics for total, working, idle, and offline machines */}
-                    <BasicCard heading="Total Machines" value="16" icon={GroupIcon} iconBackground="rgba(130, 128, 255, 0.25)" />
+                    <BasicCard heading="Total Machines" value={machineList && machineList.length} icon={GroupIcon} iconBackground="rgba(130, 128, 255, 0.25)" />
                     <BasicCard heading="Working Machines" value="10" icon={WorkingIcon} iconBackground="rgba(254, 197, 61, 0.25)" />
                     <BasicCard heading="Idle Machines" value="2" icon={IdleIcon} iconBackground="rgba(74, 217, 145, 0.25)" />
                     <BasicCard heading="Offline Machines" value="4" icon={OfflineIcon} iconBackground="rgba(254, 144, 102, 0.25)" />
@@ -174,6 +173,16 @@ const MachineUsage = () => {
                     {/* Map through the filtered machines and display each as a MachineUsageCard */}
                     {machineInView.map((machine, index) => (
                         <MachineUsageCard
+                            key={machine.asset_id}
+                            machineName={machine.name} // Pass machine name to the card
+                            machineType={machine.type} // Pass machine type to the card
+                            machineStatus={machine.status} // Pass machine status to the card
+                            chartData={machines[0].chartData} // Pass chart data to the card
+                            onClick={() => handleCardClick(machine.asset_id)} // Pass click handler to navigate
+                        />
+                    ))}
+                    {/* {machineInView.map((machine, index) => (
+                        <MachineUsageCard
                             key={index}
                             machineName={machine.machineName} // Pass machine name to the card
                             machineType={machine.machineType} // Pass machine type to the card
@@ -181,11 +190,16 @@ const MachineUsage = () => {
                             chartData={machine.chartData} // Pass chart data to the card
                             onClick={() => handleCardClick(machine.machineId)} // Pass click handler to navigate
                         />
-                    ))}
+                    ))} */}
                 </Box>
             </Box>
         </Layout>
     )
 }
 
-export default MachineUsage; // Exporting the MachineUsage component for use in other parts of the application
+const mapStatetoProps = ({ main }) => ({
+    machineList: main.machines,
+    loading: main.loading
+});
+
+export default connect(mapStatetoProps, { getMachineList })(MachineUsage);

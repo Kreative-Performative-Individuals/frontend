@@ -17,12 +17,15 @@ import {
   CHAT_RAG,
   CHAT_RAG_SUCCESS,
   CHAT_RAG_ERROR,
-  GET_MACHINE_LIST,
-  GET_MACHINE_LIST_SUCCESS,
-  GET_MACHINE_LIST_ERROR,
   GET_DASHBOARD_PARAMS,
   GET_DASHBOARD_PARAMS_SUCCESS,
   GET_DASHBOARD_PARAMS_ERROR,
+  GET_MACHINE_LIST,
+  GET_MACHINE_LIST_SUCCESS,
+  GET_MACHINE_LIST_ERROR,
+  GET_MACHINE_DETAIL,
+  GET_MACHINE_DETAIL_SUCCESS,
+  GET_MACHINE_DETAIL_ERROR,
 } from "../types";
 
 export const registerUser = (payload, navigate) => ({
@@ -116,6 +119,20 @@ export const chatRagError = payload => ({
   payload
 });
 
+export const getDashboardParams = () => ({
+  type: GET_DASHBOARD_PARAMS
+});
+
+export const getDashboardParamsSuccess = (payload) => ({
+  type: GET_DASHBOARD_PARAMS_SUCCESS,
+  payload
+});
+
+export const getDashboardParamsError = payload => ({
+  type: GET_DASHBOARD_PARAMS_ERROR,
+  payload
+});
+
 export const getMachineList = () => ({
   type: GET_MACHINE_LIST
 });
@@ -130,16 +147,17 @@ export const getMachineListError = payload => ({
   payload
 });
 
-export const getDashboardParams = () => ({
-  type: GET_DASHBOARD_PARAMS
-});
-
-export const getDashboardParamsSuccess = (payload) => ({
-  type: GET_DASHBOARD_PARAMS_SUCCESS,
+export const getMachineDetail = (payload) => ({
+  type: GET_MACHINE_DETAIL,
   payload
 });
 
-export const getDashboardParamsError = payload => ({
-  type: GET_DASHBOARD_PARAMS_ERROR,
+export const getMachineDetailSuccess = (payload) => ({
+  type: GET_MACHINE_DETAIL_SUCCESS,
+  payload
+});
+
+export const getMachineDetailError = payload => ({
+  type: GET_MACHINE_DETAIL_ERROR,
   payload
 });
