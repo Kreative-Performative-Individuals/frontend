@@ -17,7 +17,7 @@ const MachineUsageCard = ({ machineName, machineType="Metal Cutting", machineSta
                     </Box>
                     {/* Display machine status with conditional styling based on status */}
                     <Box className={`machineStatus ${machineStatus === "Active" && "working"} ${machineStatus === "Offline" && "offline"} ${machineStatus === "Idle" && "idle"} ${machineStatus === "Under Maintenance" && "maintenance"}`}>
-                        {machineStatus}
+                        {machineStatus === "Active" ? "Working" : machineStatus}
                     </Box>
                 </Box>
                 {/* Render the usage chart for the machine */}

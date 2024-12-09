@@ -14,14 +14,21 @@ import "../style.scss";
 function SignIn({ userLogin, loading, loginError, isAuth, errMsg }) {
 
   const navigate = useNavigate();
+  const [userAuth, setUserAuth] = React.useState({
+      email: "",
+      password: ""
+  })
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    // console.log();
-    await userLogin({
-      email: data.get("email"),
-      password: data.get("password")
-    }, navigate)
+    const email = data.get("email");
+    const password = data.get("password");
+    if (email && password) {
+      await userLogin({
+        email: email,
+        password: password
+      }, navigate)
+    }
   };
   return (
     <AuthLayout>
@@ -42,6 +49,8 @@ function SignIn({ userLogin, loading, loginError, isAuth, errMsg }) {
             name="email"
             autoComplete="email"
             autoFocus
+            value={userAuth.email}
+            onChange={(e) => setUserAuth((prev) => ({...prev, email: e.target.value}))}
           />
           <TextField
             margin="normal"
@@ -52,15 +61,17 @@ function SignIn({ userLogin, loading, loginError, isAuth, errMsg }) {
             type="password"
             id="password"
             autoComplete="current-password"
+            value={userAuth.password}
+            onChange={(e) => setUserAuth((prev) => ({...prev, password: e.target.value}))}
           />
           
           <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-            <Box item xs>
+            <Box>
               <Link href="#" variant="body2">
                 Forgot password?
               </Link>
             </Box>
-            <Box item>
+            <Box>
               <Link to="/signup" variant="body2">
                 {"Don't have an account? Sign Up"}
               </Link>
@@ -73,6 +84,7 @@ function SignIn({ userLogin, loading, loginError, isAuth, errMsg }) {
                 variant="contained"
                 fullWidth
                 sx={{ mt: 1, mb: 2 }}
+                disabled={!userAuth.email || !userAuth.password}
               >
                 Sign In
               </Button>
