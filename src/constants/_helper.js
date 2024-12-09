@@ -1,3 +1,6 @@
+import axios from "axios";
+import { runQueryAPI } from "./apiRoutes";
+
 // Function to convert Machine list API response into JSON
 const machineColumnNames = [
   "asset_id",
@@ -39,9 +42,9 @@ function getLast24Hours() {
   return { init_date: initDate, end_date: formattedEndDate };
 }
 
-function getOneDay7MonthsAgo() {
+function getOneDay5MonthsAgo() {
   const startDate = new Date();
-  startDate.setMonth(startDate.getMonth() - 7);
+  startDate.setMonth(startDate.getMonth() - 5);
 
   const endDate = new Date(startDate.getTime() + 24 * 60 * 60 * 1000); // Add 1 day
 
@@ -127,15 +130,53 @@ function showDateOnly(dateString) {
   return `${yy}-${mm}-${dd}`;
 }
 
+async function runDBQuery(query) {
+  const data = await axios.get(`${runQueryAPI}?statement=${encodeURIComponent(query)}`)
+  return data
+}
+
+function formatMachineUsageTime(inputArray) {
+  const result = {};
+  inputArray.forEach(item => {
+      const key = item[0];
+      const value = item[1];
+      result[key] = value;
+  });
+  return result;
+}
+
+function secondsToHHMMSS(seconds) {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const remainingSeconds = seconds % 60;
+  const paddedHours = String(hours).padStart(2, '0');
+  const paddedMinutes = String(minutes).padStart(2, '0');
+  const paddedSeconds = String(remainingSeconds).padStart(2, '0');
+
+  return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
+}
+
+function secondsToReadableFormat(seconds) {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const remainingSeconds = seconds % 60;
+  return `${hours} Hours ${minutes} Minutes ${remainingSeconds} Seconds`;
+}
+
+
 export {
   transformMachineList,
   getLast24Hours,
-  getOneDay7MonthsAgo,
+  getOneDay5MonthsAgo,
   capitalizeFirstLetter,
   truncateToFiveDecimals,
   getRandomEnergyContribution,
   formatDate,
   getLastDayOfMonth,
   addOneDay,
-  showDateOnly
+  showDateOnly,
+  runDBQuery,
+  formatMachineUsageTime,
+  secondsToHHMMSS,
+  secondsToReadableFormat
 };
