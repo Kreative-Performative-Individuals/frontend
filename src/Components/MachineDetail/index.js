@@ -11,7 +11,7 @@ import BasicCard from '../Common/BasicCard';
 import MachineDetailLineChart from './MachineDetailLineChart';
 import DateFilter from '../Common/DateFilter';
 import { getMachineDetail } from '../../store/main/actions';
-import { getOneDay7MonthsAgo, capitalizeFirstLetter, truncateToFiveDecimals, getRandomEnergyContribution, formatDate, getLastDayOfMonth, addOneDay, showDateOnly } from '../../constants/_helper';
+import { getOneDay5MonthsAgo, capitalizeFirstLetter, truncateToFiveDecimals, getRandomEnergyContribution, formatDate, getLastDayOfMonth, addOneDay, showDateOnly, runDBQuery } from '../../constants/_helper';
 import { connect } from 'react-redux';
 import { usePDF } from 'react-to-pdf';
 
@@ -28,6 +28,8 @@ const MachineDetail = ({ getMachineDetail, singleMachineDetail }) => {
     
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
+    const [chartData, setChartData] = useState({});
+
     const onDateRangeChange = (dates) => {
         const [start, end] = dates;
         setStartDate(start);
@@ -35,7 +37,8 @@ const MachineDetail = ({ getMachineDetail, singleMachineDetail }) => {
         setSelectedDate(null);
         setSelectedMonth(null);
         if (start && end) {
-            getMachineDetail({machineId, init_date: formatDate(start), end_date: formatDate(end)})
+            getMachineDetail({machineId, init_date: formatDate(start), end_date: formatDate(end)});
+            getQueryResult(formatDate(start), formatDate(end));
         }
     };
     const onDateMonthChange = (date) => {
@@ -46,6 +49,7 @@ const MachineDetail = ({ getMachineDetail, singleMachineDetail }) => {
         if (date) {
             const end_date = getLastDayOfMonth(date)
             getMachineDetail({machineId, init_date: formatDate(date), end_date})
+            getQueryResult(formatDate(date), end_date);
         }
     };
     const onDateDayChange = (date) => {
@@ -56,22 +60,45 @@ const MachineDetail = ({ getMachineDetail, singleMachineDetail }) => {
         if (date) {
             const end_date = addOneDay(date)
             getMachineDetail({machineId, init_date: formatDate(date), end_date})
+            getQueryResult(formatDate(date), end_date);
         }
     };
 
+    function transformDataForChart(data) {
+        const result = {
+            labels: [],
+            working: [],
+            idle: [],
+            offline: []
+        };
 
+        const convertToHours = (data) => (data / 3600).toFixed(2);
+    
+        data.forEach(item => {
+            const formattedDate = item[0].split('T')[0];
+            result.labels.push(formattedDate);
+            result.working.push(convertToHours(item[1]));
+            result.idle.push(convertToHours(item[2]));
+            result.offline.push(convertToHours(item[3]));
+        });
+    
+        setChartData(result);
+    }
+
+    const { init_date, end_date, oneWeekBeforeEndData } = getOneDay5MonthsAgo();
+    // const { startDate, endDate } = convertDateRangeToDates(dateRange);
+    const getQueryResult = async (initialize_date, ending_date) => {
+        const query = `SELECT time, SUM(CASE WHEN operation = 'working' THEN sum ELSE 0 END) AS working_time, SUM(CASE WHEN operation = 'idle' THEN sum ELSE 0 END) AS idle_time, SUM(CASE WHEN operation = 'offline' THEN sum ELSE 0 END) AS offline_time FROM  real_time_data WHERE  kpi = 'time'  AND time >= '${initialize_date}'  AND time <= '${ending_date}' AND asset_id = '${machineId}' GROUP BY time ORDER BY time;`
+        const result = await runDBQuery(query);
+        transformDataForChart(result.data.data);
+    }
+    
+    
     useEffect(() => {
-        const { init_date, end_date } = getOneDay7MonthsAgo();
-        getMachineDetail({machineId, init_date, end_date})
+        getMachineDetail({ machineId, init_date, end_date });
+        getQueryResult(oneWeekBeforeEndData, end_date)
         // eslint-disable-next-line
     }, []);
-
-    // useEffect(() => {
-    //     if (singleMachineDetail === undefined) {
-    //         navigate("/machines")
-    //     }
-    //     // eslint-disable-next-line
-    // }, [singleMachineDetail])
 
     const downloadReport = () => {
         targetRef.current.style.padding = '40px';
@@ -81,8 +108,16 @@ const MachineDetail = ({ getMachineDetail, singleMachineDetail }) => {
         targetRef.current.style.padding = '0px';
         filterRef.current.style.display = 'block';
         reportDateRef.current.style.display = 'none';
-    }
+    };
 
+    const reportDate = () => {
+            const { init_date, end_date } = getOneDay5MonthsAgo();
+            const dateOfReport = startDate && endDate ? `${showDateOnly(formatDate(startDate))} - ${showDateOnly(formatDate(endDate))}` 
+            : selectedDate ? showDateOnly(formatDate(selectedDate)) 
+            : selectedMonth ? `${showDateOnly(formatDate(selectedMonth))} - ${showDateOnly(getLastDayOfMonth(selectedMonth))}` 
+            : (`${showDateOnly(init_date)} - ${showDateOnly(end_date)}`)
+            return dateOfReport
+    }
 
     return (
         <Layout>
@@ -112,12 +147,7 @@ const MachineDetail = ({ getMachineDetail, singleMachineDetail }) => {
                 </Box>
 
                 <Typography sx={{ fontSize: "20px", fontWeight: "500", mt: 3, display: "none" }} ref={reportDateRef}>
-                    Report Date {
-                        startDate && endDate ? `${showDateOnly(formatDate(startDate))} - ${showDateOnly(formatDate(endDate))}` 
-                        : selectedDate ? showDateOnly(formatDate(selectedDate)) 
-                        : selectedMonth ? `${showDateOnly(formatDate(selectedMonth))} - ${showDateOnly(getLastDayOfMonth(selectedMonth))}` 
-                        : showDateOnly(formatDate(new Date()))
-                    }
+                    Report Date {reportDate()}
                 </Typography>
                 
                 <Box className="machineDetailStats">
@@ -126,6 +156,7 @@ const MachineDetail = ({ getMachineDetail, singleMachineDetail }) => {
                         value={`${singleMachineDetail ? truncateToFiveDecimals(singleMachineDetail?.totalPower) : "-"} kw`}
                         icon={PowerIcon}
                         iconBackground="rgba(130, 128, 255, 0.25)"
+                        duration={reportDate()}
                     />
                     <BasicCard
                         heading="Total Consumption"
@@ -133,7 +164,7 @@ const MachineDetail = ({ getMachineDetail, singleMachineDetail }) => {
                         icon={ConsumptionIcon}
                         iconBackground="rgba(254, 197, 61, 0.25)"
                         isStat={false}
-                        duration='Today'
+                        duration={reportDate()}
                         statPercent="4.3%"
                         statUpOrDown="Up"
                         statText="Up from yesterday"
@@ -144,7 +175,7 @@ const MachineDetail = ({ getMachineDetail, singleMachineDetail }) => {
                         icon={CostIcon}
                         iconBackground="rgba(74, 217, 145, 0.25)"
                         isStat={false}
-                        duration='Today'
+                        duration={reportDate()}
                         statPercent="1.7%"
                         statUpOrDown="Down"
                         statText="Down from yesterday"
@@ -155,7 +186,7 @@ const MachineDetail = ({ getMachineDetail, singleMachineDetail }) => {
                         icon={EnergyIcon}
                         iconBackground="rgba(254, 144, 102, 0.25)"
                         isStat={false}
-                        duration='Today'
+                        duration={reportDate()}
                         statPercent="1.7%"
                         statUpOrDown="Down"
                         statText="Down from yesterday"
@@ -173,12 +204,16 @@ const MachineDetail = ({ getMachineDetail, singleMachineDetail }) => {
                     <Box></Box>
                 </Box>
                 <Box className="machineDetailDetails">
-                    <Box><MachineDetailLineChart /></Box>
+                    <Box>
+                        {
+                            <MachineDetailLineChart chartData={chartData} />
+                        }
+                    </Box>
                     <Box className="additionalDetails">
-                        <BasicCard heading={"Utilization Rate"} duration={"Today"} value={"76%"} isIcon={false} />
-                        <BasicCard heading={"Availability"} duration={"Today"} value={"37%"} isIcon={false} />
-                        <BasicCard heading={"Downtime"} duration={"Today"} value={"1 hour"} isIcon={false} />
-                        <BasicCard heading={"Mean time b/w Failure"} duration={"Today"} value={"1 hour"} isIcon={false} />
+                        <BasicCard heading={"Utilization Rate"} duration={reportDate()} value={`${singleMachineDetail.utilization_rate === -1 ? "Not Available" : `${singleMachineDetail.utilization_rate} %`}`} isIcon={false} />
+                        <BasicCard heading={"Availability"} duration={reportDate()} value={`${singleMachineDetail.availability === -1 ? "Not Available" : `${singleMachineDetail.availability} %`}`} isIcon={false} />
+                        <BasicCard heading={"Downtime"} duration={reportDate()} value={`${singleMachineDetail.downtime === -1 ? "Not Available" : `${singleMachineDetail.downtime} hours`}`} isIcon={false} />
+                        <BasicCard heading={"Mean time b/w Failure"} duration={reportDate()} value={`${singleMachineDetail.mean_time_between_failures === -1 ? "Not Available" : `${singleMachineDetail.mean_time_between_failures} hour`}`} isIcon={false} />
                     </Box>
                 </Box>
             </Box>

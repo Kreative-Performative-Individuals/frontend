@@ -10,7 +10,7 @@ import {
     Tooltip,
     Legend,
 } from 'chart.js';
-
+import { hoursToReadableFormat } from '../../constants/_helper';
 
 // Register components with Chart.js
 ChartJS.register(
@@ -25,40 +25,40 @@ ChartJS.register(
 
 
 
-const MachineDetailLineChart = () => {
-
+const MachineDetailLineChart = ({ chartData }) => {
+    
     const data = {
-        labels: ['01/03/2024', '02/03/2024', '03/03/2024', '04/03/2024', '05/03/2024'],
+        labels: chartData.labels,
         datasets: [
             {
                 label: 'Working Time',
-                data: [8, 11, 7, 13, 9],
+                data: chartData.working,
                 fill: false,
                 borderColor: '#3366CC',
-                tension: 0.1,
+                tension: 0.25,
                 pointStyle: 'circle',
-                pointRadius: 10,
-                pointHoverRadius: 15
+                pointRadius: 8,
+                pointHoverRadius: 12
             },
             {
                 label: 'Idle Time',
-                data: [4, 5, 3, 7, 2],
+                data: chartData.idle,
                 fill: false,
                 borderColor: '#DC3912',
-                tension: 0.1,
+                tension: 0.25,
                 pointStyle: 'circle',
-                pointRadius: 10,
-                pointHoverRadius: 15
+                pointRadius: 8,
+                pointHoverRadius: 12
             },
             {
                 label: 'Offline Time',
-                data: [12, 8, 14, 4, 13],
+                data: chartData.offline,
                 fill: false,
                 borderColor: '#FF9900',
-                tension: 0.1,
+                tension: 0.25,
                 pointStyle: 'circle',
-                pointRadius: 10,
-                pointHoverRadius: 15
+                pointRadius: 8,
+                pointHoverRadius: 12
             },
         ],
     };
@@ -71,6 +71,37 @@ const MachineDetailLineChart = () => {
             },
             title: {
                 display: false
+            },
+            tooltip: {
+                mode: 'index',
+                intersect: false,
+                callbacks: {
+                    label: (tooltipItem) => {
+                        const datasetLabel = tooltipItem.dataset.label;
+                        const value = tooltipItem.raw;
+                        return `${datasetLabel}: ${hoursToReadableFormat(value)}`;
+                    },
+                },
+            },
+            interaction: {
+                mode: 'index', 
+                intersect: false,
+            },
+        },
+        scales: {
+            y: {
+                title: {
+                    display: true,
+                    text: 'Time (in hrs)', // Y-axis label
+                },
+                beginAtZero: true,
+            },
+            x: {
+                title: {
+                    display: true,
+                    text: 'Date', // X-axis label
+                },
+                beginAtZero: false,
             },
         },
     };

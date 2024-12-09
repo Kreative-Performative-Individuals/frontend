@@ -2,19 +2,22 @@ import React from 'react'; // Import React library
 import { Doughnut } from 'react-chartjs-2'; // Import Doughnut chart from react-chartjs-2
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'; // Import necessary components from Chart.js
 import "./style.scss"; // Import styles specific to this component
+import { secondsToHHMMSS, secondsToReadableFormat } from '../../../constants/_helper';
 
 // Register components with Chart.js
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 // MachineUsageChart component definition
 const MachineUsageChart = ({ chartData }) => {
-    // Data for the doughnut chart
+    
+    const arrayForChart = Object.values(chartData);
+
     const data = {
-        labels: ['Working Time', 'Idle Time', 'Offline Time'], // Labels for the chart segments
+        labels: ['Working Time', 'Idle Time', 'Offline Time', "Independent Time"], // Labels for the chart segments
         datasets: [
             {
                 label: 'Usage', // Label for the dataset
-                data: chartData, // Data values for each segment
+                data: arrayForChart, // Data values for each segment
                 backgroundColor: ['#448EFC', '#FF8743', '#FF4D4F', '#E1E4E8'], // Colors for each segment
                 hoverBackgroundColor: ['#448EFC', '#FF8743', '#FF4D4F', '#E1E4E8'], // Colors when hovered
                 hoverOffset: 4, // Offset for hover effect
@@ -37,7 +40,7 @@ const MachineUsageChart = ({ chartData }) => {
                         const data = chart.data.datasets[0].data; // Access dataset values
                         return chart.data.labels.map((label, index) => {
                             return {
-                                text: `${label}: ${data[index]} hours`, // Custom label with data value
+                                text: `${label}: ${secondsToHHMMSS(data[index])}`, // Custom label with data value
                                 fillStyle: chart.data.datasets[0].backgroundColor[index], // Set the color
                             };
                         });
@@ -49,7 +52,7 @@ const MachineUsageChart = ({ chartData }) => {
                     label: (tooltipItem) => {
                         // Access the data value for the hovered segment
                         const value = tooltipItem.raw; // Get the raw value
-                        return `Usage: ${value} hours`; // Custom text with the value + " hours"
+                        return `Usage: ${secondsToReadableFormat(value)}`; // Custom text with the value + " hours"
                     },
                 },
             },
@@ -64,10 +67,16 @@ const MachineUsageChart = ({ chartData }) => {
         },
     };
 
+    function hasAllZeroValues(arr) {
+        return arr.every(value => value === 0);
+    }
+
     // Render the doughnut chart inside a container
     return (
         <div className='chart-container' >
-            <Doughnut data={data} options={options} /> {/* Render the doughnut chart with the specified data and options */}
+            {!hasAllZeroValues(arrayForChart) && (
+                <Doughnut data={data} options={options} />
+            )}
         </div>
     );
 }

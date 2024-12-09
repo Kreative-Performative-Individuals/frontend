@@ -27,15 +27,6 @@ function transformMachineList(apiResponse) {
 function getLast24Hours() {
   const endDate = new Date();
   const startDate = new Date(endDate.getTime() - 24 * 60 * 60 * 1000);
-  const formatDate = date => {
-    const yy = date.getFullYear().toString();
-    const mm = String(date.getMonth() + 1).padStart(2, "0");
-    const dd = String(date.getDate()).padStart(2, "0");
-    const hh = String(date.getHours()).padStart(2, "0");
-    const mi = String(date.getMinutes()).padStart(2, "0");
-    const ss = String(date.getSeconds()).padStart(2, "0");
-    return `${yy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
-  };
   const initDate = formatDate(startDate);
   const formattedEndDate = formatDate(endDate);
 
@@ -47,21 +38,11 @@ function getOneDay5MonthsAgo() {
   startDate.setMonth(startDate.getMonth() - 5);
 
   const endDate = new Date(startDate.getTime() + 24 * 60 * 60 * 1000); // Add 1 day
-
-  const formatDate = date => {
-    const yy = date.getFullYear().toString();
-    const mm = String(date.getMonth() + 1).padStart(2, "0"); // Month is 0-based
-    const dd = String(date.getDate()).padStart(2, "0");
-    const hh = String(date.getHours()).padStart(2, "0");
-    const mi = String(date.getMinutes()).padStart(2, "0");
-    const ss = String(date.getSeconds()).padStart(2, "0");
-    return `${yy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
-  };
-
   const initDate = formatDate(startDate);
   const formattedEndDate = formatDate(endDate);
+  const oneWeekBeforeEndData = formatDate(endDate.setDate(endDate.getDate() - 7))
 
-  return { init_date: initDate, end_date: formattedEndDate };
+  return { init_date: initDate, end_date: formattedEndDate, oneWeekBeforeEndData };
 }
 
 function capitalizeFirstLetter(string) {
@@ -79,12 +60,13 @@ function getRandomEnergyContribution() {
 }
 
 function formatDate(date) {
-  const yy = date.getFullYear();
-  const mm = String(date.getMonth() + 1).padStart(2, '0'); // Month is 0-based
-  const dd = String(date.getDate()).padStart(2, '0');
-  const hh = String(date.getHours()).padStart(2, '0');
-  const mi = String(date.getMinutes()).padStart(2, '0');
-  const ss = String(date.getSeconds()).padStart(2, '0');
+  const d = new Date(date);
+  const yy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0'); // Month is 0-based
+  const dd = String(d.getDate()).padStart(2, '0');
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mi = String(d.getMinutes()).padStart(2, '0');
+  const ss = String(d.getSeconds()).padStart(2, '0');
 
   return `${yy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
 }
@@ -163,6 +145,14 @@ function secondsToReadableFormat(seconds) {
   return `${hours} Hours ${minutes} Minutes ${remainingSeconds} Seconds`;
 }
 
+const hoursToReadableFormat = (hours) => {
+  const totalSeconds = Math.round(hours * 3600);
+  const hrs = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+  const mins = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+  return `${hrs} Hours ${mins} Minutes`;
+};
+
+
 
 export {
   transformMachineList,
@@ -178,5 +168,6 @@ export {
   runDBQuery,
   formatMachineUsageTime,
   secondsToHHMMSS,
-  secondsToReadableFormat
+  secondsToReadableFormat,
+  hoursToReadableFormat
 };

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'; // Import necessary React ho
 import Layout from '../Layout'; // Import layout component for consistent page structure
 import "./style.scss"; // Import styles specific to this component
 import BasicCard from '../Common/BasicCard'; // Import BasicCard component to display statistics
-import GroupIcon from "../../Assets/Group.svg"; // Import icon for total machines
+import PowerIcon from "../../Assets/Power Logo.svg";
 import WorkingIcon from "../../Assets/Working Machines.svg"; // Import icon for working machines
 import IdleIcon from "../../Assets/Idle Machines.svg"; // Import icon for idle machines
 import OfflineIcon from "../../Assets/Offline Machines.svg"; // Import icon for offline machines
@@ -13,6 +13,7 @@ import MachineUsageCard from '../Common/MachineUsageCard'; // Import MachineUsag
 import { useNavigate } from 'react-router-dom'; // Import useNavigate hook for navigation between routes
 import { connect } from 'react-redux';
 import { getMachineList } from '../../store/main/actions';
+import { formatMachineUsageTime, runDBQuery } from '../../constants/_helper';
 
 // Constants for dropdown menu styling
 const ITEM_HEIGHT = 48; // Height of each item in the dropdown
@@ -33,6 +34,7 @@ const MachineUsage = ({ getMachineList, machineList }) => {
     const [machineType, setMachineType] = useState([]); // State for selected machine types
     const [machineStatus, setMachineStatus] = useState([]); // State for selected machine statuses
     const [machineInView, setMachineInView] = useState([]); // State for machines currently displayed
+    const [machineUsageData, setMachineUsageData] = useState([]);
 
     // Handle change in machine type selection
     const handleChange = (event) => {
@@ -72,14 +74,35 @@ const MachineUsage = ({ getMachineList, machineList }) => {
 
     // Predefined machine types and statuses for filtering
     const machineTypes = ["Metal Cutting", "Laser Cutting", "Laser Welding", "Assembly", "Testing", "Riveting"];
-    const machineStatuses = ["Active", "Offline", "Idle"];
+    const machineStatuses = ["Working", "Offline", "Idle"];
 
     // Sample machine data for demonstration
     const machines = [ { machineId: "010001", machineName: "Assembly Machine 1", machineType: "Metal Cutting", machineStatus: "Working", chartData: [9, 6, 8] } ];
 
+
+    const getQueryResult = async() => {
+        // const { init_date, end_date } = getOneDay5MonthsAgo();
+        const query = `
+            SELECT asset_id,
+                JSON_BUILD_OBJECT(
+                    'working', COALESCE(SUM(CASE WHEN operation = 'working' THEN sum ELSE 0 END), 0),
+                    'idle', COALESCE(SUM(CASE WHEN operation = 'idle' THEN sum ELSE 0 END), 0),
+                    'offline', COALESCE(SUM(CASE WHEN operation = 'offline' THEN sum ELSE 0 END), 0),
+                    'independent', COALESCE(SUM(CASE WHEN operation = 'independent' THEN sum ELSE 0 END), 0)
+                ) AS operation_sums
+            FROM real_time_data
+            WHERE kpi = 'time' and time >= '2024-08-06 12:00:00' and time <= '2024-08-07 12:00:00'
+            GROUP BY asset_id;
+        `
+        const result = await runDBQuery(query);
+        const formatted = formatMachineUsageTime(result.data.data)
+        setMachineUsageData(formatted)
+        // return result;
+    }
     // Effect to set initial machine view when the component mounts
     useEffect(() => {
         getMachineList();
+        getQueryResult()
         // eslint-disable-next-line
     }, []);
 
@@ -89,7 +112,6 @@ const MachineUsage = ({ getMachineList, machineList }) => {
     };
 
     useEffect(() => {
-        console.log(machineList)
         setMachineInView(machineList); // Set all machines to be visible initially
     }, [machineList])
 
@@ -99,10 +121,10 @@ const MachineUsage = ({ getMachineList, machineList }) => {
             <Box className="machines">
                 <Box className="machineStatsConatiner">
                     {/* Display statistics for total, working, idle, and offline machines */}
-                    <BasicCard heading="Total Machines" value={machineList && machineList.length} icon={GroupIcon} iconBackground="rgba(130, 128, 255, 0.25)" />
-                    <BasicCard heading="Working Machines" value="10" icon={WorkingIcon} iconBackground="rgba(254, 197, 61, 0.25)" />
-                    <BasicCard heading="Idle Machines" value="2" icon={IdleIcon} iconBackground="rgba(74, 217, 145, 0.25)" />
-                    <BasicCard heading="Offline Machines" value="4" icon={OfflineIcon} iconBackground="rgba(254, 144, 102, 0.25)" />
+                    <BasicCard heading="Total Machines" value={machineList && machineList.length} icon={PowerIcon} iconBackground="rgba(130, 128, 255, 0.25)" />
+                    <BasicCard heading="Working Machines" value={machineList && machineList.length} icon={WorkingIcon} iconBackground="rgba(254, 197, 61, 0.25)" />
+                    <BasicCard heading="Idle Machines" value="0" icon={IdleIcon} iconBackground="rgba(74, 217, 145, 0.25)" />
+                    <BasicCard heading="Offline Machines" value="0" icon={OfflineIcon} iconBackground="rgba(254, 144, 102, 0.25)" />
                 </Box>
 
                 <Box className="machinesHeader">
@@ -177,20 +199,11 @@ const MachineUsage = ({ getMachineList, machineList }) => {
                             machineName={machine.name} // Pass machine name to the card
                             machineType={machine.type} // Pass machine type to the card
                             machineStatus={machine.status} // Pass machine status to the card
-                            chartData={machines[0].chartData} // Pass chart data to the card
+                            // chartData={machines[0].chartData} // Pass chart data to the card
+                            chartData={machineUsageData[machine.asset_id]} // Pass chart data to the card
                             onClick={() => handleCardClick(machine.asset_id)} // Pass click handler to navigate
                         />
                     ))}
-                    {/* {machineInView.map((machine, index) => (
-                        <MachineUsageCard
-                            key={index}
-                            machineName={machine.machineName} // Pass machine name to the card
-                            machineType={machine.machineType} // Pass machine type to the card
-                            machineStatus={machine.machineStatus} // Pass machine status to the card
-                            chartData={machine.chartData} // Pass chart data to the card
-                            onClick={() => handleCardClick(machine.machineId)} // Pass click handler to navigate
-                        />
-                    ))} */}
                 </Box>
             </Box>
         </Layout>
