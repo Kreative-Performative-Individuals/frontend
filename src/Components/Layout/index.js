@@ -9,7 +9,7 @@ import Typography from "@mui/material/Typography"; // Import Material-UI Typogra
 import Divider from "@mui/material/Divider"; // Import Material-UI Divider component
 import IconButton from "@mui/material/IconButton"; // Import Material-UI IconButton component
 import DehazeIcon from '@mui/icons-material/Dehaze'; // Import Dehaze icon for the menu button
-import { MainListItems, secondaryListItems } from "./listItems"; // Import main and secondary list items for the sidebar
+import { MainListItems } from "./listItems"; // Import main and secondary list items for the sidebar
 import Copyright from "../Authentication/Copyright"; // Import Copyright component
 // import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import PersonIcon from '@mui/icons-material/Person';
@@ -92,6 +92,7 @@ const Layout = ({ children }) => {
         } else {
             navigate("/signin")
         }
+        // eslint-disable-next-line
     }, [])
 
     const navigate = useNavigate(); // Initialize navigate function for routing
