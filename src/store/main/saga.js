@@ -46,13 +46,22 @@ import {
   ChatRagAPI,
   GetDashboardParamsAPI,
   GetMachineListAPI,
-  GetMachineDetailAPI
+  GetMachineDetailAPI,
+  // CheckDbAPI,
+  CheckKpiEngineAPI,
+  GetDerivedKpiDataAPI
 } from "../../constants/apiRoutes";
-import { getOneDay7MonthsAgo } from "../../constants/_helper";
+import { getOneDay5MonthsAgo } from "../../constants/_helper";
 
 // const userLoginAPI = async data => {
 //   return await axios.post(LoginUserAPI, data);
 // };
+// const checkDBAPI = async () => {
+//   return await axios.get(CheckDbAPI);
+// };
+const checkKpiEngineAPI = async () => {
+  return await axios.get(CheckKpiEngineAPI);
+};
 const userRegisterAPI = async data => {
   return await axios.post(RegisterUserAPI, data);
 };
@@ -70,11 +79,14 @@ const getMachineListAPI = async () => {
 };
 const getDashboardParamsAPI = async () => {
   // const { init_date, end_date } = getLast24Hours();
-  const { init_date, end_date } = getOneDay7MonthsAgo();
+  const { init_date, end_date } = getOneDay5MonthsAgo();
   return await axios.get(`${GetDashboardParamsAPI}?init_date=${init_date}&end_date=${end_date}`);
 };
 const getMachineDetailAPI = async ({ machineId, init_date, end_date }) => {
   return await axios.get(`${GetMachineDetailAPI}?machine_id=${machineId}&init_date=${init_date}&end_date=${end_date}`);
+};
+const getDerivedKpiAPI = async (data) => {
+  return await axios.post(`${GetDerivedKpiDataAPI}`, data);
 };
 
 function* userRegisterSaga({ payload, navigate }) {
@@ -93,10 +105,12 @@ function* userLoginSaga({ payload, history }) {
     // setDefaultToken("Authorization", data.token);
     // setLocal("token", data.token);
     // setLocal("authUser", JSON.stringify({ ...data }));
+    yield call(checkKpiEngineAPI);
     const data = { ...payload }
     yield put(userLoginSuccess({ ...data }));
     yield history("/dashboard");
   } catch (error) {
+    alert("Please make sure that the docker compose is up and running.")
     yield put(userLoginError(error));
   }
 }
@@ -166,7 +180,22 @@ function* getMachineListSaga() {
 function* getMachineDetailSaga({ payload }) {
   try {
     const { data } = yield call(getMachineDetailAPI, {...payload});
-    yield put(getMachineDetailSuccess(data));
+    const machineDetail = (data.data);
+    const utilization_rate_payload = { "name": "utilization_rate", "machines": [machineDetail.machineName], "operations": [machineDetail.machineStatus], "time_aggregation": "sum", "start_date": payload.init_date, "end_date": payload.end_date, "step": 2 }
+    const utilization_rate = yield call(getDerivedKpiAPI, {...utilization_rate_payload});
+    const availability_payload = { "name": "availability", "machines": [machineDetail.machineName], "operations": [machineDetail.machineStatus], "time_aggregation": "sum", "start_date": payload.init_date, "end_date": payload.end_date, "step": 2 }
+    const availability = yield call(getDerivedKpiAPI, {...availability_payload});
+    const downtime_payload = { "name": "non_operative_time", "machines": [machineDetail.machineName], "operations": [machineDetail.machineStatus], "time_aggregation": "sum", "start_date": payload.init_date, "end_date": payload.end_date, "step": 2 }
+    const downtime = yield call(getDerivedKpiAPI, {...downtime_payload});
+    const mean_time_between_failures_payload = { "name": "mean_time_between_failures", "machines": [machineDetail.machineName], "operations": [machineDetail.machineStatus], "time_aggregation": "sum", "start_date": payload.init_date, "end_date": payload.end_date, "step": 2 }
+    const mean_time_between_failures = yield call(getDerivedKpiAPI, {...mean_time_between_failures_payload});
+    const derivedKpiData = {
+      utilization_rate: utilization_rate.data.value,
+      availability: availability.data.value,
+      downtime: downtime.data.value,
+      mean_time_between_failures: mean_time_between_failures.data.value
+    }
+    yield put(getMachineDetailSuccess({ ...data.data, ...derivedKpiData }));
   } catch (error) {
     yield put(getMachineDetailError(error));
   }

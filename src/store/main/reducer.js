@@ -28,6 +28,8 @@ import {
   GET_MACHINE_DETAIL,
   GET_MACHINE_DETAIL_SUCCESS,
   GET_MACHINE_DETAIL_ERROR,
+  REPORT_LIST,
+  ADD_REPORT_TO_LIST
 } from "../types";
 
 const initialState = {
@@ -44,6 +46,7 @@ const initialState = {
   machines: [],
   dashboardParams: {},
   singleMachineDetail: {},
+  reports: getLocal("reports") ? JSON.parse(getLocal("reports")) : []
 };
 
 const MyReducer = (state = initialState, action) => {
@@ -279,7 +282,7 @@ const MyReducer = (state = initialState, action) => {
               error: false,
               loading: false,
               errMsg: "",
-              singleMachineDetail: action.payload.data
+              singleMachineDetail: action.payload
           };
       case GET_MACHINE_DETAIL_ERROR:
           return {
@@ -288,6 +291,22 @@ const MyReducer = (state = initialState, action) => {
               loading: false,
               errMsg: action.payload,
               singleMachineDetail: []
+          };
+      
+      case REPORT_LIST:
+          return {
+              ...state,
+              error: false,
+              reports: []
+          };
+      case ADD_REPORT_TO_LIST:
+        const currentReports = state.reports;
+        currentReports.push(action.payload)
+        console.log(currentReports)
+          return {
+              ...state,
+              error: false,
+              reports: currentReports
           };
       
       

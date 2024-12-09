@@ -26,6 +26,8 @@ import {
   GET_MACHINE_DETAIL,
   GET_MACHINE_DETAIL_SUCCESS,
   GET_MACHINE_DETAIL_ERROR,
+  REPORT_LIST,
+  ADD_REPORT_TO_LIST,
 } from "../types";
 
 export const registerUser = (payload, navigate) => ({
@@ -159,5 +161,13 @@ export const getMachineDetailSuccess = (payload) => ({
 
 export const getMachineDetailError = payload => ({
   type: GET_MACHINE_DETAIL_ERROR,
+  payload
+});
+
+export const getReportList = () => ({
+  type: REPORT_LIST
+});
+export const addReportToList = (payload) => ({
+  type: ADD_REPORT_TO_LIST,
   payload
 });
