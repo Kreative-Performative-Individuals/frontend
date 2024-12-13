@@ -16,6 +16,7 @@ export const runQueryAPI = `${dbUrl}/query`; // GET add? statement
 export const GetDashboardParamsAPI = `${dbUrl}/get_machines`; // GET add ?init_date=yy-mm-dd hh:mm:ss & end_date=yy-mm-dd hh:mm:ss
 export const GetMachineListAPI = `${dbUrl}/machines`; // GET
 export const GetMachineDetailAPI = `${dbUrl}/single_machine_detail`; // GET add? machine_id, init_date and end_date
+export const GetProductionDashboardAPI = `${dbUrl}/production_dashboard`; // GET add? init_date and end_date
 
 // RAG (Group 5)
 export const ChatRagAPI = `${ragUrl}/chat`; // GET Add ?message=""

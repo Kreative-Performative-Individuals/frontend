@@ -13,6 +13,8 @@ import OutlinedInput from '@mui/material/OutlinedInput'; // Import outlined inpu
 import Chip from '@mui/material/Chip'; // Import Chip component for displaying selected items
 import ProductionCard from '../Common/ProductionCard'; // Import MachineUsageCard component for displaying individual machine details
 import { useNavigate } from 'react-router-dom'; // Import useNavigate hook for navigation between routes
+import { getMachineList, getProductionDashboard } from '../../store/main/actions';
+import { connect } from 'react-redux';
 
 // Constants for dropdown menu styling
 const ITEM_HEIGHT = 48; // Height of each item in the dropdown
@@ -27,7 +29,7 @@ const MenuProps = {
 };
 
 // Main MachineUsage component
-const Production = () => {
+const Production = ({ getProductionDashboard, productionDashboard, loading }) => {
 
     const navigate = useNavigate(); // Initialize the navigate function for routing
     const [machineType, setMachineType] = useState([]); // State for selected machine types
@@ -55,9 +57,9 @@ const Production = () => {
     // Function to filter machines based on selected types and statuses
     const filterMachines = (types, statuses) => {
         // Filter the machines array based on type and status
-        const filteredMachines = machines.filter((machine) => {
-            const typeMatch = types.length === 0 || types.includes(machine.machineType); // Check if type matches
-            const statusMatch = statuses.length === 0 || statuses.includes(machine.machineStatus); // Check if status matches
+        const filteredMachines = productionDashboard.machines.filter((machine) => {
+            const typeMatch = types.length === 0 || types.includes(machine.type); // Check if type matches
+            const statusMatch = statuses.length === 0 || statuses.includes(machine.status); // Check if status matches
             return typeMatch && statusMatch; // Return true if both type and status match
         });
         setMachineInView(filteredMachines); // Update the state with the filtered machines
@@ -65,44 +67,44 @@ const Production = () => {
 
     // Reset filters and show all machines
     const handleReset = () => {
-        setMachineInView(machines); // Show all machines
+        setMachineInView(productionDashboard.machines); // Show all machines
         setMachineType([]); // Clear selected types
         setMachineStatus([]); // Clear selected statuses
     };
 
     // Predefined machine types and statuses for filtering
     const machineTypes = ["Metal Cutting", "Laser Cutting", "Laser Welding", "Assembly", "Testing", "Riveting"];
-    const machineStatuses = ["Working", "Offline", "Idle", "Under Maintenance"];
-
-    // Sample machine data for demonstration
-    const machines = [
-        { machineId: "010001", machineName: "Assembly Machine 1", machineType: "Metal Cutting", machineStatus: "Working", efficiency: "90", density: "80", success_rate: "92", failure_rate: "8"},
-        { machineId: "010002", machineName: "Assembly Machine 2", machineType: "Laser Cutting", machineStatus: "Offline", efficiency: "90", density: "80", success_rate: "92", failure_rate: "8"},
-        { machineId: "010003", machineName: "Assembly Machine 3", machineType: "Laser Welding", machineStatus: "Idle", efficiency: "90", density: "80", success_rate: "92", failure_rate: "8"},
-        { machineId: "010004", machineName: "Assembly Machine 4", machineType: "Assembly", machineStatus: "Under Maintenance", efficiency: "90", density: "80", success_rate: "92", failure_rate: "8"},
-        { machineId: "010005", machineName: "Assembly Machine 5", machineType: "Testing", machineStatus: "Working", efficiency: "90", density: "80", success_rate: "92", failure_rate: "8"},
-        { machineId: "010006", machineName: "Assembly Machine 6", machineType: "Riveting", machineStatus: "Offline", efficiency: "90", density: "80", success_rate: "92", failure_rate: "8"},
-        { machineId: "010007", machineName: "Assembly Machine 7", machineType: "Riveting", machineStatus: "Idle", efficiency: "90", density: "80", success_rate: "92", failure_rate: "8"},
-        { machineId: "010008", machineName: "Assembly Machine 8", machineType: "Testing", machineStatus: "Under Maintenance", efficiency: "90", density: "80", success_rate: "92", failure_rate: "8"},
-    ];
+    const machineStatuses = ["Working", "Offline", "Idle", "Independent"];
 
     // Effect to set initial machine view when the component mounts
     useEffect(() => {
-        setMachineInView(machines); // Set all machines to be visible initially
+        getProductionDashboard();
         // eslint-disable-next-line
     }, []);
 
+
+
     // Function to handle card click and navigate to machine detail page
-    const handleCardClick = (machineId) => {
-        navigate(`/production/${machineId}`); // Navigate to the machine detail page using the machineId
+    const handleCardClick = (machine) => {
+        navigate(`/production/${machine.asset_id}?machineName=${machine.name}&machineStatus=${machine.status}`); // Navigate to the machine detail page using the machineId
     };
+
+    useEffect(() => {
+        if (productionDashboard !== undefined) {
+            if (productionDashboard.machines !== undefined) {
+                setMachineInView(productionDashboard.machines); // Set all machines to be visible initially
+            }
+        }
+    }, [productionDashboard])
+
 
 
     const cardData = [
         {
             id: 1,
             heading: "Total Power",
-            value: "700 kW",
+            value: `${productionDashboard.totalPower} kW`,
+            duration: "Today",
             isStat: false,
             icon: PowerIcon,
             iconBackground: "rgba(130, 128, 255, 0.25)",
@@ -111,7 +113,8 @@ const Production = () => {
             id: 2,
             heading: "Total Consumption",
             duration: "Today",
-            value: "540.55kWh",
+            value: `${productionDashboard.totalConsumption} kWh`,
+            isStat: false,
             statUpOrDown: "Up",
             statPercent: "1.3%",
             statText: "Up from yesterday",
@@ -122,7 +125,8 @@ const Production = () => {
             id: 3,
             heading: "Total Cost",
             duration: "Today",
-            value: "550.13€",
+            value: `${productionDashboard.totalCost} €`,
+            isStat: false,
             statUpOrDown: "Down",
             statPercent: "4.3%",
             statText: "Down from yesterday",
@@ -133,7 +137,8 @@ const Production = () => {
             id: 4,
             heading: "Energy Contributions",
             duration: "Today",
-            value: "18 hours",
+            value: `${productionDashboard.energyContributions} hours`,
+            isStat: false,
             statUpOrDown: "Up",
             statPercent: "1.3%",
             statText: "Up from yesterday",
@@ -152,7 +157,7 @@ const Production = () => {
                             key={id} // Using unique ID as key
                             heading={heading}
                             duration={duration}
-                            value={value}
+                            value={!loading ? value : "Loading.."}
                             isStat={isStat}
                             statUpOrDown={statUpOrDown}
                             statPercent={statPercent}
@@ -231,20 +236,29 @@ const Production = () => {
                     {machineInView.map((machine, index) => (
                         <ProductionCard
                             key={index}
-                            machineName={machine.machineName} // Pass machine name to the card
-                            machineType={machine.machineType} // Pass machine type to the card
-                            machineStatus={machine.machineStatus} // Pass machine status to the card
-                            onClick={() => handleCardClick(machine.machineId)} // Pass click handler to navigate
+                            machineName={machine.name} // Pass machine name to the card
+                            machineType={machine.type} // Pass machine type to the card
+                            machineStatus={machine.status} // Pass machine status to the card
+                            onClick={() => handleCardClick(machine)} // Pass click handler to navigate
                             efficiency={machine.efficiency}
-                            density={machine.density}
                             success_rate={machine.success_rate}
                             failure_rate={machine.failure_rate}
+                            good_cycles={machine.good_cycles}
+                            bad_cycles={machine.bad_cycles}
+                            total_cycles={machine.total_cycles}
+                            average_cycle_time={machine.average_cycle_time}
                         />
                     ))}
+                    {loading && ( <div>Loading ...</div> )}
                 </Box>
             </Box>
         </Layout>
     )
 }
 
-export default Production; // Exporting the MachineUsage component for use in other parts of the application
+const mapStatetoProps = ({ main }) => ({
+    productionDashboard: main.productionDashboard,
+    loading: main.loading
+});
+
+export default connect(mapStatetoProps, { getProductionDashboard, getMachineList })(Production); // Exporting the Production component for use in other parts of the application

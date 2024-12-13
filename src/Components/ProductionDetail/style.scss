@@ -46,6 +46,18 @@
         .productionDetailFilters {
             display: flex;
             gap: 0.5rem;
+
+            .react-datepicker-wrapper {
+                height: 100%;
+                .react-datepicker__input-container {
+                    height: 100%;
+                    input {
+                        height: 100%;
+                        width: 100%;
+                        border: none;
+                    }
+                }
+            }
             
             .button {
                 padding: 0.5rem 1rem;

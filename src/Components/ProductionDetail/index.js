@@ -1,47 +1,127 @@
-import React from 'react'; // Import React
-import { useParams } from 'react-router-dom'; // Import useParams for routing
+import React, { useEffect, useRef, useState } from 'react'; // Import React
+import { useLocation, useParams } from 'react-router-dom'; // Import useParams for routing
 import Layout from '../Layout';
 import PowerIcon from "../../Assets/Power Logo.svg";
 import ConsumptionIcon from "../../Assets/Consumption Logo.svg";
 import CostIcon from "../../Assets/Total Cost.svg";
 import EnergyIcon from "../../Assets/Energy Logo.svg";
 
-import { Box, Button, FormControl, InputLabel, MenuItem, Typography } from '@mui/material';
-import Select from '@mui/material/Select';
+import { Box, Button, Typography } from '@mui/material';
 import './style.scss';
 import BasicCard from '../Common/BasicCard';
 import ProductionDetailLineChart from './ProductionDetailLineChart';
+import { getProductionDetail } from '../../store/main/actions';
+import { connect } from 'react-redux';
+import { usePDF } from 'react-to-pdf';
+import DateFilter from '../Common/DateFilter';
+import { addOneDay, getLastDayOfMonth, getOneDay5MonthsAgo, formatDate, showDateOnly, truncateToFiveDecimals, runDBQuery } from '../../constants/_helper';
 
-const ProductionDetail = () => {
+const ProductionDetail = ({ getProductionDetail, productionDetail }) => {
     const { machineId } = useParams(); // Get machineId from URL parameters
+    const location = useLocation(); // Access the current location object
+    const queryParams = new URLSearchParams(location.search); // Parse the query string
 
-    const machines = [
-        { machineId: "010001", machineName: "Assembly Machine 1", machineType: "Metal Cutting", machineStatus: "Working", efficiency: "90", density: "80", success_rate: "92", failure_rate: "8" },
-        { machineId: "010002", machineName: "Assembly Machine 2", machineType: "Laser Cutting", machineStatus: "Offline", efficiency: "90", density: "80", success_rate: "92", failure_rate: "8" },
-        { machineId: "010003", machineName: "Assembly Machine 3", machineType: "Laser Welding", machineStatus: "Idle", efficiency: "90", density: "80", success_rate: "92", failure_rate: "8" },
-        { machineId: "010004", machineName: "Assembly Machine 4", machineType: "Assembly", machineStatus: "Under Maintenance", efficiency: "90", density: "80", success_rate: "92", failure_rate: "8" },
-        { machineId: "010005", machineName: "Assembly Machine 5", machineType: "Testing", machineStatus: "Working", efficiency: "90", density: "80", success_rate: "92", failure_rate: "8" },
-        { machineId: "010006", machineName: "Assembly Machine 6", machineType: "Riveting", machineStatus: "Offline", efficiency: "90", density: "80", success_rate: "92", failure_rate: "8" },
-        { machineId: "010007", machineName: "Assembly Machine 7", machineType: "Riveting", machineStatus: "Idle", efficiency: "90", density: "80", success_rate: "92", failure_rate: "8" },
-        { machineId: "010008", machineName: "Assembly Machine 8", machineType: "Testing", machineStatus: "Under Maintenance", efficiency: "90", density: "80", success_rate: "92", failure_rate: "8" },
-    ];
+    const { toPDF, targetRef } = usePDF({filename: `${machineId} Machine Usage.pdf`});
+    const reportDateRef = useRef(null);
+    const filterRef = useRef(null);
 
-    // Find the machine based on the machineId from the URL
-    const currentMachine = machines.find(machine => machine.machineId === machineId);
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedMonth, setSelectedMonth] = useState(null);
+    
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+    const [chartData, setChartData] = useState({});
 
-    // If no machine is found, you can handle it accordingly
-    if (!currentMachine) {
-        return <Typography variant="h6">Machine not found</Typography>;
+    // SELECT * FROM real_time_data WHERE kpi IN ('cycles', 'good_cycles', 'bad_cycles') AND asset_id = 'ast-yhccl1zjue2t';
+    const getQueryResult = async (initialize_date, ending_date) => {
+        
+        const query = `SELECT time, SUM(CASE WHEN kpi = 'cycles' THEN sum ELSE 0 END) AS cycles, SUM(CASE WHEN kpi = 'good_cycles' THEN sum ELSE 0 END) AS good_cycles, SUM(CASE WHEN kpi = 'bad_cycles' THEN sum ELSE 0 END) AS bad_cycles FROM real_time_data WHERE kpi IN ('cycles', 'good_cycles', 'bad_cycles') AND time >= '${initialize_date}'  AND time <= '${ending_date}' AND asset_id = '${machineId}' GROUP BY time ORDER BY time;`
+        const result = await runDBQuery(query);
+        transformDataForChart(result.data.data);
     }
 
-    const { machineName, machineStatus } = currentMachine; // Destructure the machine details
+    function transformDataForChart(data) {
+        const result = {
+            labels: [],
+            cycles: [],
+            good_cycles: [],
+            bad_cycles: []
+        };
+    
+        data.forEach(item => {
+            const formattedDate = item[0].split('T')[0];
+            result.labels.push(formattedDate);
+            result.cycles.push(item[1]);
+            result.good_cycles.push(item[2]);
+            result.bad_cycles.push(item[3]);
+        });
+    
+        setChartData(result);
+    }
+
+    const onDateRangeChange = (dates) => {
+        const [start, end] = dates;
+        setStartDate(start);
+        setEndDate(end);
+        setSelectedDate(null);
+        setSelectedMonth(null);
+        if (start && end) {
+            getProductionDetail({machineName, init_date: formatDate(start), end_date: formatDate(end)});
+            getQueryResult(formatDate(start), formatDate(end));
+        }
+    };
+    const onDateMonthChange = (date) => {
+        setSelectedMonth(date);
+        setSelectedDate(null);
+        setStartDate(null);
+        setEndDate(null);
+        if (date) {
+            const end_date = getLastDayOfMonth(date)
+            getProductionDetail({machineName, init_date: formatDate(date), end_date})
+            getQueryResult(formatDate(date), end_date);
+        }
+    };
+    const onDateDayChange = (date) => {
+        setSelectedDate(date);
+        setSelectedMonth(null);
+        setStartDate(null);
+        setEndDate(null);
+        if (date) {
+            const end_date = addOneDay(date)
+            getProductionDetail({machineName, init_date: formatDate(date), end_date})
+            getQueryResult(formatDate(date), end_date);
+        }
+    };
+
+    useEffect(() => {
+        const payload = {
+            init_date: "2024-05-02 00:00:00",
+            end_date: "2024-05-03 00:00:00",
+            machineName: machineName
+        }
+        getProductionDetail(payload);
+        getQueryResult("2024-04-26 00:00:00", "2024-05-03 00:00:00")
+        // eslint-disable-next-line
+    }, [])
+
+    // Retrieve specific query parameters
+    const machineName = queryParams.get("machineName");
+    const machineStatus = queryParams.get("machineStatus");
+    const total_cycles = productionDetail.total_cycles;
+    const good_cycles = productionDetail.good_cycles;
+    const bad_cycles = productionDetail.bad_cycles;
+    const avg_cycle_time = productionDetail.average_cycle_time;
+    const efficiency = productionDetail.efficiency;
+    const success_rate = productionDetail.success_rate;
+    const failure_rate = productionDetail.failure_rate;
 
     const cardData = [
         {
             id: 1,
             heading: "Total Cycles",
             duration: "Today",
-            value: "4500",
+            value: total_cycles,
+            isStat: false,
             statUpOrDown: "Up",
             statPercent: "1.3%",
             statText: "Up from yesterday",
@@ -52,7 +132,8 @@ const ProductionDetail = () => {
             id: 2,
             heading: "Good Cycles",
             duration: "Today",
-            value: "4350",
+            value: good_cycles,
+            isStat: false,
             statUpOrDown: "Up",
             statPercent: "1.3%",
             statText: "Up from yesterday",
@@ -63,7 +144,8 @@ const ProductionDetail = () => {
             id: 3,
             heading: "Bad Cycles",
             duration: "Today",
-            value: "150",
+            value: bad_cycles,
+            isStat: false,
             statUpOrDown: "Down",
             statPercent: "4.3%",
             statText: "Down from yesterday",
@@ -74,7 +156,8 @@ const ProductionDetail = () => {
             id: 4,
             heading: "Average Cycle Time",
             duration: "Today",
-            value: "00:30:00",
+            value: avg_cycle_time,
+            isStat: false,
             statUpOrDown: "Up",
             statPercent: "1.3%",
             statText: "Up from yesterday",
@@ -83,59 +166,49 @@ const ProductionDetail = () => {
         },
     ];
 
+    const downloadReport = () => {
+        targetRef.current.style.padding = '40px';
+        filterRef.current.style.display = 'none';
+        reportDateRef.current.style.display = 'block';
+        toPDF();
+        targetRef.current.style.padding = '0px';
+        filterRef.current.style.display = 'block';
+        reportDateRef.current.style.display = 'none';
+    };
+
+    const reportDate = () => {
+        const { init_date, end_date } = getOneDay5MonthsAgo();
+        const dateOfReport = startDate && endDate ? `${showDateOnly(formatDate(startDate))} - ${showDateOnly(formatDate(endDate))}` 
+        : selectedDate ? showDateOnly(formatDate(selectedDate)) 
+        : selectedMonth ? `${showDateOnly(formatDate(selectedMonth))} - ${showDateOnly(getLastDayOfMonth(selectedMonth))}` 
+        : (`${showDateOnly(init_date)} - ${showDateOnly(end_date)}`)
+        return dateOfReport
+    }   
+
     return (
         <Layout>
-            <Box className="productionDetail">
+            <Box className="productionDetail" ref={targetRef}>
                 <Box className="productionDetailHead">
                     <Box className="productionDetailIntro">
                         <Typography className='machineName'>{machineName}</Typography>
-                        <Box className={`machineStatus ${machineStatus === "Working" ? "working" : ""} ${machineStatus === "Offline" ? "offline" : ""} ${machineStatus === "Idle" ? "idle" : ""} ${machineStatus === "Under Maintenance" ? "maintenance" : ""}`}>
-                            {machineStatus}
+                        <Box className={`machineStatus ${machineStatus === "Working" || machineStatus === "Active" ? "working" : ""} ${machineStatus === "Offline" ? "offline" : ""} ${machineStatus === "Idle" ? "idle" : ""} ${machineStatus === "Under Maintenance" ? "maintenance" : ""}`}>
+                            {machineStatus === "Active" ? "Working" : machineStatus}
                         </Box>
                     </Box>
 
-                    <Box className="productionDetailFilters">
+                    <Box className="productionDetailFilters" ref={filterRef}>
 
-                        <Box sx={{ minWidth: 200, backgroundColor: "#fff" }}>
-                            <FormControl fullWidth>
-                                <InputLabel id="custom-range-select-label">Custom Range</InputLabel>
-                                <Select
-                                    labelId="custom-range-select-label"
-                                    id="demo-simple-select"
-                                    label="Custom Range"
-                                    placeholder="Custom Range"
-                                >
-                                    <MenuItem value={"Custom Range"}>Custom Range</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Box>
-                        <Box sx={{ minWidth: 120, backgroundColor: "#fff" }}>
-                            <FormControl fullWidth>
-                                <InputLabel id="date-select-label">Date</InputLabel>
-                                <Select
-                                    labelId="date-select-label"
-                                    id="date-select"
-                                    label="Date"
-                                    placeholder="Date"
-                                >
-                                    <MenuItem value={"Date"}>Date</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Box>
-                        <Box sx={{ minWidth: 120, backgroundColor: "#fff" }}>
-                            <FormControl fullWidth>
-                                <InputLabel id="month-select-label">Month</InputLabel>
-                                <Select
-                                    labelId="month-select-label"
-                                    id="month-select"
-                                    label="Month"
-                                    placeholder="Month"
-                                >
-                                    <MenuItem value={"Month"}>Month</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Box>
-                        <Button className="button">Download Report</Button>
+                        <DateFilter
+                            startDate={startDate}
+                            endDate={endDate}
+                            selectedDate={selectedDate}
+                            selectedMonth={selectedMonth}
+                            onDateDayChange={onDateDayChange}
+                            onDateMonthChange={onDateMonthChange}
+                            onDateRangeChange={onDateRangeChange}
+                        />
+
+                        <Button className="button" onClick={downloadReport}>Download Report</Button>
                     </Box>
                 </Box>
                 <Box className="productionDetailStats">
@@ -143,8 +216,8 @@ const ProductionDetail = () => {
                         <BasicCard
                             key={id} // Using unique ID as key
                             heading={heading}
-                            duration={duration}
-                            value={value}
+                            duration={reportDate()}
+                            value={value ? truncateToFiveDecimals(value) : "-"}
                             isStat={isStat}
                             statUpOrDown={statUpOrDown}
                             statPercent={statPercent}
@@ -154,6 +227,11 @@ const ProductionDetail = () => {
                         />
                     ))}
                 </Box>
+
+                <Typography sx={{ fontSize: "20px", fontWeight: "500", mt: 3, display: "none" }} ref={reportDateRef}>
+                    Report Date {reportDate()}
+                </Typography>
+
                 <Box className="machineDetailChartFilter">
                     <Box className="header">
                         <Typography>Utilization</Typography>
@@ -166,11 +244,11 @@ const ProductionDetail = () => {
                     <Box></Box>
                 </Box>
                 <Box className="machineDetailDetails">
-                    <Box><ProductionDetailLineChart /></Box>
+                    <Box><ProductionDetailLineChart chartData={chartData} /></Box>
                     <Box className="additionalDetails">
-                        <BasicCard heading={"Efficiency"} duration={"Today"} value={"100%"} isIcon={false} />
-                        <BasicCard heading={"Success Rate"} duration={"Today"} value={"99.99%"} isIcon={false} />
-                        <BasicCard heading={"Failure Rate"} duration={"Today"} value={"0%"} isIcon={false} />
+                        <BasicCard heading={"Efficiency"} duration={reportDate()} value={`${efficiency} %`} isIcon={false} />
+                        <BasicCard heading={"Success Rate"} duration={reportDate()} value={`${success_rate > 100 ? "100" : success_rate} %`} isIcon={false} />
+                        <BasicCard heading={"Failure Rate"} duration={reportDate()} value={`${failure_rate} %`} isIcon={false} />
                     </Box>
                 </Box>
             </Box>
@@ -178,7 +256,12 @@ const ProductionDetail = () => {
     );
 }
 
-export default ProductionDetail;
+const mapStatetoProps = ({ main }) => ({
+    productionDetail: main.productionDetail,
+    loading: main.loading
+});
+
+export default connect(mapStatetoProps, { getProductionDetail })(ProductionDetail); // Exporting the Production component for use in other parts of the application
 
 
 const AreaChartSVG = () => {

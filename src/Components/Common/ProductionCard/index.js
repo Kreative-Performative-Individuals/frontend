@@ -4,7 +4,7 @@ import { Box, Typography } from '@mui/material'; // Import Material-UI component
 // import { GaugeComponent } from 'react-gauge-component';
 import { Gauge, gaugeClasses } from '@mui/x-charts/Gauge';
 
-const ProductionCard = ({ machineName, machineType = "Metal Cutting", machineStatus, efficiency, density, success_rate, failure_rate, onClick }) => {
+const ProductionCard = ({ machineName, machineType = "Metal Cutting", machineStatus, efficiency=100, success_rate=100, failure_rate=0, good_cycles=10, bad_cycles=0, total_cycles=10, average_cycle_time=0, onClick }) => {
 
     return (
         <React.Fragment>
@@ -15,39 +15,39 @@ const ProductionCard = ({ machineName, machineType = "Metal Cutting", machineSta
                         <Typography className='machineType'>{machineType}</Typography> {/* Display machine type */}
                     </Box>
                     {/* Display machine status with conditional styling based on status */}
-                    <Box className={`machineStatus ${machineStatus === "Working" && "working"} ${machineStatus === "Offline" && "offline"} ${machineStatus === "Idle" && "idle"} ${machineStatus === "Under Maintenance" && "maintenance"}`}>
-                        {machineStatus}
+                    <Box className={`machineStatus ${machineStatus === "Active" && "working"} ${machineStatus === "Offline" && "offline"} ${machineStatus === "Idle" && "idle"} ${machineStatus === "Under Maintenance" && "maintenance"}`}>
+                        {machineStatus === "Active" ? "Working" : machineStatus}
                     </Box>
                 </Box>
 
                 <Box className="productionCardBody">
                     <Box className="statRow">
                         <Typography>Average Cycle Time</Typography>
-                        <Typography>03:00</Typography>
+                        <Typography>{average_cycle_time}</Typography>
                     </Box>
                     <Box className="statRow">
                         <Typography>Cycle Count</Typography>
-                        <Typography>5000</Typography>
+                        <Typography>{total_cycles}</Typography>
                     </Box>
                     <Box>
                         <div className='cycleBar'>
-                            <div style={{ width: "60%", backgroundColor: '#4AD991' }} />
-                            <div style={{ width: "40%", backgroundColor: '#FF0000   ' }} />
+                            <div title={`${good_cycles} Cycles`} style={{ width:((good_cycles / (good_cycles + bad_cycles))*100)+"%", backgroundColor: '#4AD991' }} />
+                            <div title={`${bad_cycles} Cycles`} style={{ width:((bad_cycles / (good_cycles + bad_cycles))*100)+"%", backgroundColor: '#FF0000   ' }} />
                         </div>
                     </Box>
                 </Box>
 
                 <Box className="productionCardFooter">
                     <Box className="gaugeContainer">
-                        <Gauge width={100} height={100} value={efficiency} startAngle={-90} endAngle={90} sx={(theme) => ({ [`& .${gaugeClasses.valueArc}`]: { fill: '#4AD991' }, [`& .${gaugeClasses.valueText}`]: { display: 'none' } })} />
+                        <Gauge width={100} height={100} value={efficiency >= 0 ? efficiency : 0} startAngle={-90} endAngle={90} sx={(theme) => ({ [`& .${gaugeClasses.valueArc}`]: { fill: '#4AD991' }, [`& .${gaugeClasses.valueText}`]: { display: 'none' } })} />
                         <Typography className='gaugeLegend'>Efficiency</Typography>
                     </Box>
                     <Box className="gaugeContainer">
-                        <Gauge width={100} height={100} value={success_rate} startAngle={-90} endAngle={90} sx={(theme) => ({ [`& .${gaugeClasses.valueArc}`]: { fill: '#4AD991' }, [`& .${gaugeClasses.valueText}`]: { display: 'none' } })} />
+                        <Gauge width={100} height={100} value={success_rate >= 0 ? success_rate : 0} startAngle={-90} endAngle={90} sx={(theme) => ({ [`& .${gaugeClasses.valueArc}`]: { fill: '#4AD991' }, [`& .${gaugeClasses.valueText}`]: { display: 'none' } })} />
                         <Typography className='gaugeLegend'>Success Rate</Typography>
                     </Box>
                     <Box className="gaugeContainer">
-                        <Gauge width={100} height={100} value={failure_rate} startAngle={-90} endAngle={90} sx={(theme) => ({ [`& .${gaugeClasses.valueArc}`]: { fill: '#4AD991' }, [`& .${gaugeClasses.valueText}`]: { display: 'none' } })} />
+                        <Gauge width={100} height={100} value={failure_rate >= 0 ? failure_rate : 0} startAngle={-90} endAngle={90} sx={(theme) => ({ [`& .${gaugeClasses.valueArc}`]: { fill: '#4AD991' }, [`& .${gaugeClasses.valueText}`]: { display: 'none' } })} />
                         <Typography className='gaugeLegend'>Failure Rate</Typography>
                     </Box>
 

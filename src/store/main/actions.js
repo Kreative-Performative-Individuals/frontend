@@ -28,6 +28,12 @@ import {
   GET_MACHINE_DETAIL_ERROR,
   REPORT_LIST,
   ADD_REPORT_TO_LIST,
+  GET_PRODUCTION_DASHBOARD,
+  GET_PRODUCTION_DASHBOARD_SUCCESS,
+  GET_PRODUCTION_DASHBOARD_ERROR,
+  GET_PRODUCTION_DETAIL,
+  GET_PRODUCTION_DETAIL_SUCCESS,
+  GET_PRODUCTION_DETAIL_ERROR,
 } from "../types";
 
 export const registerUser = (payload, navigate) => ({
@@ -161,6 +167,35 @@ export const getMachineDetailSuccess = (payload) => ({
 
 export const getMachineDetailError = payload => ({
   type: GET_MACHINE_DETAIL_ERROR,
+  payload
+});
+
+export const getProductionDashboard = () => ({
+  type: GET_PRODUCTION_DASHBOARD
+});
+
+export const getProductionDashboardSuccess = (payload) => ({
+  type: GET_PRODUCTION_DASHBOARD_SUCCESS,
+  payload
+});
+
+export const getProductionDashboardError = payload => ({
+  type: GET_PRODUCTION_DASHBOARD_ERROR,
+  payload
+});
+
+export const getProductionDetail = (payload) => ({
+  type: GET_PRODUCTION_DETAIL,
+  payload
+});
+
+export const getProductionDetailSuccess = (payload) => ({
+  type: GET_PRODUCTION_DETAIL_SUCCESS,
+  payload
+});
+
+export const getProductionDetailError = payload => ({
+  type: GET_PRODUCTION_DETAIL_ERROR,
   payload
 });
 

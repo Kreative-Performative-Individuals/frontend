@@ -28,6 +28,12 @@ import {
   GET_MACHINE_DETAIL,
   GET_MACHINE_DETAIL_SUCCESS,
   GET_MACHINE_DETAIL_ERROR,
+  GET_PRODUCTION_DASHBOARD,
+  GET_PRODUCTION_DASHBOARD_SUCCESS,
+  GET_PRODUCTION_DASHBOARD_ERROR,
+  GET_PRODUCTION_DETAIL,
+  GET_PRODUCTION_DETAIL_SUCCESS,
+  GET_PRODUCTION_DETAIL_ERROR,
   REPORT_LIST,
   ADD_REPORT_TO_LIST
 } from "../types";
@@ -46,6 +52,8 @@ const initialState = {
   machines: [],
   dashboardParams: {},
   singleMachineDetail: {},
+  productionDashboard: {},
+  productionDetail: {},
   reports: getLocal("reports") ? JSON.parse(getLocal("reports")) : []
 };
 
@@ -291,6 +299,58 @@ const MyReducer = (state = initialState, action) => {
               loading: false,
               errMsg: action.payload,
               singleMachineDetail: []
+          };
+      
+      case GET_PRODUCTION_DASHBOARD:
+          return {
+              ...state,
+              error: false,
+              loading: true,
+              errMsg: "",
+              productionDashboard: {}
+          };
+
+      case GET_PRODUCTION_DASHBOARD_SUCCESS:
+          return {
+              ...state,
+              error: false,
+              loading: false,
+              errMsg: "",
+              productionDashboard: action.payload
+          };
+      case GET_PRODUCTION_DASHBOARD_ERROR:
+          return {
+              ...state,
+              error: true,
+              loading: false,
+              errMsg: action.payload,
+              productionDashboard: {}
+          };
+      
+      case GET_PRODUCTION_DETAIL:
+          return {
+              ...state,
+              error: false,
+              loading: true,
+              errMsg: "",
+              productionDetail: {}
+          };
+
+      case GET_PRODUCTION_DETAIL_SUCCESS:
+          return {
+              ...state,
+              error: false,
+              loading: false,
+              errMsg: "",
+              productionDetail: action.payload
+          };
+      case GET_PRODUCTION_DETAIL_ERROR:
+          return {
+              ...state,
+              error: true,
+              loading: false,
+              errMsg: action.payload,
+              productionDetail: {}
           };
       
       case REPORT_LIST:

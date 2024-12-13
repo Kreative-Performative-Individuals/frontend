@@ -11,7 +11,9 @@ import {
   CHAT_RAG,
   GET_MACHINE_LIST,
   GET_DASHBOARD_PARAMS,
-  GET_MACHINE_DETAIL
+  GET_MACHINE_DETAIL,
+  GET_PRODUCTION_DASHBOARD,
+  GET_PRODUCTION_DETAIL
 } from "../types";
 
 import setDefaultToken, { clearLocal } from "../../constants/localstorage";
@@ -35,7 +37,11 @@ import {
   getDashboardParamsSuccess,
   getDashboardParamsError,
   getMachineDetailSuccess,
-  getMachineDetailError
+  getMachineDetailError,
+  getProductionDashboardSuccess,
+  getProductionDashboardError,
+  getProductionDetailSuccess,
+  getProductionDetailError,
 } from "./actions";
 
 import {
@@ -49,9 +55,10 @@ import {
   GetMachineDetailAPI,
   // CheckDbAPI,
   CheckKpiEngineAPI,
-  GetDerivedKpiDataAPI
+  GetDerivedKpiDataAPI,
+  GetProductionDashboardAPI
 } from "../../constants/apiRoutes";
-import { getOneDay5MonthsAgo } from "../../constants/_helper";
+import { getOneDay5MonthsAgo, transformMachineList } from "../../constants/_helper";
 
 // const userLoginAPI = async data => {
 //   return await axios.post(LoginUserAPI, data);
@@ -87,6 +94,10 @@ const getMachineDetailAPI = async ({ machineId, init_date, end_date }) => {
 };
 const getDerivedKpiAPI = async (data) => {
   return await axios.post(`${GetDerivedKpiDataAPI}`, data);
+};
+const getProductionDashboardAPI = async () => {
+  const { init_date, end_date } = getOneDay5MonthsAgo();
+  return await axios.get(`${GetProductionDashboardAPI}?init_date=${init_date}&end_date=${end_date}`);
 };
 
 function* userRegisterSaga({ payload, navigate }) {
@@ -201,6 +212,91 @@ function* getMachineDetailSaga({ payload }) {
   }
 }
 
+function* getProductionDashboardSaga() {
+  try {
+    const { data } = yield call(getProductionDashboardAPI);
+    const machineListResponse = yield call(getMachineListAPI);
+    const machineList = transformMachineList(machineListResponse.data.data);
+
+    const machineListArray = [];
+    
+    // const { init_date, end_date } = getOneDay5MonthsAgo();
+    const init_date = "2024-05-02 12:00:00";
+    const end_date = "2024-05-03 12:00:00";
+    for (const machine of machineList) {
+      const average_cycle_time_payload = { "name": "average_cycle_time_avg", "machines": [machine.name], "operations": ["working"], "time_aggregation": "mean", "start_date": init_date, "end_date": end_date, "step": 2 }
+      const average_cycle_time = yield call(getDerivedKpiAPI, {...average_cycle_time_payload});
+      const good_cycles_sum_payload = { "name": "good_cycles_sum", "machines": [machine.name], "operations": ["working"], "time_aggregation": "sum", "start_date": init_date, "end_date": end_date, "step": 2 }
+      const good_cycles_sum = yield call(getDerivedKpiAPI, {...good_cycles_sum_payload});
+      const bad_cycles_sum_payload = { "name": "bad_cycles_sum", "machines": [machine.name], "operations": ["working"], "time_aggregation": "sum", "start_date": init_date, "end_date": end_date, "step": 2 }
+      const bad_cycles_sum = yield call(getDerivedKpiAPI, {...bad_cycles_sum_payload});
+      const total_cycles_sum_payload = { "name": "cycles_sum", "machines": [machine.name], "operations": ["working"], "time_aggregation": "sum", "start_date": init_date, "end_date": end_date, "step": 2 }
+      const total_cycles_sum = yield call(getDerivedKpiAPI, {...total_cycles_sum_payload});
+      const success_rate_payload = { "name": "success_rate", "machines": [machine.name], "operations": ["working"], "time_aggregation": "sum", "start_date": init_date, "end_date": end_date, "step": 2 }
+      const success_rate = yield call(getDerivedKpiAPI, {...success_rate_payload});
+      const failure_rate_payload = { "name": "failure_rate", "machines": [machine.name], "operations": ["working"], "time_aggregation": "sum", "start_date": init_date, "end_date": end_date, "step": 2 }
+      const failure_rate = yield call(getDerivedKpiAPI, {...failure_rate_payload});
+      // const efficiency_sum_payload = { "name": "overall_equipment_effectiveness", "machines": [machine.name], "operations": ["working"], "time_aggregation": "sum", "start_date": init_date, "end_date": end_date, "step": 2 }
+      // const efficiency_sum = yield call(getDerivedKpiAPI, {...efficiency_sum_payload});
+      machineListArray.push({
+        ...machine,
+        average_cycle_time: average_cycle_time.data.value,
+        good_cycles: good_cycles_sum.data.value,
+        bad_cycles: bad_cycles_sum.data.value,
+        total_cycles: total_cycles_sum.data.value,
+        success_rate: success_rate.data.value,
+        failure_rate: failure_rate.data.value,
+        // efficiency: efficiency_sum.data.value,
+        efficiency: (success_rate.data.value / (success_rate.data.value + failure_rate.data.value)) * 100 || 0,
+      })
+    }
+    
+    const formatted = {...data.data, machines: machineListArray}
+    yield put(getProductionDashboardSuccess(formatted));
+  } catch (error) {
+    yield put(getProductionDashboardError(error));
+  }
+}
+
+function* getProductionDetailSaga({ payload }) {
+  try {
+    // const { init_date, end_date } = getOneDay5MonthsAgo();
+    const init_date = payload.init_date;
+    const end_date = payload.end_date;
+    const machineName = payload.machineName;
+    
+    const average_cycle_time_payload = { "name": "average_cycle_time_avg", "machines": [machineName], "operations": ["working"], "time_aggregation": "mean", "start_date": init_date, "end_date": end_date, "step": 2 }
+    const average_cycle_time = yield call(getDerivedKpiAPI, {...average_cycle_time_payload});
+    const good_cycles_sum_payload = { "name": "good_cycles_sum", "machines": [machineName], "operations": ["working"], "time_aggregation": "sum", "start_date": init_date, "end_date": end_date, "step": 2 }
+    const good_cycles_sum = yield call(getDerivedKpiAPI, {...good_cycles_sum_payload});
+    const bad_cycles_sum_payload = { "name": "bad_cycles_sum", "machines": [machineName], "operations": ["working"], "time_aggregation": "sum", "start_date": init_date, "end_date": end_date, "step": 2 }
+    const bad_cycles_sum = yield call(getDerivedKpiAPI, {...bad_cycles_sum_payload});
+    const total_cycles_sum_payload = { "name": "cycles_sum", "machines": [machineName], "operations": ["working"], "time_aggregation": "sum", "start_date": init_date, "end_date": end_date, "step": 2 }
+    const total_cycles_sum = yield call(getDerivedKpiAPI, {...total_cycles_sum_payload});
+    const success_rate_payload = { "name": "success_rate", "machines": [machineName], "operations": ["working"], "time_aggregation": "sum", "start_date": init_date, "end_date": end_date, "step": 2 }
+    const success_rate = yield call(getDerivedKpiAPI, {...success_rate_payload});
+    const failure_rate_payload = { "name": "failure_rate", "machines": [machineName], "operations": ["working"], "time_aggregation": "sum", "start_date": init_date, "end_date": end_date, "step": 2 }
+    const failure_rate = yield call(getDerivedKpiAPI, {...failure_rate_payload});
+    // const efficiency_sum_payload = { "name": "overall_equipment_effectiveness", "machines": [machineName], "operations": ["working"], "time_aggregation": "sum", "start_date": init_date, "end_date": end_date, "step": 2 }
+    // const efficiency_sum = yield call(getDerivedKpiAPI, {...efficiency_sum_payload});
+    const machineObject = {
+      ...payload,
+      average_cycle_time: average_cycle_time.data.value,
+      good_cycles: good_cycles_sum.data.value,
+      bad_cycles: bad_cycles_sum.data.value,
+      total_cycles: total_cycles_sum.data.value,
+      success_rate: success_rate.data.value,
+      failure_rate: failure_rate.data.value,
+      // efficiency: efficiency_sum.data.value,
+      efficiency: (success_rate.data.value / (success_rate.data.value + failure_rate.data.value)) * 100 || 0,
+    }
+    
+    yield put(getProductionDetailSuccess(machineObject));
+  } catch (error) {
+    yield put(getProductionDetailError(error));
+  }
+}
+
 
 export function* watchUserRegister() {
   yield takeEvery(USER_REGISTER, userRegisterSaga);
@@ -229,6 +325,12 @@ export function* watchGetMachineList() {
 export function* watchGetMachineDetail() {
   yield takeEvery(GET_MACHINE_DETAIL, getMachineDetailSaga);
 }
+export function* watchGetProductionDashboard() {
+  yield takeEvery(GET_PRODUCTION_DASHBOARD, getProductionDashboardSaga);
+}
+export function* watchGetProductionDetail() {
+  yield takeEvery(GET_PRODUCTION_DETAIL, getProductionDetailSaga);
+}
 
 export default function* rootSaga() {
   yield all([
@@ -241,5 +343,7 @@ export default function* rootSaga() {
     fork(watchGetDashboardParams),
     fork(watchGetMachineList),
     fork(watchGetMachineDetail),
+    fork(watchGetProductionDashboard),
+    fork(watchGetProductionDetail),
   ]);
 }
