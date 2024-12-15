@@ -3,6 +3,7 @@ const dbUrl = "http://localhost:8002";
 // const dataProcessingUrl = "http://localhost:8003";
 const ragUrl = "http://localhost:8005";
 const kpiEngineUrl = "http://localhost:8008";
+const kpiEngineWS = "ws://localhost:8008";
 
 // Auth
 export const LoginUserAPI = `${baseUrl}/users/authenticate`; // POST { email, password }
@@ -28,4 +29,4 @@ export const CheckKpiEngineAPI = `${kpiEngineUrl}`; // GET
 // Get Derived KPI Data
 export const GetDerivedKpiDataAPI = `${kpiEngineUrl}/kpi`; // POST { name, machines, operations, time_aggregation, start_date, end_date, step }
 
-export { baseUrl };
+export { baseUrl, kpiEngineWS };

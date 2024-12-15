@@ -13,7 +13,7 @@ import OutlinedInput from '@mui/material/OutlinedInput'; // Import outlined inpu
 import Chip from '@mui/material/Chip'; // Import Chip component for displaying selected items
 import ProductionCard from '../Common/ProductionCard'; // Import MachineUsageCard component for displaying individual machine details
 import { useNavigate } from 'react-router-dom'; // Import useNavigate hook for navigation between routes
-import { getMachineList, getProductionDashboard } from '../../store/main/actions'; // Action creators for fetching production data
+import { getProductionDashboard } from '../../store/main/actions'; // Action creators for fetching production data
 import { connect } from 'react-redux'; // Connect component to Redux store
 import { truncateToFiveDecimals, updateRecentlyViewed } from '../../constants/_helper'; // Helper functions for truncation and recently viewed tracking
 
@@ -269,4 +269,4 @@ const mapStatetoProps = ({ main }) => ({
     loading: main.loading
 });
 
-export default connect(mapStatetoProps, { getProductionDashboard, getMachineList })(Production); // Exporting the Production component for use in other parts of the application
+export default connect(mapStatetoProps, { getProductionDashboard })(Production); // Exporting the Production component for use in other parts of the application
