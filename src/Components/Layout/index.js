@@ -190,7 +190,7 @@ const Layout = ({ children }) => {
                         sx={{
                             backgroundColor: "#F5F6FA", // Main content background color
                             flexGrow: 1,
-                            // height: "95vh", // Set height for the main content area
+                            height: "95vh", // Set height for the main content area
                             overflow: "auto", // Enable scrolling if content overflows
                             padding: "1rem" // Padding for the main content
                         }}
