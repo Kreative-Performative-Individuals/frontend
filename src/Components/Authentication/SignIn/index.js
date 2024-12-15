@@ -10,13 +10,15 @@ import { useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { userLogin } from "../../../store/main/actions";
 import "../style.scss";
+import { ButtonGroup } from "@mui/material";
 
 function SignIn({ userLogin, loading, loginError, isAuth, errMsg }) {
 
   const navigate = useNavigate();
   const [userAuth, setUserAuth] = React.useState({
       email: "",
-      password: ""
+      password: "",
+      role: undefined
   })
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -35,11 +37,18 @@ function SignIn({ userLogin, loading, loginError, isAuth, errMsg }) {
       <Box className="authContainer" >
 
         <Typography className="heading"> Login to account </Typography>
+
+        <Box sx={{ display: "flex", alignItems: "center", gap: "1rem", mt: 1, mb: 1 }}>
+          <Typography> Demo Login as </Typography>
+          <ButtonGroup variant="outlined" aria-label="Demo Accounts">
+            <Button variant={userAuth.role === "smo" ? "contained" : "outlined"} onClick={() => setUserAuth({ email: "smo@kreative.org", password: "P@ssword", role: "smo" })} >SMO</Button>
+            <Button variant={userAuth.role === "ffm" ? "contained" : "outlined"} onClick={() => setUserAuth({ email: "ffm@kreative.org", password: "P@ssword", role: "ffm" })} >FFM</Button>
+          </ButtonGroup>
+        </Box>
+
         <Typography className="subHeading"> Please enter your email and password to continue </Typography>
 
         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
-
-
           <TextField
             margin="normal"
             required
