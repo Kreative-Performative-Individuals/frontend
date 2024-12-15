@@ -3,19 +3,19 @@ import Layout from '../Layout'; // Import layout component for consistent page s
 import "./style.scss"; // Import styles specific to this component
 import BasicCard from '../Common/BasicCard'; // Import BasicCard component to display statistics
 
-import PowerIcon from "../../Assets/Power Logo.svg";
-import ConsumptionIcon from "../../Assets/Consumption Logo.svg";
-import CostIcon from "../../Assets/Total Cost.svg";
-import EnergyIcon from "../../Assets/Energy Logo.svg";
+import PowerIcon from "../../Assets/Power Logo.svg"; // Import Power icon
+import ConsumptionIcon from "../../Assets/Consumption Logo.svg"; // Import Consumption icon
+import CostIcon from "../../Assets/Total Cost.svg"; // Import Cost icon
+import EnergyIcon from "../../Assets/Energy Logo.svg"; // Import Energy icon
 
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, Typography, Checkbox, ListItemText, CircularProgress } from '@mui/material'; // Import Material-UI components for UI elements
 import OutlinedInput from '@mui/material/OutlinedInput'; // Import outlined input style for select fields
 import Chip from '@mui/material/Chip'; // Import Chip component for displaying selected items
 import { useNavigate } from 'react-router-dom'; // Import useNavigate hook for navigation between routes
-import EnergyCard from '../Common/EnergyCard';
-import { getEnergyDashboard } from '../../store/main/actions';
-import { connect } from 'react-redux';
-import { truncateToFiveDecimals, updateRecentlyViewed } from '../../constants/_helper';
+import EnergyCard from '../Common/EnergyCard'; // Import EnergyCard component for displaying individual machine data
+import { getEnergyDashboard } from '../../store/main/actions'; // Import action for fetching energy dashboard data
+import { connect } from 'react-redux'; // Import Redux connect to map state and dispatch
+import { truncateToFiveDecimals, updateRecentlyViewed } from '../../constants/_helper'; // Import helper functions for truncating decimals and updating recently viewed data
 
 // Constants for dropdown menu styling
 const ITEM_HEIGHT = 48; // Height of each item in the dropdown
@@ -39,13 +39,13 @@ const Energy = ({ getEnergyDashboard, energyDashboard, loading }) => {
 
     useEffect(() => {
         if (Object.keys(energyDashboard).length === 0) {
-            getEnergyDashboard()
+            getEnergyDashboard() // Fetch energy dashboard data if not already available
         }
         // eslint-disable-next-line
     }, []);
     
     useEffect(() => {
-        setMachineInView(energyDashboard.machines)
+        setMachineInView(energyDashboard.machines) // Update the state with the machines data from the energy dashboard
         // eslint-disable-next-line
     }, [energyDashboard])
 
@@ -91,7 +91,7 @@ const Energy = ({ getEnergyDashboard, energyDashboard, loading }) => {
 
     // Function to handle card click and navigate to machine detail page
     const handleCardClick = (machine) => {
-        updateRecentlyViewed("energy", machine);
+        updateRecentlyViewed("energy", machine); // Update the recently viewed machines list
         navigate(`/energy/${machine.asset_id}?machineName=${machine.name}&machineStatus=${machine.status}`); // Navigate to the machine detail page using the machineId
     };
 
@@ -102,8 +102,8 @@ const Energy = ({ getEnergyDashboard, energyDashboard, loading }) => {
             duration: "Today",
             value: `${truncateToFiveDecimals(energyDashboard.total_power)} kW`,
             isStat: false,
-            icon: PowerIcon,
-            iconBackground: "rgba(130, 128, 255, 0.25)",
+            icon: PowerIcon, // Power icon
+            iconBackground: "rgba(130, 128, 255, 0.25)", // Icon background color
         },
         {
             id: 2,
@@ -111,8 +111,8 @@ const Energy = ({ getEnergyDashboard, energyDashboard, loading }) => {
             duration: "Today",
             value: `${truncateToFiveDecimals(energyDashboard.total_consumption)} kWh`,
             isStat: false,
-            icon: ConsumptionIcon,
-            iconBackground: "rgba(254, 197, 61, 0.25)",
+            icon: ConsumptionIcon, // Consumption icon
+            iconBackground: "rgba(254, 197, 61, 0.25)", // Icon background color
         },
         {
             id: 3,
@@ -120,23 +120,23 @@ const Energy = ({ getEnergyDashboard, energyDashboard, loading }) => {
             duration: "Today",
             value: `${truncateToFiveDecimals(energyDashboard.total_cost)} €`,
             isStat: false,
-            icon: CostIcon,
-            iconBackground: "rgba(74, 217, 145, 0.25)",
+            icon: CostIcon, // Cost icon
+            iconBackground: "rgba(74, 217, 145, 0.25)", // Icon background color
         },
         {
             id: 4,
             heading: "Energy Contributions",
             duration: "Today",
             value: "0 hours",
-            icon: EnergyIcon,
-            iconBackground: "rgba(254, 144, 102, 0.25)",
+            icon: EnergyIcon, // Energy icon
+            iconBackground: "rgba(254, 144, 102, 0.25)", // Icon background color
         },
     ];
 
     return (
         <Layout>
             {loading ? (
-                <Box className="loader"><CircularProgress /></Box>
+                <Box className="loader"><CircularProgress /></Box> // Show loader while the data is being fetched
             ) : (
                 <Box className="energy">
                     <Box className="energyStatsConatiner">
@@ -158,7 +158,7 @@ const Energy = ({ getEnergyDashboard, energyDashboard, loading }) => {
                     </Box>
 
                     <Box className="energyHeader">
-                        <Typography variant="p" className='headerHeading'>Machines</Typography>
+                        <Typography variant="p" className='headerHeading'>Machines</Typography> {/* Header for Machines section */}
 
                         <Box className="headerFilters">
                             {/* Dropdown for selecting machine types */}
@@ -240,9 +240,10 @@ const Energy = ({ getEnergyDashboard, energyDashboard, loading }) => {
         </Layout>
     )
 }
+
 const mapStatetoProps = ({ main }) => ({
     energyDashboard: main.energyDashboard,
-    loading: main.loading
+    loading: main.loading // Map state to props
 });
 
-export default connect(mapStatetoProps, { getEnergyDashboard })(Energy);
+export default connect(mapStatetoProps, { getEnergyDashboard })(Energy); // Connect the component to Redux store

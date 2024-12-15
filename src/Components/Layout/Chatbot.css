@@ -1,137 +1,137 @@
 /* General Chatbot Container */
 .chatbot {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
+  position: fixed; /* Fixes the chatbot to a fixed position on the screen */
+  bottom: 20px; /* Places the chatbot 20px from the bottom */
+  right: 20px; /* Places the chatbot 20px from the right */
+  z-index: 1000; /* Ensures the chatbot stays on top of other elements */
+}
+
+/* Floating Chat Icon */
+.chatbot-icon {
+  background-color: #4880FF; /* Blue background for the icon */
+  color: white; /* White color for the icon text */
+  width: 50px; /* Set width of the icon */
+  height: 50px; /* Set height of the icon */
+  border-radius: 50%; /* Circular shape for the icon */
+  display: flex; /* Flexbox for centering the content */
+  justify-content: center; /* Center the content horizontally */
+  align-items: center; /* Center the content vertically */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow for a floating effect */
+  cursor: pointer; /* Pointer cursor when hovering over the icon */
+  font-size: 24px; /* Set font size for the icon content */
+  transition: transform 0.2s; /* Smooth scaling effect on hover */
+}
+
+.chatbot-icon:hover {
+  transform: scale(1.1); /* Slightly enlarge the icon when hovered */
+}
+
+/* Chat Panel */
+.chat-panel {
+  background-color: #f8f9fa; /* Light background color */
+  border: 1px solid #ddd; /* Light border around the panel */
+  border-radius: 8px; /* Rounded corners for the chat panel */
+  display: flex; /* Flexbox layout for the chat panel */
+  flex-direction: column; /* Stack children elements vertically */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow for depth effect */
+  position: fixed; /* Fix the panel in a fixed position */
+  bottom: 80px; /* 80px from the bottom */
+  right: 20px; /* 20px from the right */
+  overflow: hidden; /* Hide overflow content */
+  animation: slide-up 0.3s ease-out; /* Animation for smooth appearance */
+  transition: width 0.3s ease, height 0.3s ease; /* Smooth transitions for resizing */
+}
+
+@keyframes slide-up {
+  from {
+      opacity: 0; /* Start with 0 opacity */
+      transform: translateY(20px); /* Slide from below */
   }
-  
-  /* Floating Chat Icon */
-  .chatbot-icon {
-    background-color: #4880FF;
-    color: white;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    font-size: 24px;
-    transition: transform 0.2s;
+  to {
+      opacity: 1; /* Fade in */
+      transform: translateY(0); /* End at its final position */
   }
-  
-  .chatbot-icon:hover {
-    transform: scale(1.1);
-  }
-  
-  /* Chat Panel */
-  .chat-panel {
-    background-color: #f8f9fa;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    position: fixed;
-    bottom: 80px;
-    right: 20px;
-    overflow: hidden;
-    animation: slide-up 0.3s ease-out;
-    transition: width 0.3s ease, height 0.3s ease;
-  }
-  
-  @keyframes slide-up {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  /* Chat Header */
-  .chat-header {
-    background-color: #4880FF;
-    color: white;
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .chat-header h4 {
-    margin: 0;
-  }
-  
-  .close-btn {
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  
-  /* Chat Body */
-  .chat-body {
-    flex: 1;
-    padding: 10px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .chat-message {
-    max-width: 80%;
-    padding: 8px;
-    border-radius: 5px;
-    font-size: 14px;
-  }
-  
-  .user-message {
-    align-self: flex-end;
-    background-color: #4880FF;
-    color: white;
-  }
-  
-  .bot-message {
-    align-self: flex-start;
-    background-color: #e9ecef;
-    color: #333;
-  }
-  .processing-message {
-    align-self: flex-start;
-    color: #33333380;
-    padding: 0 8px;
-  }
-  
-  /* Chat Footer */
-  .chat-footer {
-    display: flex;
-    padding: 10px;
-    border-top: 1px solid #ddd;
-  }
-  
-  .chat-footer input {
-    flex: 1;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    margin-right: 5px;
-  }
-  
-  .chat-footer button {
-    padding: 8px 12px;
-    background-color: #4880FF;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .chat-footer button:hover {
-    background-color: #0056b3;
-  }
-  
+}
+
+/* Chat Header */
+.chat-header {
+  background-color: #4880FF; /* Blue background for the header */
+  color: white; /* White text color */
+  padding: 10px; /* Padding inside the header */
+  display: flex; /* Flexbox layout for header elements */
+  justify-content: space-between; /* Space between elements in the header */
+  align-items: center; /* Vertically align items in the center */
+}
+
+.chat-header h4 {
+  margin: 0; /* Remove margin from the header title */
+}
+
+.close-btn {
+  color: white; /* White color for the close button */
+  font-size: 16px; /* Font size for the button */
+  cursor: pointer; /* Pointer cursor for the close button */
+}
+
+/* Chat Body */
+.chat-body {
+  flex: 1; /* Allow the chat body to grow and take available space */
+  padding: 10px; /* Padding inside the chat body */
+  overflow-y: auto; /* Allow vertical scrolling if content overflows */
+  display: flex; /* Flexbox layout for the chat messages */
+  flex-direction: column; /* Stack messages vertically */
+  gap: 10px; /* Space between messages */
+}
+
+.chat-message {
+  max-width: 80%; /* Maximum width for the message */
+  padding: 8px; /* Padding inside the message bubble */
+  border-radius: 5px; /* Rounded corners for the message */
+  font-size: 14px; /* Font size for the message text */
+}
+
+.user-message {
+  align-self: flex-end; /* Align user messages to the right */
+  background-color: #4880FF; /* Blue background for user messages */
+  color: white; /* White text color */
+}
+
+.bot-message {
+  align-self: flex-start; /* Align bot messages to the left */
+  background-color: #e9ecef; /* Light gray background for bot messages */
+  color: #333; /* Dark text color */
+}
+
+.processing-message {
+  align-self: flex-start; /* Align processing message to the left */
+  color: #33333380; /* Light gray text for processing message */
+  padding: 0 8px; /* Padding for the processing message */
+}
+
+/* Chat Footer */
+.chat-footer {
+  display: flex; /* Flexbox layout for the footer */
+  padding: 10px; /* Padding inside the footer */
+  border-top: 1px solid #ddd; /* Border at the top of the footer */
+}
+
+.chat-footer input {
+  flex: 1; /* Allow the input field to take available space */
+  padding: 8px; /* Padding inside the input field */
+  border: 1px solid #ddd; /* Light border around the input field */
+  border-radius: 4px; /* Rounded corners for the input field */
+  margin-right: 5px; /* Space between input field and button */
+}
+
+.chat-footer button {
+  padding: 8px 12px; /* Padding inside the button */
+  background-color: #4880FF; /* Blue background color */
+  color: white; /* White text color */
+  border: none; /* Remove border from the button */
+  border-radius: 4px; /* Rounded corners for the button */
+  cursor: pointer; /* Pointer cursor when hovering over the button */
+}
+
+.chat-footer button:hover {
+  background-color: #0056b3; /* Darken background color on hover */
+}

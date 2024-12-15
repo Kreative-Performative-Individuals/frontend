@@ -1,54 +1,62 @@
+/* Loader - Displays a loader while content is being fetched */
 .loader {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(5px);
-    z-index: 100,
+    position: fixed; /* Fixes loader to the entire screen */
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    display: flex; /* Flexbox layout for centering the loader */
+    align-items: center; /* Vertically center the loader */
+    justify-content: center; /* Horizontally center the loader */
+    background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent background */
+    backdrop-filter: blur(5px); /* Blurred background behind loader */
+    z-index: 100; /* Ensures loader is on top of other content */
 }
+
+/* Main energy container */
 .energy {
-    display: flex; // Flexbox layout for the main container
-    flex-direction: column; // Stack children vertically
+    display: flex; /* Flexbox layout for the entire energy page */
+    flex-direction: column; /* Stack child elements vertically */
 
+    /* Container for energy statistics cards */
     .energyStatsConatiner {
-        display: flex; // Flexbox layout for the stats container
-        gap: 1rem; // Space between stats cards
-        padding: 1rem; // Add some padding around the container
-        justify-content: space-between; // Distribute space between items
+        display: flex; /* Flexbox layout for the stats container */
+        gap: 1rem; /* Space between stats cards */
+        padding: 1rem; /* Padding around the container */
+        justify-content: space-between; /* Distribute space between items */
     }
 
+    /* Header container */
     .energyHeader {
-        margin-bottom: 15px; // Space below the header
-        display: flex; // Flexbox layout for the header
-        align-items: center; // Center items vertically
-        justify-content: space-between; // Space items evenly
+        margin-bottom: 15px; /* Space below the header */
+        display: flex; /* Flexbox layout for the header */
+        align-items: center; /* Vertically center the items */
+        justify-content: space-between; /* Space items evenly */
 
+        /* Styling for the header text */
         .headerHeading {
-            font-size: 16px; // Font size for the header text
-            margin-bottom: -30px;
+            font-size: 16px; /* Font size for header */
+            margin-bottom: -30px; /* Negative margin to reduce space below header */
         }
 
+        /* Container for filters in the header */
         .headerFilters {
-            display: flex; // Flexbox layout for the filters
-            align-items: center; // Center items vertically
-            gap: 1rem; // Space between filters
-            min-width: 400px; // Minimum width for the filters container
-            flex-wrap : nowrap; // Prevent wrapping of filter items
+            display: flex; /* Flexbox layout for filters */
+            align-items: center; /* Vertically center the filters */
+            gap: 1rem; /* Space between filter items */
+            min-width: 400px; /* Ensure filters container has at least 400px width */
+            flex-wrap: nowrap; /* Prevent filters from wrapping to the next line */
         }
     }
 
+    /* Container for the list of machine cards */
     .machinesList {
-        display: flex; // Flexbox layout for the list of machines
-        align-items: center; // Center items vertically
-        gap: 1.5rem; // Space between machine cards
-        flex-wrap: wrap; // Allow wrapping of machine cards
+        display: flex; /* Flexbox layout for the list of machines */
+        align-items: center; /* Vertically center the items */
+        gap: 1.5rem; /* Space between machine cards */
+        flex-wrap: wrap; /* Allow machine cards to wrap to the next line */
     }
 
-    /* Optional: Style the Chip component */
+    /* Optional: Style for Material-UI Chip component used in dropdowns */
     .MuiChip-root {
-        margin: 0; // Remove margin to prevent wrapping
+        margin: 0; /* Remove margin to prevent wrapping around chips */
     }
 }

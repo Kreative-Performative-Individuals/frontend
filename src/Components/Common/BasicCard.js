@@ -5,20 +5,20 @@ import "./BasicCard.scss";
 
 // BasicCard component definition
 const BasicCard = ({
-    heading,                // Title of the card
-    duration = ".",               // Duration text (e.g., "per day")
-    value,                 // Main value to display on the card
-    isIcon=true,           // Flag to indicate if icon should be displayed
-    icon,                  // Icon image URL
-    iconBackground,        // Background color for the icon container
-    isStat = true,         // Flag to indicate if statistics should be displayed
-    statUpOrDown,          // Indicates if the statistic is up or down
-    statPercent,           // Percentage change for the statistic
-    statText               // Text accompanying the statistic (e.g., "Up from yesterday")
+    heading, // Title of the card
+    duration = ".", // Duration or subtitle to display
+    value, // Main value displayed on the card
+    isIcon=true, // Flag to display an icon (default is true)
+    icon, // The source URL for the icon image
+    iconBackground, // Background color for the icon container
+    isStat = true, // Flag to display statistics section (default is true)
+    statUpOrDown, // Direction of the stat change ("Up" or "Down")
+    statPercent, // Percentage value for the stat change
+    statText // Text to accompany the stat (e.g., "increase" or "decrease")
 }) => {
     return (
-        <Card className='basicCard'> {/* Material-UI Card component */}
-            {/* Card Head */}
+        <Card className='basicCard'> {/* Material-UI Card component for the card structure */}
+            {/* Card Head: Displays heading, duration, and main value */}
             <div className='basicCardContainer'>
                 <div>
                     {/* Heading of the card */}
@@ -28,7 +28,7 @@ const BasicCard = ({
                     <p className='value'>{value}</p>
                 </div>
 
-                {/* Icon container with background color */}
+                {/* Icon container with background color, shown conditionally */}
                 {isIcon && (
                     <div className='iconContainer' style={{ backgroundColor: iconBackground }}>
                         {/* Icon image with descriptive alt text */}
@@ -37,15 +37,15 @@ const BasicCard = ({
                 )}
             </div>
 
-            {/* Card Foot */}
+            {/* Card Foot: Displays statistical information (conditional rendering) */}
             {isStat && ( // Conditional rendering for statistics section
                 <div className='cardFooterContainer'>
                     <div className='cardFooter'>
-                        {/* Display percentage change with conditional styling */}
+                        {/* Display percentage change with conditional styling for "Up" or "Down" */}
                         <span className={statUpOrDown === "Up" ? "up" : "down"}>
                             {statPercent}
                         </span>
-                        {/* Conditional rendering for accompanying text */}
+                        {/* Conditional rendering for accompanying text (e.g., "increase" or "decrease") */}
                         {statText && <span> {" " + statText}</span>}
                     </div>
                 </div>
@@ -54,4 +54,4 @@ const BasicCard = ({
     );
 }
 
-export default BasicCard; // Exporting the BasicCard component
+export default BasicCard;

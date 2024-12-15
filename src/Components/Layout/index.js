@@ -11,14 +11,11 @@ import IconButton from "@mui/material/IconButton"; // Import Material-UI IconBut
 import DehazeIcon from '@mui/icons-material/Dehaze'; // Import Dehaze icon for the menu button
 import { MainListItems } from "./listItems"; // Import main and secondary list items for the sidebar
 import Copyright from "../Authentication/Copyright"; // Import Copyright component
-// import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
-import PersonIcon from '@mui/icons-material/Person';
-import { getLocal } from "../../constants/localstorage";
-import Chatbot from "./ChatUI";
+import PersonIcon from '@mui/icons-material/Person'; // Import Person icon for user display
+import { getLocal } from "../../constants/localstorage"; // Import local storage utility
+import Chatbot from "./ChatUI"; // Import Chatbot component
 import LogoutIcon from '@mui/icons-material/Logout'; // Import Logout icon
 import { useNavigate } from "react-router-dom"; // Import useNavigate hook from react-router-dom
-
-// import setDefaultToken, { getLocal } from "../../constants/localstorage"; // Import local storage utility functions
 
 const drawerWidth = 220; // Set the width of the drawer
 
@@ -72,53 +69,39 @@ const defaultTheme = createTheme(); // Create a default theme for Material-UI
 
 const Layout = ({ children }) => {
     const [open, setOpen] = useState(true); // State to manage drawer open/close
-    // const [mainToken, setMainToken] = useState(false); // State for authentication token (commented out)
 
     const toggleDrawer = () => {
         setOpen(!open); // Toggle the drawer open/close state
     };
 
-    const [smoView, setSmoView] = React.useState(false);
-    const [userMail, setUserMail] = React.useState("");
+    const [smoView, setSmoView] = React.useState(false); // State for checking if the user is an SMO
+    const [userMail, setUserMail] = React.useState(""); // State to store user email
 
     React.useEffect(() => {
-        const user = getLocal("authUser");
-        const userData = JSON.parse(user);
+        const user = getLocal("authUser"); // Get user data from local storage
+        const userData = JSON.parse(user); // Parse the user data
         if (userData) {
-            setUserMail(userData.email);
+            setUserMail(userData.email); // Set user email
             if (userData.email.includes("smo")) {
-                setSmoView(true);
+                setSmoView(true); // Set SMO view if the email contains "smo"
             }
         } else {
-            navigate("/signin")
+            navigate("/signin") // Navigate to signin if no user data is found
         }
         // eslint-disable-next-line
     }, [])
 
     const navigate = useNavigate(); // Initialize navigate function for routing
-    // useEffect(() => {
-    //   const token = getLocal("token"); // Retrieve token from local storage
-    //   if (token) {
-    //     setDefaultToken("Authorization", token); // Set default token for API calls
-    //     setMainToken(token); // Set main token state
-    //   } else {
-    //     navigate("/signin"); // Redirect to signin if no token
-    //   }
-    //   // eslint-disable-next-line
-    // }, []);
 
     const handleLogout = () => {
-        navigate("/logout");
+        navigate("/logout"); // Navigate to logout when the user logs out
     }
-
-
 
     return (
         <React.Fragment>
             <ThemeProvider theme={defaultTheme}> {/* Provide the default theme to the component */}
-            <Chatbot />
+                <Chatbot /> {/* Render the Chatbot component */}
                 <Box sx={{ display: "flex" }}>
-                    {/* <Css Baseline /> */}
                     <AppBar position="absolute" open={open} style={{ backgroundColor: "#fff", color: "#202224" }}>
                         <Toolbar
                             sx={{
@@ -139,11 +122,8 @@ const Layout = ({ children }) => {
                             <Typography sx={{ flexGrow: 1 }} ></Typography>
                             <div>
                                 <Box sx={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-
-                                    {/* <NotificationsNoneIcon sx={{ fontSize: "35px" }} /> */}
-
                                     <Box sx={{ display: "flex", alignItems: "center" }}>
-                                        <div><PersonIcon sx={{ fontSize: "40px" }} /></div>
+                                        <div><PersonIcon sx={{ fontSize: "40px" }} /></div> {/* Display user icon */}
                                         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                                             <Typography sx={{ margin: 0, fontSize: "14px", fontWeight: "bold" }}>{userMail}</Typography>
                                             <Typography sx={{ color: "#565656", fontSize: "12px", marginTop: "-4px" }}>{smoView ? "SMO" : "FFM"}</Typography>
@@ -151,9 +131,8 @@ const Layout = ({ children }) => {
                                     </Box>
 
                                     <Box onClick={handleLogout} style={{ cursor: "pointer" }}>
-                                        <LogoutIcon />
+                                        <LogoutIcon /> {/* Logout icon */}
                                     </Box>
-
                                 </Box>
                             </div>
                         </Toolbar>
@@ -177,11 +156,6 @@ const Layout = ({ children }) => {
                                 <MainListItems /> {/* Main sidebar items */}
                                 <Divider sx={{ my: 1 }} />
                             </List>
-
-                            {/* <List component="nav" style={{ marginTop: "12rem" }}>
-                                <Divider sx={{ my: 1 }} />
-                                {secondaryListItems}
-                            </List> */}
                         </div>
                     </Drawer>
 
@@ -196,13 +170,8 @@ const Layout = ({ children }) => {
                         }}
                     >
                         <Toolbar /> {/* Toolbar for spacing */}
-
-                        {/* Dashboard Layout */}
                         {children} {/* Render child components here */}
-
-                        {/* Copyright */}
                         <Copyright sx={{ pt: 4 }} /> {/* Copyright component at the bottom */}
-
                     </Box>
                 </Box>
             </ThemeProvider>

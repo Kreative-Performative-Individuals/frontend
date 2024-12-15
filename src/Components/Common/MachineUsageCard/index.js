@@ -1,5 +1,5 @@
 import React from 'react'; // Import React library
-import "./style.scss"; // Import styles specific to this component
+import "./style.scss"; // Import the styles specific to this component
 import { Box, Typography } from '@mui/material'; // Import Material-UI components for layout and typography
 import MachineUsageChart from './MachineUsageChart'; // Import the chart component to display machine usage data
 

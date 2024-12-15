@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'; // Import necessary React ho
 import Layout from '../Layout'; // Import layout component for consistent page structure
 import "./style.scss"; // Import styles specific to this component
 import BasicCard from '../Common/BasicCard'; // Import BasicCard component to display statistics
-import PowerIcon from "../../Assets/Power Logo.svg";
+import PowerIcon from "../../Assets/Power Logo.svg"; // Import icon for total machines
 import WorkingIcon from "../../Assets/Working Machines.svg"; // Import icon for working machines
 import IdleIcon from "../../Assets/Idle Machines.svg"; // Import icon for idle machines
 import OfflineIcon from "../../Assets/Offline Machines.svg"; // Import icon for offline machines
@@ -11,9 +11,9 @@ import OutlinedInput from '@mui/material/OutlinedInput'; // Import outlined inpu
 import Chip from '@mui/material/Chip'; // Import Chip component for displaying selected items
 import MachineUsageCard from '../Common/MachineUsageCard'; // Import MachineUsageCard component for displaying individual machine details
 import { useNavigate } from 'react-router-dom'; // Import useNavigate hook for navigation between routes
-import { connect } from 'react-redux';
-import { getMachineList } from '../../store/main/actions';
-import { formatMachineUsageTime, runDBQuery, updateRecentlyViewed } from '../../constants/_helper';
+import { connect } from 'react-redux'; // Connect to Redux store
+import { getMachineList } from '../../store/main/actions'; // Action to fetch machine list
+import { formatMachineUsageTime, runDBQuery, updateRecentlyViewed } from '../../constants/_helper'; // Helper functions for formatting, querying DB, and updating recently viewed machines
 
 // Constants for dropdown menu styling
 const ITEM_HEIGHT = 48; // Height of each item in the dropdown
@@ -34,7 +34,7 @@ const MachineUsage = ({ getMachineList, machineList, loading }) => {
     const [machineType, setMachineType] = useState([]); // State for selected machine types
     const [machineStatus, setMachineStatus] = useState([]); // State for selected machine statuses
     const [machineInView, setMachineInView] = useState([]); // State for machines currently displayed
-    const [machineUsageData, setMachineUsageData] = useState([]);
+    const [machineUsageData, setMachineUsageData] = useState([]); // State for machine usage data
 
     // Handle change in machine type selection
     const handleChange = (event) => {
@@ -76,6 +76,7 @@ const MachineUsage = ({ getMachineList, machineList, loading }) => {
     const machineTypes = ["Metal Cutting", "Laser Cutting", "Laser Welding", "Assembly", "Testing", "Riveting"];
     const machineStatuses = ["Working", "Offline", "Idle"];
 
+    // Query the database to fetch machine usage data
     const getQueryResult = async() => {
         // const { init_date, end_date } = getOneDay5MonthsAgo();
         const query = `
@@ -90,32 +91,33 @@ const MachineUsage = ({ getMachineList, machineList, loading }) => {
             WHERE kpi = 'time' and time >= '2024-08-06 12:00:00' and time <= '2024-08-07 12:00:00'
             GROUP BY asset_id;
         `
-        const result = await runDBQuery(query);
-        const formatted = formatMachineUsageTime(result.data.data)
-        setMachineUsageData(formatted)
-        // return result;
+        const result = await runDBQuery(query); // Run the query to get machine usage data
+        const formatted = formatMachineUsageTime(result.data.data) // Format the data for display
+        setMachineUsageData(formatted) // Set the formatted machine usage data
     }
+
     // Effect to set initial machine view when the component mounts
     useEffect(() => {
-        getMachineList();
-        getQueryResult()
+        getMachineList(); // Fetch the machine list from the Redux store
+        getQueryResult() // Fetch machine usage data
         // eslint-disable-next-line
     }, []);
 
     // Function to handle card click and navigate to machine detail page
     const handleCardClick = (machine) => {
-        const chartData = machineUsageData[machine.asset_id]
-        updateRecentlyViewed("machines", {...machine, chartData: chartData});
+        const chartData = machineUsageData[machine.asset_id] // Get chart data for the clicked machine
+        updateRecentlyViewed("machines", {...machine, chartData: chartData}); // Update recently viewed machines in the Redux store
         navigate(`/machines/${machine.asset_id}`); // Navigate to the machine detail page using the machineId
     };
 
+    // Effect to set all machines to be visible initially
     useEffect(() => {
         setMachineInView(machineList); // Set all machines to be visible initially
     }, [machineList])
 
     return (
         <Layout>
-            {loading ? (
+            {loading ? ( // Show loader while data is being fetched
                 <Box className="loader"><CircularProgress /></Box>
             ) : (
                 <Box className="machines">

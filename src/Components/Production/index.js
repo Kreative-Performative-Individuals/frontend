@@ -3,19 +3,19 @@ import Layout from '../Layout'; // Import layout component for consistent page s
 import "./style.scss"; // Import styles specific to this component
 import BasicCard from '../Common/BasicCard'; // Import BasicCard component to display statistics
 
-import PowerIcon from "../../Assets/Power Logo.svg";
-import ConsumptionIcon from "../../Assets/Consumption Logo.svg";
-import CostIcon from "../../Assets/Total Cost.svg";
-import EnergyIcon from "../../Assets/Energy Logo.svg";
+import PowerIcon from "../../Assets/Power Logo.svg"; // Icon for power statistics
+import ConsumptionIcon from "../../Assets/Consumption Logo.svg"; // Icon for consumption statistics
+import CostIcon from "../../Assets/Total Cost.svg"; // Icon for total cost statistics
+import EnergyIcon from "../../Assets/Energy Logo.svg"; // Icon for energy contribution statistics
 
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, Typography, Checkbox, ListItemText, CircularProgress } from '@mui/material'; // Import Material-UI components for UI elements
 import OutlinedInput from '@mui/material/OutlinedInput'; // Import outlined input style for select fields
 import Chip from '@mui/material/Chip'; // Import Chip component for displaying selected items
 import ProductionCard from '../Common/ProductionCard'; // Import MachineUsageCard component for displaying individual machine details
 import { useNavigate } from 'react-router-dom'; // Import useNavigate hook for navigation between routes
-import { getMachineList, getProductionDashboard } from '../../store/main/actions';
-import { connect } from 'react-redux';
-import { truncateToFiveDecimals, updateRecentlyViewed } from '../../constants/_helper';
+import { getMachineList, getProductionDashboard } from '../../store/main/actions'; // Action creators for fetching production data
+import { connect } from 'react-redux'; // Connect component to Redux store
+import { truncateToFiveDecimals, updateRecentlyViewed } from '../../constants/_helper'; // Helper functions for truncation and recently viewed tracking
 
 // Constants for dropdown menu styling
 const ITEM_HEIGHT = 48; // Height of each item in the dropdown
@@ -80,81 +80,81 @@ const Production = ({ getProductionDashboard, productionDashboard, loading }) =>
     // Effect to set initial machine view when the component mounts
     useEffect(() => {
         if (Object.keys(productionDashboard).length === 0) {
-            getProductionDashboard();
+            getProductionDashboard(); // Fetch the production data if not already available
         }
         // eslint-disable-next-line
-    }, []);
+    }, []); // Empty dependency array ensures this runs only once when the component mounts
 
 
 
     // Function to handle card click and navigate to machine detail page
     const handleCardClick = (machine) => {
-        updateRecentlyViewed("production", machine);
+        updateRecentlyViewed("production", machine); // Update recently viewed machines
         navigate(`/production/${machine.asset_id}?machineName=${machine.name}&machineStatus=${machine.status}`); // Navigate to the machine detail page using the machineId
     };
 
+    // Effect to update machine view whenever productionDashboard data is available
     useEffect(() => {
         if (productionDashboard !== undefined) {
             if (productionDashboard.machines !== undefined) {
                 setMachineInView(productionDashboard.machines); // Set all machines to be visible initially
             }
         }
-    }, [productionDashboard])
+    }, [productionDashboard]) // Dependency on productionDashboard ensures the effect runs when it changes
 
-
-
+    // Static card data for displaying high-level production statistics
     const cardData = [
         {
             id: 1,
             heading: "Total Power",
             duration: "Today",
-            value: `${truncateToFiveDecimals(productionDashboard.totalPower)} kW`,
+            value: `${truncateToFiveDecimals(productionDashboard.totalPower)} kW`, // Format the total power value
             isStat: false,
             icon: PowerIcon,
-            iconBackground: "rgba(130, 128, 255, 0.25)",
+            iconBackground: "rgba(130, 128, 255, 0.25)", // Background color for the icon
         },
         {
             id: 2,
             heading: "Total Consumption",
             duration: "Today",
-            value: `${truncateToFiveDecimals(productionDashboard.totalConsumption)} kWh`,
+            value: `${truncateToFiveDecimals(productionDashboard.totalConsumption)} kWh`, // Format the total consumption value
             isStat: false,
-            statUpOrDown: "Up",
-            statPercent: "1.3%",
-            statText: "Up from yesterday",
+            statUpOrDown: "Up", // Stat direction (up or down)
+            statPercent: "1.3%", // Stat percentage
+            statText: "Up from yesterday", // Stat text description
             icon: ConsumptionIcon,
-            iconBackground: "rgba(254, 197, 61, 0.25)",
+            iconBackground: "rgba(254, 197, 61, 0.25)", // Background color for the icon
         },
         {
             id: 3,
             heading: "Total Cost",
             duration: "Today",
-            value: `${truncateToFiveDecimals(productionDashboard.totalCost)} €`,
+            value: `${truncateToFiveDecimals(productionDashboard.totalCost)} €`, // Format the total cost value
             isStat: false,
-            statUpOrDown: "Down",
-            statPercent: "4.3%",
-            statText: "Down from yesterday",
+            statUpOrDown: "Down", // Stat direction (up or down)
+            statPercent: "4.3%", // Stat percentage
+            statText: "Down from yesterday", // Stat text description
             icon: CostIcon,
-            iconBackground: "rgba(74, 217, 145, 0.25)",
+            iconBackground: "rgba(74, 217, 145, 0.25)", // Background color for the icon
         },
         {
             id: 4,
             heading: "Energy Contributions",
             duration: "Today",
-            value: `${truncateToFiveDecimals(productionDashboard.energyContributions)} hours`,
+            value: `${truncateToFiveDecimals(productionDashboard.energyContributions)} hours`, // Format the energy contributions value
             isStat: false,
-            statUpOrDown: "Up",
-            statPercent: "1.3%",
-            statText: "Up from yesterday",
+            statUpOrDown: "Up", // Stat direction (up or down)
+            statPercent: "1.3%", // Stat percentage
+            statText: "Up from yesterday", // Stat text description
             icon: EnergyIcon,
-            iconBackground: "rgba(254, 144, 102, 0.25)",
+            iconBackground: "rgba(254, 144, 102, 0.25)", // Background color for the icon
         },
     ];
 
     return (
-        <Layout>
+        <Layout> {/* Wraps the page in a consistent layout */}
             {loading ? (
-                <Box className="loader"><CircularProgress /></Box>
+                <Box className="loader"><CircularProgress /> {/* Show loading spinner while data is fetching */}</Box>
             ) : (
                 <Box className="production">
                     <Box className="machineStatsConatiner">
@@ -164,7 +164,7 @@ const Production = ({ getProductionDashboard, productionDashboard, loading }) =>
                                 key={id} // Using unique ID as key
                                 heading={heading}
                                 duration={duration}
-                                value={!loading ? value : "Loading.."}
+                                value={!loading ? value : "Loading.."} // Show loading state if data is not available
                                 isStat={isStat}
                                 statUpOrDown={statUpOrDown}
                                 statPercent={statPercent}
@@ -176,7 +176,7 @@ const Production = ({ getProductionDashboard, productionDashboard, loading }) =>
                     </Box>
 
                     <Box className="machinesHeader">
-                        <Typography variant="p" className='headerHeading'>Machines</Typography>
+                        <Typography variant="p" className='headerHeading'>Machines</Typography> {/* Machines section header */}
 
                         <Box className="headerFilters">
                             {/* Dropdown for selecting machine types */}
@@ -256,7 +256,7 @@ const Production = ({ getProductionDashboard, productionDashboard, loading }) =>
                                 average_cycle_time={machine.average_cycle_time}
                             />
                         ))}
-                        {loading && ( <div>Loading ...</div> )}
+                        {loading && ( <div>Loading ...</div> )} {/* Display loading message if machines are being fetched */}
                     </Box>
                 </Box>
             )}

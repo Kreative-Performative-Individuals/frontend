@@ -15,7 +15,6 @@ import {
 } from 'chart.js';
 import { truncateToFiveDecimals } from '../../constants/_helper';
 
-
 // Register components with Chart.js
 ChartJS.register(
     CategoryScale,
@@ -30,10 +29,9 @@ ChartJS.register(
     RadarController
 );
 
-
-
+// Main component to display energy details with various chart types
 const EnergyDetailLineChart = ({ chartData, chartType }) => {
-
+    // Define data structure for the chart
     const data = {
         labels: chartData.labels,
         datasets: [
@@ -73,6 +71,7 @@ const EnergyDetailLineChart = ({ chartData, chartType }) => {
         ],
     };
 
+    // Helper function to create polar chart data
     function createPolarData(chartData) {
         const labels = chartData.datasets.map(dataset => dataset.label);
         const data = chartData.datasets.map(dataset => {
@@ -95,9 +94,10 @@ const EnergyDetailLineChart = ({ chartData, chartType }) => {
         return polarData;
     }
     
+    // Create polar data for the chart
     const polarData = createPolarData(data);
-    
 
+    // Chart options for customization
     const options = {
         responsive: true,
         plugins: {
@@ -129,7 +129,7 @@ const EnergyDetailLineChart = ({ chartData, chartType }) => {
                     display: true,
                     text: 'Consumption (in kWh)', // Y-axis label
                 },
-                stacked: chartType === "stacked",
+                stacked: chartType === "stacked", // Stack chart data if required
                 beginAtZero: true,
             },
             x: {
@@ -137,15 +137,15 @@ const EnergyDetailLineChart = ({ chartData, chartType }) => {
                     display: true,
                     text: 'Date', // X-axis label
                 },
-                stacked: chartType === "stacked",
+                stacked: chartType === "stacked", // Stack chart data if required
                 beginAtZero: false,
             },
         },
     };
 
-
     return (
         <div style={{ backgroundColor: "#fff" }}>
+            {/* Render chart based on selected chartType */}
             {chartType === "line" && <Line data={data} options={options} />}
             {(chartType === "bar" || chartType === "stacked") && <Bar data={data} options={options} />}
             {chartType === "pie" && <Pie data={polarData} options={options} />}
@@ -155,4 +155,4 @@ const EnergyDetailLineChart = ({ chartData, chartType }) => {
     )
 }
 
-export default EnergyDetailLineChart
+export default EnergyDetailLineChart;
