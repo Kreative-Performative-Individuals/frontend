@@ -20,6 +20,18 @@
             display: flex;
             gap: 0.5rem;
 
+            .react-datepicker-wrapper {
+                height: 100%;
+                .react-datepicker__input-container {
+                    height: 100%;
+                    input {
+                        height: 100%;
+                        width: 100%;
+                        border: none;
+                    }
+                }
+            }
+
             .button {
                 padding: 0.5rem 1rem;
                 color: #fff;
@@ -62,7 +74,12 @@
                     border: 1px solid #979797;
                     border-radius: 0;
                     margin-bottom: 10px;
+                    color: #000;
 
+                    &.active {
+                        background-color: #000;
+                        color: #fff;
+                    }
                     &.left {
                         border-top-left-radius: 10px;
                         border-bottom-left-radius: 10px;

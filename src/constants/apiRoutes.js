@@ -19,7 +19,7 @@ export const GetMachineDetailAPI = `${dbUrl}/single_machine_detail`; // GET add?
 export const GetProductionDashboardAPI = `${dbUrl}/production_dashboard`; // GET add? init_date and end_date
 
 // RAG (Group 5)
-export const ChatRagAPI = `${ragUrl}/chat`; // GET Add ?message=""
+export const ChatRagAPI = `${ragUrl}/chat`; // GET Add ?message="" and previous_query (Optional)
 
 // Checking Compose
 export const CheckDbAPI = `${dbUrl}/openapi.json`; // GET
