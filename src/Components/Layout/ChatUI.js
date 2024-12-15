@@ -68,7 +68,7 @@ const Chatbot = ({ chatRag, ragResponse }) => {
   // Update chat with the response from the backend
   useEffect(() => {
     if (ragResponse) {
-      const formatResponse = ragResponse.split('"""'); // Split the response from the backend
+      const formatResponse = ragResponse.split('***'); // Split the response from the *
       setMessages(prevMessages => [
         ...prevMessages,
         { sender: "processing", text: `${formatResponse[0]}` }, // Add processing message
