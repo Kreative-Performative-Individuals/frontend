@@ -223,7 +223,7 @@ const MyReducer = (state = initialState, action) => {
                 error: true,
                 loading: false,
                 errMsg: action.payload?.response?.data?.error,
-                ragResponse: `Error. Please try again later. """ ERROR`
+                ragResponse: `Error. Please try again later. *** ERROR`
             };
         
         case GET_DASHBOARD_PARAMS:
