@@ -1,64 +1,27 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./Chatbot.css"; // Import the CSS for styling
 import SmartToyIcon from "@mui/icons-material/SmartToy";
+import AspectRatioIcon from '@mui/icons-material/AspectRatio';
+import CloseIcon from '@mui/icons-material/Close';
 import { chatRag } from "../../store/main/actions";
 import { connect } from "react-redux";
 
 const Chatbot = ({ chatRag, ragResponse }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [enlarge, setEnlarge] = useState(false);
+  const [lastQuery, setLastQuery] = useState("");
   const [messages, setMessages] = useState([
     {
       sender: "bot",
       text: `Hello, good to see you. I'm an AI chatbot. Do you have any questions for me?`
     },
-    {
-      sender: "user",
-      text:
-        "Tell me what is the monthly energy consumption KPI for the Large Capacity Cutting Machine from 19th February 2020 to half of March 2020."
-    },
-    { sender: "processing", text: `Retrieving data of _List of machines_` },
-    { sender: "processing", text: `Selecting dates from _begin_ to _end_` },
-    {
-      sender: "processing",
-      text: `Using KPI calculation engine to compute _Nome KPI_`
-    },
-    { sender: "processing", text: `Formulating textual response…` },
-    {
-      sender: "bot",
-      text: `<h2>Energy Consumption KPI</h2>
-      <p><strong>Machine Name:</strong> Large Capacity Cutting Machine</p>
-      <p><strong>Time Period:</strong> 19th February 2020 – 15th March 2020</p>
-      <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-        <thead>
-          <tr>
-            <th style="border: 1px solid #ddd; padding: 8px; background-color: #f4f4f4;">Date Range</th>
-            <th style="border: 1px solid #ddd; padding: 8px; background-color: #f4f4f4;">Energy Consumption (kWh)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style="border: 1px solid #ddd; padding: 8px;">19th – 29th Feb 2020</td>
-            <td style="border: 1px solid #ddd; padding: 8px;">3,450 kWh</td>
-          </tr>
-          <tr>
-            <td style="border: 1px solid #ddd; padding: 8px;">1st – 15th Mar 2020</td>
-            <td style="border: 1px solid #ddd; padding: 8px;">2,300 kWh</td>
-          </tr>
-          <tr>
-            <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">Total</td>
-            <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">5,750 kWh</td>
-          </tr>
-        </tbody>
-      </table>
-      <div style="margin-top: 20px;">
-        <h3>Insights:</h3>
-        <ul>
-          <li><strong>Daily Average Consumption:</strong> Approximately 230 kWh/day</li>
-          <li><strong>Peak Usage Date:</strong> 27th February 2020 with 450 kWh consumption</li>
-          <li><strong>Comparison:</strong> Energy consumption reduced by ~5% in March compared to the last 10 days of February</li>
-        </ul>
-      </div>`
-    }
+    // {
+    //   sender: "user",
+    //   text:
+    //     "Tell me what is the monthly energy consumption KPI for the Large Capacity Cutting Machine from 19th February 2020 to half of March 2020."
+    // },
+    // { sender: "processing", text: `Formulating textual response…` },
+    
   ]);
   const [inputMessage, setInputMessage] = useState("");
 
@@ -78,51 +41,15 @@ const Chatbot = ({ chatRag, ragResponse }) => {
           { sender: "user", text: inputMessage }
         ]);
         // API Request
-        await chatRag({ message: inputMessage });
+        if (lastQuery === "") {
+          await chatRag({ message: inputMessage });
+          setLastQuery(inputMessage);
+        } else {
+          await chatRag({ message: inputMessage, previous_query: lastQuery });
+        }
       } catch (error) {
         console.log(error);
       }
-
-      // // Simulated bot response sequence
-      // setTimeout(() => {
-      //   setMessages(prevMessages => [
-      //     ...prevMessages,
-      //     {
-      //       sender: "processing",
-      //       text: `Retrieving data of _List of machines_`
-      //     }
-      //   ]);
-      // }, 1500);
-      // setTimeout(() => {
-      //   setMessages(prevMessages => [
-      //     ...prevMessages,
-      //     {
-      //       sender: "processing",
-      //       text: `Selecting dates from _begin_ to _end_`
-      //     }
-      //   ]);
-      // }, 2500);
-      // setTimeout(() => {
-      //   setMessages(prevMessages => [
-      //     ...prevMessages,
-      //     {
-      //       sender: "processing",
-      //       text: `Using KPI calculation engine to compute _Nome KPI_`
-      //     }
-      //   ]);
-      // }, 4000);
-      // setTimeout(() => {
-      //   setMessages(prevMessages => [
-      //     ...prevMessages,
-      //     { sender: "processing", text: `Formulating textual response…` }
-      //   ]);
-      // }, 6000);
-      // setTimeout(() => {
-      //   setMessages(prevMessages => [
-      //     ...prevMessages,
-      //     { sender: "bot", text: `You said: ${inputMessage}` }
-      //   ]);
-      // }, 9000);
 
       setInputMessage("");
     }
@@ -142,10 +69,14 @@ const Chatbot = ({ chatRag, ragResponse }) => {
   }, [messages]);
 
   useEffect(() => {
-      setMessages(prevMessages => [
-        ...prevMessages,
-        { sender: "bot", text: `Bot: ${ragResponse}` }
-      ]);
+      if (ragResponse) {
+        const formatResponse = ragResponse.split('"""');
+        setMessages(prevMessages => [
+          ...prevMessages,
+          { sender: "processing", text: `${formatResponse[0]}` },
+          { sender: "bot", text: `${formatResponse[1] || ""}` }
+        ]);
+      }
   }, [ragResponse]);
 
   return (
@@ -157,12 +88,15 @@ const Chatbot = ({ chatRag, ragResponse }) => {
 
       {/* Chat Panel */}
       {isOpen &&
-        <div className="chat-panel">
+        <div className="chat-panel" style={{ width: enlarge ? "45%" : "400px", height: enlarge ? "70%" : "400px" }}>
           <div className="chat-header">
             <h4>Kreative Chatbot</h4>
-            <button className="close-btn" onClick={toggleChat}>
-              ✖
-            </button>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              
+              <AspectRatioIcon className="close-btn" onClick={() => setEnlarge(!enlarge)} />
+              <CloseIcon className="close-btn" onClick={toggleChat} />
+              
+            </div>
           </div>
           <div className="chat-body" ref={chatBodyRef}>
             {messages.map((message, index) =>

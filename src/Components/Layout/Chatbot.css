@@ -28,8 +28,6 @@
   
   /* Chat Panel */
   .chat-panel {
-    width: 400px;
-    height: 400px;
     background-color: #f8f9fa;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -41,6 +39,7 @@
     right: 20px;
     overflow: hidden;
     animation: slide-up 0.3s ease-out;
+    transition: width 0.3s ease, height 0.3s ease;
   }
   
   @keyframes slide-up {
@@ -69,8 +68,6 @@
   }
   
   .close-btn {
-    background: none;
-    border: none;
     color: white;
     font-size: 16px;
     cursor: pointer;
