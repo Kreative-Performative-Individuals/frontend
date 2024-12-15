@@ -13,7 +13,8 @@ import {
   GET_DASHBOARD_PARAMS,
   GET_MACHINE_DETAIL,
   GET_PRODUCTION_DASHBOARD,
-  GET_PRODUCTION_DETAIL
+  GET_PRODUCTION_DETAIL,
+  GET_ENERGY_DASHBOARD
 } from "../types";
 
 import setDefaultToken, { clearLocal } from "../../constants/localstorage";
@@ -42,6 +43,8 @@ import {
   getProductionDashboardError,
   getProductionDetailSuccess,
   getProductionDetailError,
+  getEnergyDashboardSuccess,
+  // getEnergyDashboardError
 } from "./actions";
 
 import {
@@ -58,7 +61,7 @@ import {
   GetDerivedKpiDataAPI,
   GetProductionDashboardAPI
 } from "../../constants/apiRoutes";
-import { getOneDay5MonthsAgo, transformMachineList } from "../../constants/_helper";
+import { getOneDay5MonthsAgo, runDBQuery, transformMachineList } from "../../constants/_helper";
 
 // const userLoginAPI = async data => {
 //   return await axios.post(LoginUserAPI, data);
@@ -79,7 +82,11 @@ const resetPasswordAPI = async data => {
   return await axios.post(ResetPasswordAPI, data);
 };
 const chatWithRagAPI = async data => {
-  return await axios.get(`${ChatRagAPI}/?message=${data.message}`);
+  if (data.previous_query) {
+    return await axios.get(`${ChatRagAPI}/?message=${data.message}&previous_query=${data.previous_query}`);
+  } else {
+    return await axios.get(`${ChatRagAPI}/?message=${data.message}`);
+  }
 };
 const getMachineListAPI = async () => {
   return await axios.get(`${GetMachineListAPI}`);
@@ -99,6 +106,9 @@ const getProductionDashboardAPI = async () => {
   const { init_date, end_date } = getOneDay5MonthsAgo();
   return await axios.get(`${GetProductionDashboardAPI}?init_date=${init_date}&end_date=${end_date}`);
 };
+const queryDB = async (query) => {
+  return await runDBQuery(query);
+}
 
 function* userRegisterSaga({ payload, navigate }) {
   try {
@@ -202,7 +212,9 @@ function* getMachineDetailSaga({ payload }) {
     const mean_time_between_failures = yield call(getDerivedKpiAPI, {...mean_time_between_failures_payload});
     const derivedKpiData = {
       utilization_rate: utilization_rate.data.value,
+      // availability: -1,
       availability: availability.data.value,
+      // downtime: -1,
       downtime: downtime.data.value,
       mean_time_between_failures: mean_time_between_failures.data.value
     }
@@ -297,6 +309,61 @@ function* getProductionDetailSaga({ payload }) {
   }
 }
 
+function* getEnergyDashboardSaga() {
+  const init_date = "2024-05-02 12:00:00";
+  const end_date = "2024-05-03 12:00:00";
+  const machineTypes = { 
+    "Metal Cutting": [ "ast-yhccl1zjue2t", "ast-ha448od5d6bd", "ast-6votor3o4i9l", "ast-5aggxyk5hb36", "ast-anxkweo01vv2", "ast-6nv7viesiao7" ],
+    "Laser Cutting": ["ast-xpimckaf3dlf"],
+    "Laser Welding": ["ast-hnsa8phk2nay", "ast-206phi0b9v6p"],
+    "Assembly": ["ast-pwpbba0ewprp", "ast-upqd50xg79ir", "ast-sfio4727eub0"],
+    "Testing": ["ast-nrd4vl07sffd", "ast-pu7dfrxjf2ms", "ast-06kbod797nnp"],
+    "Riveting": ["ast-o8xtn5xa8y87"],
+  }
+  // try {
+    const query = `SELECT jsonb_build_object(
+        'total_cost', (SELECT SUM(avg) FROM real_time_data WHERE time >= '${init_date}' AND time <= '${end_date}' AND kpi = 'cost'),
+        'total_consumption', (SELECT SUM(avg) FROM real_time_data WHERE time >= '${init_date}' AND time <= '${end_date}' AND kpi = 'consumption'),
+        'total_power', (SELECT SUM(avg) FROM real_time_data WHERE time >= '${init_date}' AND time <= '${end_date}' AND kpi = 'power')
+    ) AS result;`
+    const { data } = yield call(queryDB, query);
+    const query2 = `SELECT jsonb_build_object( 'name', name, 'asset_id', asset_id, 'total_consumption', SUM(sum), 'working_consumption', SUM(CASE WHEN operation = 'working' THEN sum ELSE 0 END)) AS result
+      FROM real_time_data  WHERE kpi = 'consumption' AND time >= '${init_date}' AND time <= '${end_date}' GROUP BY name, asset_id;
+    `
+    const stats = data.data[0][0]
+    const query2_response = yield call(queryDB, query2);
+    const query2_filter = query2_response.data.data.map(item => item[0]);
+    const query2_filtered_response = query2_filter.map(machine => {
+      for (const type in machineTypes) {
+          if (machineTypes[type].includes(machine.asset_id)) {
+              return { ...machine, type, status: "working" };
+          }
+      }
+      return machine;
+    });
+
+    const machineList = query2_filtered_response;
+    for (const machine of machineList) {
+      const total_cycles_sum_payload = { "name": "cycles_sum", "machines": [machine.name], "operations": ["working"], "time_aggregation": "sum", "start_date": init_date, "end_date": end_date, "step": 2 }
+      const total_cycles_sum = yield call(getDerivedKpiAPI, {...total_cycles_sum_payload});
+    
+      // const power_mean_payload = { "name": "power_mean", "machines": [machine.name], "operations": ["working"], "time_aggregation": "sum", "start_date": init_date, "end_date": end_date, "step": 2 }
+      // const power_mean = yield call(getDerivedKpiAPI, {...power_mean_payload});
+      
+      // const power_cumulative_payload = { "name": "power_cumulative", "machines": [machine.name], "operations": ["working"], "time_aggregation": "sum", "start_date": init_date, "end_date": end_date, "step": 2 }
+      // const power_cumulative = yield call(getDerivedKpiAPI, {...power_cumulative_payload});
+
+      machine.total_cycles_sum = total_cycles_sum.data.value || 0;
+      // machine.power_cumulative = power_cumulative.data.value || 0;
+
+    }
+
+    yield put(getEnergyDashboardSuccess({...stats, machines: machineList }));
+  // } catch (error) {
+  //   yield put(getEnergyDashboardError(error));
+  // }
+}
+
 
 export function* watchUserRegister() {
   yield takeEvery(USER_REGISTER, userRegisterSaga);
@@ -331,6 +398,9 @@ export function* watchGetProductionDashboard() {
 export function* watchGetProductionDetail() {
   yield takeEvery(GET_PRODUCTION_DETAIL, getProductionDetailSaga);
 }
+export function* watchGetEnergyDashboard() {
+  yield takeEvery(GET_ENERGY_DASHBOARD, getEnergyDashboardSaga);
+}
 
 export default function* rootSaga() {
   yield all([
@@ -345,5 +415,6 @@ export default function* rootSaga() {
     fork(watchGetMachineDetail),
     fork(watchGetProductionDashboard),
     fork(watchGetProductionDetail),
+    fork(watchGetEnergyDashboard),
   ]);
 }

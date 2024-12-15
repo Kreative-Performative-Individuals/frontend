@@ -34,6 +34,9 @@ import {
   GET_PRODUCTION_DETAIL,
   GET_PRODUCTION_DETAIL_SUCCESS,
   GET_PRODUCTION_DETAIL_ERROR,
+  GET_ENERGY_DASHBOARD,
+  GET_ENERGY_DASHBOARD_SUCCESS,
+  GET_ENERGY_DASHBOARD_ERROR
 } from "../types";
 
 export const registerUser = (payload, navigate) => ({
@@ -196,6 +199,20 @@ export const getProductionDetailSuccess = (payload) => ({
 
 export const getProductionDetailError = payload => ({
   type: GET_PRODUCTION_DETAIL_ERROR,
+  payload
+});
+
+export const getEnergyDashboard = () => ({
+  type: GET_ENERGY_DASHBOARD
+});
+
+export const getEnergyDashboardSuccess = (payload) => ({
+  type: GET_ENERGY_DASHBOARD_SUCCESS,
+  payload
+});
+
+export const getEnergyDashboardError = payload => ({
+  type: GET_ENERGY_DASHBOARD_ERROR,
   payload
 });
 

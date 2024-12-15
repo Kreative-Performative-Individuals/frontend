@@ -99,7 +99,12 @@
                     height: 40px;
                     border: 1px solid #979797;
                     border-radius: 0;
+                    color: #000;
 
+                    &.active {
+                        background-color: #000;
+                        color: #fff;
+                    }
                     &.left {
                         border-top-left-radius: 10px;
                         border-bottom-left-radius: 10px;

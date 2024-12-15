@@ -8,13 +8,14 @@ import ConsumptionIcon from "../../Assets/Consumption Logo.svg";
 import CostIcon from "../../Assets/Total Cost.svg";
 import EnergyIcon from "../../Assets/Energy Logo.svg";
 
-import { Box, Button, FormControl, InputLabel, MenuItem, Select, Typography, Checkbox, ListItemText } from '@mui/material'; // Import Material-UI components for UI elements
+import { Box, Button, FormControl, InputLabel, MenuItem, Select, Typography, Checkbox, ListItemText, CircularProgress } from '@mui/material'; // Import Material-UI components for UI elements
 import OutlinedInput from '@mui/material/OutlinedInput'; // Import outlined input style for select fields
 import Chip from '@mui/material/Chip'; // Import Chip component for displaying selected items
 import ProductionCard from '../Common/ProductionCard'; // Import MachineUsageCard component for displaying individual machine details
 import { useNavigate } from 'react-router-dom'; // Import useNavigate hook for navigation between routes
 import { getMachineList, getProductionDashboard } from '../../store/main/actions';
 import { connect } from 'react-redux';
+import { truncateToFiveDecimals, updateRecentlyViewed } from '../../constants/_helper';
 
 // Constants for dropdown menu styling
 const ITEM_HEIGHT = 48; // Height of each item in the dropdown
@@ -78,7 +79,9 @@ const Production = ({ getProductionDashboard, productionDashboard, loading }) =>
 
     // Effect to set initial machine view when the component mounts
     useEffect(() => {
-        getProductionDashboard();
+        if (Object.keys(productionDashboard).length === 0) {
+            getProductionDashboard();
+        }
         // eslint-disable-next-line
     }, []);
 
@@ -86,6 +89,7 @@ const Production = ({ getProductionDashboard, productionDashboard, loading }) =>
 
     // Function to handle card click and navigate to machine detail page
     const handleCardClick = (machine) => {
+        updateRecentlyViewed("production", machine);
         navigate(`/production/${machine.asset_id}?machineName=${machine.name}&machineStatus=${machine.status}`); // Navigate to the machine detail page using the machineId
     };
 
@@ -103,8 +107,8 @@ const Production = ({ getProductionDashboard, productionDashboard, loading }) =>
         {
             id: 1,
             heading: "Total Power",
-            value: `${productionDashboard.totalPower} kW`,
             duration: "Today",
+            value: `${truncateToFiveDecimals(productionDashboard.totalPower)} kW`,
             isStat: false,
             icon: PowerIcon,
             iconBackground: "rgba(130, 128, 255, 0.25)",
@@ -113,7 +117,7 @@ const Production = ({ getProductionDashboard, productionDashboard, loading }) =>
             id: 2,
             heading: "Total Consumption",
             duration: "Today",
-            value: `${productionDashboard.totalConsumption} kWh`,
+            value: `${truncateToFiveDecimals(productionDashboard.totalConsumption)} kWh`,
             isStat: false,
             statUpOrDown: "Up",
             statPercent: "1.3%",
@@ -125,7 +129,7 @@ const Production = ({ getProductionDashboard, productionDashboard, loading }) =>
             id: 3,
             heading: "Total Cost",
             duration: "Today",
-            value: `${productionDashboard.totalCost} €`,
+            value: `${truncateToFiveDecimals(productionDashboard.totalCost)} €`,
             isStat: false,
             statUpOrDown: "Down",
             statPercent: "4.3%",
@@ -137,7 +141,7 @@ const Production = ({ getProductionDashboard, productionDashboard, loading }) =>
             id: 4,
             heading: "Energy Contributions",
             duration: "Today",
-            value: `${productionDashboard.energyContributions} hours`,
+            value: `${truncateToFiveDecimals(productionDashboard.energyContributions)} hours`,
             isStat: false,
             statUpOrDown: "Up",
             statPercent: "1.3%",
@@ -149,109 +153,113 @@ const Production = ({ getProductionDashboard, productionDashboard, loading }) =>
 
     return (
         <Layout>
-            <Box className="production">
-                <Box className="machineStatsConatiner">
-                    {/* Display statistics for total, working, idle, and offline machines */}
-                    {cardData.map(({ id, heading, duration, value, isStat, statUpOrDown, statPercent, statText, icon, iconBackground }) => (
-                        <BasicCard
-                            key={id} // Using unique ID as key
-                            heading={heading}
-                            duration={duration}
-                            value={!loading ? value : "Loading.."}
-                            isStat={isStat}
-                            statUpOrDown={statUpOrDown}
-                            statPercent={statPercent}
-                            statText={statText}
-                            icon={icon}
-                            iconBackground={iconBackground}
-                        />
-                    ))}
-                </Box>
+            {loading ? (
+                <Box className="loader"><CircularProgress /></Box>
+            ) : (
+                <Box className="production">
+                    <Box className="machineStatsConatiner">
+                        {/* Display statistics for total, working, idle, and offline machines */}
+                        {cardData.map(({ id, heading, duration, value, isStat, statUpOrDown, statPercent, statText, icon, iconBackground }) => (
+                            <BasicCard
+                                key={id} // Using unique ID as key
+                                heading={heading}
+                                duration={duration}
+                                value={!loading ? value : "Loading.."}
+                                isStat={isStat}
+                                statUpOrDown={statUpOrDown}
+                                statPercent={statPercent}
+                                statText={statText}
+                                icon={icon}
+                                iconBackground={iconBackground}
+                            />
+                        ))}
+                    </Box>
 
-                <Box className="machinesHeader">
-                    <Typography variant="p" className='headerHeading'>Machines</Typography>
+                    <Box className="machinesHeader">
+                        <Typography variant="p" className='headerHeading'>Machines</Typography>
 
-                    <Box className="headerFilters">
-                        {/* Dropdown for selecting machine types */}
-                        <FormControl style={{ width: "100%" }}>
-                            <InputLabel id="machineTypeSelector">Machine Type</InputLabel>
-                            <Select
-                                labelId="machineTypeSelector"
-                                id="machineTypeSelect"
-                                value={machineType}
-                                label="Machine Type"
-                                multiple
-                                MenuProps={MenuProps}
-                                onChange={handleChange} // Handle change in machine type selection
-                                input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
-                                renderValue={(selected) => (
-                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                        {selected.map((value) => (
-                                            <Chip key={value} label={value} /> // Display selected machine types as chips
-                                        ))}
-                                    </Box>
-                                )}
-                            >
-                                {machineTypes.map((type, index) => (
-                                    <MenuItem key={index} value={type}>
-                                        <Checkbox checked={machineType.indexOf(type) > -1} /> {/* Checkbox for selected types */}
-                                        <ListItemText primary={type} />
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                        {/* Dropdown for selecting machine statuses */}
-                        <FormControl style={{ width: "100%" }}>
-                            <InputLabel id="machineStatusSelector">Machine Status</InputLabel>
-                            <Select
-                                labelId="machineStatusSelector"
-                                id="machineStatusSelect"
-                                value={machineStatus}
-                                label="Machine Status"
-                                multiple
-                                onChange={handleStatusChange} // Handle change in machine status selection
-                                input={<OutlinedInput id="select-multiple-chip-status" label="Chip" />}
-                                renderValue={(selected) => (
-                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                        {selected.map((value) => (
-                                            <Chip key={value} label={value} /> // Display selected machine statuses as chips
-                                        ))}
-                                    </Box>
-                                )}
-                            >
-                                {machineStatuses.map((status, index) => (
-                                    <MenuItem key={index} value={status}>
-                                        <Checkbox checked={machineStatus.indexOf(status) > -1} /> {/* Checkbox for selected statuses */}
-                                        <ListItemText primary={status} />
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                        <Button onClick={handleReset}>Reset</Button> {/* Button to reset filters */}
+                        <Box className="headerFilters">
+                            {/* Dropdown for selecting machine types */}
+                            <FormControl style={{ width: "100%" }}>
+                                <InputLabel id="machineTypeSelector">Machine Type</InputLabel>
+                                <Select
+                                    labelId="machineTypeSelector"
+                                    id="machineTypeSelect"
+                                    value={machineType}
+                                    label="Machine Type"
+                                    multiple
+                                    MenuProps={MenuProps}
+                                    onChange={handleChange} // Handle change in machine type selection
+                                    input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+                                    renderValue={(selected) => (
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                            {selected.map((value) => (
+                                                <Chip key={value} label={value} /> // Display selected machine types as chips
+                                            ))}
+                                        </Box>
+                                    )}
+                                >
+                                    {machineTypes.map((type, index) => (
+                                        <MenuItem key={index} value={type}>
+                                            <Checkbox checked={machineType.indexOf(type) > -1} /> {/* Checkbox for selected types */}
+                                            <ListItemText primary={type} />
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            {/* Dropdown for selecting machine statuses */}
+                            <FormControl style={{ width: "100%" }}>
+                                <InputLabel id="machineStatusSelector">Machine Status</InputLabel>
+                                <Select
+                                    labelId="machineStatusSelector"
+                                    id="machineStatusSelect"
+                                    value={machineStatus}
+                                    label="Machine Status"
+                                    multiple
+                                    onChange={handleStatusChange} // Handle change in machine status selection
+                                    input={<OutlinedInput id="select-multiple-chip-status" label="Chip" />}
+                                    renderValue={(selected) => (
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                            {selected.map((value) => (
+                                                <Chip key={value} label={value} /> // Display selected machine statuses as chips
+                                            ))}
+                                        </Box>
+                                    )}
+                                >
+                                    {machineStatuses.map((status, index) => (
+                                        <MenuItem key={index} value={status}>
+                                            <Checkbox checked={machineStatus.indexOf(status) > -1} /> {/* Checkbox for selected statuses */}
+                                            <ListItemText primary={status} />
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            <Button onClick={handleReset}>Reset</Button> {/* Button to reset filters */}
+                        </Box>
+                    </Box>
+
+                    <Box className="machinesList">
+                        {/* Map through the filtered machines and display each as a MachineUsageCard */}
+                        {machineInView.sort((a, b) => a.name.localeCompare(b.name)).map((machine, index) => (
+                            <ProductionCard
+                                key={index}
+                                machineName={machine.name} // Pass machine name to the card
+                                machineType={machine.type} // Pass machine type to the card
+                                machineStatus={machine.status} // Pass machine status to the card
+                                onClick={() => handleCardClick(machine)} // Pass click handler to navigate
+                                efficiency={machine.efficiency}
+                                success_rate={machine.success_rate}
+                                failure_rate={machine.failure_rate}
+                                good_cycles={machine.good_cycles}
+                                bad_cycles={machine.bad_cycles}
+                                total_cycles={machine.total_cycles}
+                                average_cycle_time={machine.average_cycle_time}
+                            />
+                        ))}
+                        {loading && ( <div>Loading ...</div> )}
                     </Box>
                 </Box>
-
-                <Box className="machinesList">
-                    {/* Map through the filtered machines and display each as a MachineUsageCard */}
-                    {machineInView.map((machine, index) => (
-                        <ProductionCard
-                            key={index}
-                            machineName={machine.name} // Pass machine name to the card
-                            machineType={machine.type} // Pass machine type to the card
-                            machineStatus={machine.status} // Pass machine status to the card
-                            onClick={() => handleCardClick(machine)} // Pass click handler to navigate
-                            efficiency={machine.efficiency}
-                            success_rate={machine.success_rate}
-                            failure_rate={machine.failure_rate}
-                            good_cycles={machine.good_cycles}
-                            bad_cycles={machine.bad_cycles}
-                            total_cycles={machine.total_cycles}
-                            average_cycle_time={machine.average_cycle_time}
-                        />
-                    ))}
-                    {loading && ( <div>Loading ...</div> )}
-                </Box>
-            </Box>
+            )}
         </Layout>
     )
 }

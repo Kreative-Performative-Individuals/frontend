@@ -1,5 +1,6 @@
 import axios from "axios";
 import { runQueryAPI } from "./apiRoutes";
+import { getLocal, setLocal } from "./localstorage";
 
 // Function to convert Machine list API response into JSON
 const machineColumnNames = [
@@ -53,6 +54,10 @@ function capitalizeFirstLetter(string) {
 function truncateToFiveDecimals(number) {
   if (typeof number !== "number") return null;
   return Math.floor(number * 100000) / 100000;
+}
+function truncateToThreeDecimals(number) {
+  if (typeof number !== "number") return null;
+  return Math.floor(number * 1000) / 1000;
 }
 
 function getRandomEnergyContribution() {
@@ -152,6 +157,31 @@ const hoursToReadableFormat = (hours) => {
   return `${hrs} Hours ${mins} Minutes`;
 };
 
+const updateRecentlyViewed = (category, item) => {
+  let recentlyViewed = JSON.parse(getLocal("recents")) || {};
+
+  if (!recentlyViewed[category]) {
+      recentlyViewed[category] = [];
+  }
+
+  const categoryArray = recentlyViewed[category];
+
+  if (Array.isArray(categoryArray)) {
+      const index = categoryArray.findIndex(i => i.asset_id === item.asset_id);
+      if (index !== -1) {
+          categoryArray.splice(index, 1);
+      }
+      categoryArray.unshift(item);
+      recentlyViewed[category] = categoryArray.slice(0, 3);
+  } else {
+      console.error(`Invalid category: ${category}`);
+  }
+
+  // Save the updated object back to local storage
+  setLocal("recents", JSON.stringify(recentlyViewed));
+};
+
+
 
 
 export {
@@ -160,6 +190,7 @@ export {
   getOneDay5MonthsAgo,
   capitalizeFirstLetter,
   truncateToFiveDecimals,
+  truncateToThreeDecimals,
   getRandomEnergyContribution,
   formatDate,
   getLastDayOfMonth,
@@ -169,5 +200,6 @@ export {
   formatMachineUsageTime,
   secondsToHHMMSS,
   secondsToReadableFormat,
-  hoursToReadableFormat
+  hoursToReadableFormat,
+  updateRecentlyViewed
 };

@@ -34,6 +34,9 @@ import {
   GET_PRODUCTION_DETAIL,
   GET_PRODUCTION_DETAIL_SUCCESS,
   GET_PRODUCTION_DETAIL_ERROR,
+  GET_ENERGY_DASHBOARD,
+  GET_ENERGY_DASHBOARD_SUCCESS,
+  GET_ENERGY_DASHBOARD_ERROR,
   REPORT_LIST,
   ADD_REPORT_TO_LIST
 } from "../types";
@@ -54,320 +57,347 @@ const initialState = {
   singleMachineDetail: {},
   productionDashboard: {},
   productionDetail: {},
+  energyDashboard: {},
   reports: getLocal("reports") ? JSON.parse(getLocal("reports")) : []
 };
 
 const MyReducer = (state = initialState, action) => {
-  switch (action.type) {
-      case USER_REGISTER:
-          return {
-              ...state,
-              error: false,
-              loading: true,
-              errMsg: ""
-          };
+    switch (action.type) {
+        case USER_REGISTER:
+            return {
+                ...state,
+                error: false,
+                loading: true,
+                errMsg: ""
+            };
 
-      case USER_REGISTER_SUCCESS:
-          return {
-              ...state,
-              error: false,
-              loading: false,
-              errMsg: ""
-          };
-      case USER_REGISTER_ERROR:
-          return {
-              ...state,
-              error: true,
-              loading: false,
-              errMsg: action.payload?.response?.data?.error
-          };
+        case USER_REGISTER_SUCCESS:
+            return {
+                ...state,
+                error: false,
+                loading: false,
+                errMsg: ""
+            };
+        case USER_REGISTER_ERROR:
+            return {
+                ...state,
+                error: true,
+                loading: false,
+                errMsg: action.payload?.response?.data?.error
+            };
 
-      case USER_LOGIN:
-          return {
-              ...state,
-              loginError: false,
-              loading: true,
-              user: {},
-              role: "",
-              token: "",
-              errMsg: ""
-          };
+        case USER_LOGIN:
+            return {
+                ...state,
+                loginError: false,
+                loading: true,
+                user: {},
+                role: "",
+                token: "",
+                errMsg: ""
+            };
 
-      case USER_LOGIN_SUCCESS:
-        setLocal("authUser", JSON.stringify(action.payload))
-        return {
-            ...state,
-            token: action.payload?.data?.token,
-            role: action.payload?.data?.role,
-            user: action.payload?.data,
-            isAuth: true,
-            loading: false,
-            loginError: false,
-            errMsg: ""
-        };
-      case USER_LOGIN_ERROR:
-          return {
-              ...state,
-              token: "",
-              user: {},
-              role: "",
-              loading: false,
-              isAuth: false,
-              loginError: true,
-              errMsg: action.payload?.response?.data?.message
-          };
+        case USER_LOGIN_SUCCESS:
+            setLocal("authUser", JSON.stringify(action.payload))
+            return {
+                ...state,
+                token: action.payload?.data?.token,
+                role: action.payload?.data?.role,
+                user: action.payload?.data,
+                isAuth: true,
+                loading: false,
+                loginError: false,
+                errMsg: ""
+            };
+        case USER_LOGIN_ERROR:
+            return {
+                ...state,
+                token: "",
+                user: {},
+                role: "",
+                loading: false,
+                isAuth: false,
+                loginError: true,
+                errMsg: action.payload?.response?.data?.message
+            };
 
-      case USER_LOGOUT:
-          return {
-              ...state,
-              error: false,
-              loading: true,
-              user: {},
-              role: "",
-              token: "",
-              isAuth: false
-          };
+        case USER_LOGOUT:
+            return {
+                ...state,
+                error: false,
+                loading: true,
+                user: {},
+                role: "",
+                token: "",
+                isAuth: false
+            };
 
-      case USER_LOGOUT_SUCCESS:
-          return {
-              ...state,
-              token: "",
-              role: "",
-              user: {},
-              loading: false,
-              error: false,
-              isAuth: false
-          };
-      case USER_LOGOUT_ERROR:
-          return {
-              ...state,
-              token: "",
-              user: {},
-              role: "",
-              loading: false,
-              error: true,
-              isAuth: false
-          };
+        case USER_LOGOUT_SUCCESS:
+            return {
+                ...state,
+                token: "",
+                role: "",
+                user: {},
+                loading: false,
+                error: false,
+                isAuth: false
+            };
+        case USER_LOGOUT_ERROR:
+            return {
+                ...state,
+                token: "",
+                user: {},
+                role: "",
+                loading: false,
+                error: true,
+                isAuth: false
+            };
 
-      case FORGET_PASSWORD:
-          return {
-              ...state,
-              error: false,
-              loading: true,
-              errMsg: ""
-          };
+        case FORGET_PASSWORD:
+            return {
+                ...state,
+                error: false,
+                loading: true,
+                errMsg: ""
+            };
 
-      case FORGET_PASSWORD_SUCCESS:
-          return {
-              ...state,
-              error: false,
-              loading: false,
-              errMsg: "",
-              successMsg: action.payload.message
-          };
-      case FORGET_PASSWORD_ERROR:
-          return {
-              ...state,
-              error: true,
-              loading: false,
-              errMsg: action.payload?.response?.data?.error
-          };
+        case FORGET_PASSWORD_SUCCESS:
+            return {
+                ...state,
+                error: false,
+                loading: false,
+                errMsg: "",
+                successMsg: action.payload.message
+            };
+        case FORGET_PASSWORD_ERROR:
+            return {
+                ...state,
+                error: true,
+                loading: false,
+                errMsg: action.payload?.response?.data?.error
+            };
 
-      case RESET_PASSWORD:
-          return {
-              ...state,
-              error: false,
-              loading: true,
-              errMsg: ""
-          };
+        case RESET_PASSWORD:
+            return {
+                ...state,
+                error: false,
+                loading: true,
+                errMsg: ""
+            };
 
-      case RESET_PASSWORD_SUCCESS:
-          return {
-              ...state,
-              error: false,
-              loading: false,
-              errMsg: ""
-          };
-      case RESET_PASSWORD_ERROR:
-          return {
-              ...state,
-              error: true,
-              loading: false,
-              errMsg: action.payload?.response?.data?.error
-          };
-      
-      case CHAT_RAG:
-          return {
-              ...state,
-              error: false,
-              loading: true,
-              errMsg: "",
-              ragResponse: ""
-          };
+        case RESET_PASSWORD_SUCCESS:
+            return {
+                ...state,
+                error: false,
+                loading: false,
+                errMsg: ""
+            };
+        case RESET_PASSWORD_ERROR:
+            return {
+                ...state,
+                error: true,
+                loading: false,
+                errMsg: action.payload?.response?.data?.error
+            };
+        
+        case CHAT_RAG:
+            return {
+                ...state,
+                error: false,
+                loading: true,
+                errMsg: "",
+                ragResponse: ""
+            };
 
-      case CHAT_RAG_SUCCESS:
-          return {
-              ...state,
-              error: false,
-              loading: false,
-              errMsg: "",
-              ragResponse: action.payload.response ? action.payload.response : "No Response"
-          };
-      case CHAT_RAG_ERROR:
-          return {
-              ...state,
-              error: true,
-              loading: false,
-              errMsg: action.payload?.response?.data?.error,
-              ragResponse: "Error. Please try again later."
-          };
-      
-      case GET_DASHBOARD_PARAMS:
-          return {
-              ...state,
-              error: false,
-              loading: true,
-              errMsg: "",
-              dashboardParams: {}
-          };
+        case CHAT_RAG_SUCCESS:
+            return {
+                ...state,
+                error: false,
+                loading: false,
+                errMsg: "",
+                ragResponse: action.payload.response ? action.payload.response : "No Response"
+            };
+        case CHAT_RAG_ERROR:
+            return {
+                ...state,
+                error: true,
+                loading: false,
+                errMsg: action.payload?.response?.data?.error,
+                ragResponse: `Error. Please try again later. """ ERROR`
+            };
+        
+        case GET_DASHBOARD_PARAMS:
+            return {
+                ...state,
+                error: false,
+                loading: true,
+                errMsg: "",
+                dashboardParams: {}
+            };
 
-      case GET_DASHBOARD_PARAMS_SUCCESS:
-          return {
-              ...state,
-              error: false,
-              loading: false,
-              errMsg: "",
-              dashboardParams: action.payload.data
-          };
-      case GET_DASHBOARD_PARAMS_ERROR:
-          return {
-              ...state,
-              error: true,
-              loading: false,
-              errMsg: action.payload?.response?.data?.error,
-              dashboardParams: {}
-          };
-      
-      case GET_MACHINE_LIST:
-          return {
-              ...state,
-              error: false,
-              loading: true,
-              errMsg: "",
-              machines: []
-          };
+        case GET_DASHBOARD_PARAMS_SUCCESS:
+            return {
+                ...state,
+                error: false,
+                loading: false,
+                errMsg: "",
+                dashboardParams: action.payload.data
+            };
+        case GET_DASHBOARD_PARAMS_ERROR:
+            return {
+                ...state,
+                error: true,
+                loading: false,
+                errMsg: action.payload?.response?.data?.error,
+                dashboardParams: {}
+            };
+        
+        case GET_MACHINE_LIST:
+            return {
+                ...state,
+                error: false,
+                loading: true,
+                errMsg: "",
+                machines: []
+            };
 
-      case GET_MACHINE_LIST_SUCCESS:
-        const formattedData = transformMachineList(action.payload.data);
-          return {
-              ...state,
-              error: false,
-              loading: false,
-              errMsg: "",
-              machines: formattedData
-          };
-      case GET_MACHINE_LIST_ERROR:
-          return {
-              ...state,
-              error: true,
-              loading: false,
-              errMsg: action.payload?.response?.data?.error,
-              machines: []
-          };
-      
-      case GET_MACHINE_DETAIL:
-          return {
-              ...state,
-              error: false,
-              loading: true,
-              errMsg: "",
-              singleMachineDetail: []
-          };
+        case GET_MACHINE_LIST_SUCCESS:
+            const formattedData = transformMachineList(action.payload.data);
+            return {
+                ...state,
+                error: false,
+                loading: false,
+                errMsg: "",
+                machines: formattedData
+            };
+        case GET_MACHINE_LIST_ERROR:
+            return {
+                ...state,
+                error: true,
+                loading: false,
+                errMsg: action.payload?.response?.data?.error,
+                machines: []
+            };
+        
+        case GET_MACHINE_DETAIL:
+            return {
+                ...state,
+                error: false,
+                loading: true,
+                errMsg: "",
+                singleMachineDetail: []
+            };
 
-      case GET_MACHINE_DETAIL_SUCCESS:
-          return {
-              ...state,
-              error: false,
-              loading: false,
-              errMsg: "",
-              singleMachineDetail: action.payload
-          };
-      case GET_MACHINE_DETAIL_ERROR:
-          return {
-              ...state,
-              error: true,
-              loading: false,
-              errMsg: action.payload,
-              singleMachineDetail: []
-          };
-      
-      case GET_PRODUCTION_DASHBOARD:
-          return {
-              ...state,
-              error: false,
-              loading: true,
-              errMsg: "",
-              productionDashboard: {}
-          };
+        case GET_MACHINE_DETAIL_SUCCESS:
+            return {
+                ...state,
+                error: false,
+                loading: false,
+                errMsg: "",
+                singleMachineDetail: action.payload
+            };
+        case GET_MACHINE_DETAIL_ERROR:
+            return {
+                ...state,
+                error: true,
+                loading: false,
+                errMsg: action.payload,
+                singleMachineDetail: []
+            };
+        
+        case GET_PRODUCTION_DASHBOARD:
+            return {
+                ...state,
+                error: false,
+                loading: true,
+                errMsg: "",
+                productionDashboard: {}
+            };
 
-      case GET_PRODUCTION_DASHBOARD_SUCCESS:
-          return {
-              ...state,
-              error: false,
-              loading: false,
-              errMsg: "",
-              productionDashboard: action.payload
-          };
-      case GET_PRODUCTION_DASHBOARD_ERROR:
-          return {
-              ...state,
-              error: true,
-              loading: false,
-              errMsg: action.payload,
-              productionDashboard: {}
-          };
-      
-      case GET_PRODUCTION_DETAIL:
-          return {
-              ...state,
-              error: false,
-              loading: true,
-              errMsg: "",
-              productionDetail: {}
-          };
+        case GET_PRODUCTION_DASHBOARD_SUCCESS:
+            return {
+                ...state,
+                error: false,
+                loading: false,
+                errMsg: "",
+                productionDashboard: action.payload
+            };
+        case GET_PRODUCTION_DASHBOARD_ERROR:
+            return {
+                ...state,
+                error: true,
+                loading: false,
+                errMsg: action.payload,
+                productionDashboard: {}
+            };
+        
+        case GET_PRODUCTION_DETAIL:
+            return {
+                ...state,
+                error: false,
+                loading: true,
+                errMsg: "",
+                productionDetail: {}
+            };
 
-      case GET_PRODUCTION_DETAIL_SUCCESS:
-          return {
-              ...state,
-              error: false,
-              loading: false,
-              errMsg: "",
-              productionDetail: action.payload
-          };
-      case GET_PRODUCTION_DETAIL_ERROR:
-          return {
-              ...state,
-              error: true,
-              loading: false,
-              errMsg: action.payload,
-              productionDetail: {}
-          };
-      
-      case REPORT_LIST:
-          return {
-              ...state,
-              error: false,
-              reports: []
-          };
-      case ADD_REPORT_TO_LIST:
-        const currentReports = state.reports;
-        currentReports.push(action.payload)
-        console.log(currentReports)
-          return {
-              ...state,
-              error: false,
-              reports: currentReports
-          };
+        case GET_PRODUCTION_DETAIL_SUCCESS:
+            return {
+                ...state,
+                error: false,
+                loading: false,
+                errMsg: "",
+                productionDetail: action.payload
+            };
+        case GET_PRODUCTION_DETAIL_ERROR:
+            return {
+                ...state,
+                error: true,
+                loading: false,
+                errMsg: action.payload,
+                productionDetail: {}
+            };
+
+        case GET_ENERGY_DASHBOARD:
+            return {
+                ...state,
+                error: false,
+                loading: true,
+                errMsg: "",
+                energyDashboard: {}
+            };
+    
+        case GET_ENERGY_DASHBOARD_SUCCESS:
+            return {
+                ...state,
+                error: false,
+                loading: false,
+                errMsg: "",
+                energyDashboard: action.payload
+            };
+        case GET_ENERGY_DASHBOARD_ERROR:
+            return {
+                ...state,
+                error: true,
+                loading: false,
+                errMsg: action.payload,
+                energyDashboard: {}
+            };
+        
+        case REPORT_LIST:
+            return {
+                ...state,
+                error: false,
+                reports: []
+            };
+        case ADD_REPORT_TO_LIST:
+            const currentReports = state.reports;
+            currentReports.push(action.payload)
+            console.log(currentReports)
+            return {
+                ...state,
+                error: false,
+                reports: currentReports
+            };
       
       
       default:

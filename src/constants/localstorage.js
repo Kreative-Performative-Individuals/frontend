@@ -7,7 +7,7 @@ export const setLocal = (key, value) => {
 export const getLocal = key => localStorage.getItem(key);
 
 export const clearLocal = () => {
-  localStorage.clear();
+  localStorage.removeItem("authUser");
 };
 
 const setDefaultToken = (key, token) => {

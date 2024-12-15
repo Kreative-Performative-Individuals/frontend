@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import BasicCard from "../Common/BasicCard";
 import Layout from "../Layout";
 import "./style.scss";
@@ -14,11 +14,19 @@ import EnergyCard from "../Common/EnergyCard";
 import { connect } from "react-redux";
 import { getDashboardParams } from "../../store/main/actions";
 import { truncateToFiveDecimals } from "../../constants/_helper";
+import { getLocal } from "../../constants/localstorage";
 
 function Dashboard( { getDashboardParams, loading, dashboardParams } ) {
 
   const navigate = useNavigate();
   
+  const [recentlyViewed, setRecentlyViewed] = useState(JSON.parse(getLocal("recents"))); // eslint-disable-line
+
+  console.log(recentlyViewed)
+  const machinesUsage = recentlyViewed?.machines || [];
+  const productionMachines = recentlyViewed?.production || [];
+  const energyMachines = recentlyViewed?.energy || [];
+
   useEffect(() => {
     getDashboardParams();
     // eslint-disable-next-line
@@ -68,16 +76,6 @@ function Dashboard( { getDashboardParams, loading, dashboardParams } ) {
     },
   ];
   
-  const machines = [
-    { machineId: "010001", machineName: "Assembly Machine 1", machineType: "Metal Cutting", machineStatus: "Working", chartData: [9, 6, 8, 1], efficiency: "90", density: "80", success_rate: "92", failure_rate: "8" },
-    { machineId: "010002", machineName: "Assembly Machine 2", machineType: "Laser Cutting", machineStatus: "Offline", chartData: [14, 2, 4, 4], efficiency: "90", density: "80", success_rate: "92", failure_rate: "8" },
-    { machineId: "010003", machineName: "Assembly Machine 3", machineType: "Laser Welding", machineStatus: "Idle", chartData: [7, 12, 3, 2], efficiency: "90", density: "80", success_rate: "92", failure_rate: "8" },
-  ];
-
-  const handleCardClick = (machineId) => {
-    navigate(`/machines/${machineId}`); // Navigate to the machine detail page using the machineId
-  };
-
   return (
     <React.Fragment>
       <Layout>
@@ -99,37 +97,46 @@ function Dashboard( { getDashboardParams, loading, dashboardParams } ) {
         </div>
         <div className="recentlyViewedContainer">
           <Typography variant="p" className='headerHeading'>Recently Viewed</Typography>
+          {machinesUsage.length === 0 && productionMachines.length === 0 && energyMachines.length === 0 && (
+            <Typography variant="h6" sx={{ ml: 2, mt: 2 }}>No Recently Viewed</Typography>
+          ) }
           <div className="recentlyViewed">
-            {machines.map((machine, index) => (
+            {machinesUsage && machinesUsage.map((machine, index) => (
               <MachineUsageCard
                 key={index}
-                machineName={machine.machineName} // Pass machine name to the card
-                machineType={machine.machineType} // Pass machine type to the card
-                machineStatus={machine.machineStatus} // Pass machine status to the card
+                machineName={machine.name} // Pass machine name to the card
+                machineType={machine.type} // Pass machine type to the card
+                machineStatus={machine.status} // Pass machine status to the card
                 chartData={machine.chartData} // Pass chart data to the card
-                onClick={() => handleCardClick(machine.machineId)} // Pass click handler to navigate
+                onClick={() => navigate(`/machines/${machine.asset_id}`)} // Pass click handler to navigate
               />
             ))}
-            {machines.map((machine, index) => (
+            {productionMachines && productionMachines.map((machine, index) => (
               <ProductionCard
-                key={index}
-                machineName={machine.machineName} // Pass machine name to the card
-                machineType={machine.machineType} // Pass machine type to the card
-                machineStatus={machine.machineStatus} // Pass machine status to the card
-                onClick={() => handleCardClick(machine.machineId)} // Pass click handler to navigate
-                efficiency={machine.efficiency}
-                density={machine.density}
-                success_rate={machine.success_rate}
-                failure_rate={machine.failure_rate}
+                  key={index}
+                  machineName={machine.name} // Pass machine name to the card
+                  machineType={machine.type} // Pass machine type to the card
+                  machineStatus={machine.status} // Pass machine status to the card
+                  onClick={() => navigate(`/production/${machine.asset_id}?machineName=${machine.name}&machineStatus=${machine.status}`)} // Pass click handler to navigate
+                  efficiency={machine.efficiency}
+                  success_rate={machine.success_rate}
+                  failure_rate={machine.failure_rate}
+                  good_cycles={machine.good_cycles}
+                  bad_cycles={machine.bad_cycles}
+                  total_cycles={machine.total_cycles}
+                  average_cycle_time={machine.average_cycle_time}
               />
             ))}
-            {machines.map((machine, index) => (
+            {energyMachines && energyMachines.map((machine, index) => (
               <EnergyCard
-                key={index}
-                machineName={machine.machineName} // Pass machine name to the card
-                machineType={machine.machineType} // Pass machine type to the card
-                machineStatus={machine.machineStatus} // Pass machine status to the card
-                onClick={() => handleCardClick(machine.machineId)} // Pass click handler to navigate
+                  key={index}
+                  machineName={machine.name} // Pass machine name to the card
+                  machineType={machine.type} // Pass machine type to the card
+                  machineStatus={machine.status} // Pass machine status to the card
+                  total_consumption={machine.total_consumption}
+                  working_consumption={machine.working_consumption}
+                  total_cycles_sum={machine.total_cycles_sum}
+                  onClick={() => navigate(`/energy/${machine.asset_id}?machineName=${machine.name}&machineStatus=${machine.status}`)}
               />
             ))}
           </div>
