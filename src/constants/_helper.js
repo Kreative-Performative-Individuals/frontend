@@ -132,7 +132,7 @@ async function runDBQuery(query) {
 // Function to format machine usage time from an array to an object
 function formatMachineUsageTime(inputArray) {
   const result = {};
-  inputArray.forEach(item => {
+  inputArray?.forEach(item => {
     const key = item[0];
     const value = item[1];
     result[key] = value; // Map each key-value pair

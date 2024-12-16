@@ -26,7 +26,6 @@ function Dashboard( { getDashboardParams, loading, dashboardParams } ) {
   const [recentlyViewed, setRecentlyViewed] = useState(JSON.parse(getLocal("recents"))); // eslint-disable-line
 
   // Destructure the recently viewed data
-  console.log(recentlyViewed);
   const machinesUsage = recentlyViewed?.machines || []; // Extract machine usage data
   const productionMachines = recentlyViewed?.production || []; // Extract production machine data
   const energyMachines = recentlyViewed?.energy || []; // Extract energy machine data

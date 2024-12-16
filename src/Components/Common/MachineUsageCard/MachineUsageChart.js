@@ -10,7 +10,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 // MachineUsageChart component definition
 const MachineUsageChart = ({ chartData }) => {
     
-    const arrayForChart = Object.values(chartData); // Convert chart data object to array
+    const arrayForChart = Object.values(chartData) || []; // Convert chart data object to array
 
     const data = {
         labels: ['Working Time', 'Idle Time', 'Offline Time', "Independent Time"], // Labels for the chart segments

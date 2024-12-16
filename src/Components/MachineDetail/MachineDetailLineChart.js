@@ -104,7 +104,6 @@ const MachineDetailLineChart = ({ chartData, chartType }) => {
     
     // Call the function to create polar data
     const polarData = createPolarData(data);
-    console.log(polarData); // Log the polar data for debugging
 
     // Define chart options such as responsiveness, tooltip, and scale behavior
     const options = {

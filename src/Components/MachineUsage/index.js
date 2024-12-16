@@ -92,7 +92,7 @@ const MachineUsage = ({ getMachineList, machineList, loading }) => {
             GROUP BY asset_id;
         `
         const result = await runDBQuery(query); // Run the query to get machine usage data
-        const formatted = formatMachineUsageTime(result.data.data) // Format the data for display
+        const formatted = formatMachineUsageTime(result?.data?.data) // Format the data for display
         setMachineUsageData(formatted) // Set the formatted machine usage data
     }
 

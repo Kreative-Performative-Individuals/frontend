@@ -125,8 +125,6 @@ const FinancialReport = () => {
         // eslint-disable-next-line
     }, [])
 
-    console.log(financialDetail)
-
     const cardData = [
         {
             id: 1,
