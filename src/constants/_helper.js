@@ -1,5 +1,5 @@
 import axios from "axios";
-import { runQueryAPI } from "./apiRoutes";
+import { GetDerivedKpiChartAPI, GetDerivedKpiDataAPI, runQueryAPI } from "./apiRoutes";
 import { getLocal, setLocal } from "./localstorage";
 
 // Array containing column names for machine data
@@ -128,6 +128,12 @@ async function runDBQuery(query) {
   const data = await axios.get(`${runQueryAPI}?statement=${encodeURIComponent(query)}`);
   return data; // Return the result of the query
 }
+async function callKpiEngine(data) {
+  return await axios.post(`${GetDerivedKpiDataAPI}`, data);
+}
+async function callKpiEngineChart(data) {
+  return await axios.post(`${GetDerivedKpiChartAPI}`, data);
+}
 
 // Function to format machine usage time from an array to an object
 function formatMachineUsageTime(inputArray) {
@@ -193,6 +199,24 @@ const updateRecentlyViewed = (category, item) => {
   setLocal("recents", JSON.stringify(recentlyViewed));
 };
 
+function getAllDatesBetween(startDate, endDate) {
+  const dates = [];
+  let currentDate = new Date(startDate); // Start from the given startDate
+  const lastDate = new Date(endDate); // Define the endDate
+  currentDate.setDate(currentDate.getDate() + 1);
+  lastDate.setDate(lastDate.getDate() + 1);
+  
+  while (currentDate <= lastDate) {
+    // Push the date in 'YYYY-MM-DD' format
+    dates.push(new Date(currentDate).toISOString().split('T')[0]);
+
+    // Increment the date by 1 day
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  return dates;
+}
+
 export {
   transformMachineList,
   getLast24Hours,
@@ -210,5 +234,8 @@ export {
   secondsToHHMMSS,
   secondsToReadableFormat,
   hoursToReadableFormat,
-  updateRecentlyViewed
+  updateRecentlyViewed,
+  callKpiEngine,
+  callKpiEngineChart,
+  getAllDatesBetween
 };

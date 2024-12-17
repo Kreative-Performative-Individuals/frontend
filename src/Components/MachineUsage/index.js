@@ -58,8 +58,8 @@ const MachineUsage = ({ getMachineList, machineList, loading }) => {
     const filterMachines = (types, statuses) => {
         // Filter the machines array based on type and status
         const filteredMachines = machineList.filter((machine) => {
-            const typeMatch = types.length === 0 || types.includes(machine.machineType); // Check if type matches
-            const statusMatch = statuses.length === 0 || statuses.includes(machine.machineStatus); // Check if status matches
+            const typeMatch = types.length === 0 || types.includes(machine.type); // Check if type matches
+            const statusMatch = statuses.length === 0 || statuses.includes(machine.status); // Check if status matches
             return typeMatch && statusMatch; // Return true if both type and status match
         });
         setMachineInView(filteredMachines); // Update the state with the filtered machines
@@ -73,8 +73,8 @@ const MachineUsage = ({ getMachineList, machineList, loading }) => {
     };
 
     // Predefined machine types and statuses for filtering
-    const machineTypes = ["Metal Cutting", "Laser Cutting", "Laser Welding", "Assembly", "Testing", "Riveting"];
-    const machineStatuses = ["Working", "Offline", "Idle"];
+    const machineTypes = ["metal_cutting", "laser_cutting", "laser_welding", "assembly", "testing", "riveting"];
+    const machineStatuses = ["Active", "Offline", "Idle"];
 
     // Query the database to fetch machine usage data
     const getQueryResult = async() => {
@@ -138,7 +138,7 @@ const MachineUsage = ({ getMachineList, machineList, loading }) => {
                                 <InputLabel id="machineTypeSelector">Machine Type</InputLabel>
                                 <Select
                                     labelId="machineTypeSelector"
-                                    id="machineTypeSelect"
+                                    id="machineTypeSelect-select"
                                     value={machineType}
                                     label="Machine Type"
                                     multiple

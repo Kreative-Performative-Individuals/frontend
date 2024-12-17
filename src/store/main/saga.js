@@ -14,7 +14,9 @@ import {
   GET_MACHINE_DETAIL,
   GET_PRODUCTION_DASHBOARD,
   GET_PRODUCTION_DETAIL,
-  GET_ENERGY_DASHBOARD
+  GET_ENERGY_DASHBOARD,
+  GET_KPI_CLASS_INSTANCE,
+  GET_FORECAST
 } from "../types";
 
 import setDefaultToken, { clearLocal } from "../../constants/localstorage";
@@ -44,6 +46,10 @@ import {
   getProductionDetailSuccess,
   getProductionDetailError,
   getEnergyDashboardSuccess,
+  getKpiClassInstanceSuccess,
+  getKpiClassInstanceError,
+  getForecastingSuccess,
+  getForecastingError
   // getEnergyDashboardError
 } from "./actions";
 
@@ -59,7 +65,9 @@ import {
   // CheckDbAPI,
   CheckKpiEngineAPI,
   GetDerivedKpiDataAPI,
-  GetProductionDashboardAPI
+  GetProductionDashboardAPI,
+  ForecastAPI,
+  GetClassInstance
 } from "../../constants/apiRoutes";
 import { getOneDay5MonthsAgo, runDBQuery, transformMachineList } from "../../constants/_helper";
 
@@ -109,6 +117,22 @@ const getProductionDashboardAPI = async () => {
 const queryDB = async (query) => {
   return await runDBQuery(query);
 }
+const getClassInstanceAPI = async (data) => {
+  return await axios.get(`${GetClassInstance}?owl_class_label=${data.label}&method=levenshtein`);
+};
+const getForecastingAPI = async (data) => {
+  const queryParams = new URLSearchParams({
+    machine_name: data.machine_name,
+    asset_id: data.asset_id,
+    kpi: data.kpi,
+    operation: data.operation,
+    transformation: data.transformation,
+    forecasting: data.forecasting,
+    timestamp_start: data.timestamp_start,
+    timestamp_end: data.timestamp_end,
+  }).toString();
+  return await axios.get(`${ForecastAPI}?${queryParams}`);
+};
 
 function* userRegisterSaga({ payload, navigate }) {
   try {
@@ -364,6 +388,24 @@ function* getEnergyDashboardSaga() {
   // }
 }
 
+function* getKbClassInstanceSaga({ payload }) {
+  try {
+    const { data } = yield call(getClassInstanceAPI, payload);
+    yield put(getKpiClassInstanceSuccess(data));
+  } catch (error) {
+    yield put(getKpiClassInstanceError(error));
+  }
+}
+
+function* getForecastingSaga({ payload }) {
+  try {
+    const { data } = yield call(getForecastingAPI, payload);
+    yield put(getForecastingSuccess(data));
+  } catch (error) {
+    yield put(getForecastingError(error));
+  }
+}
+
 
 export function* watchUserRegister() {
   yield takeEvery(USER_REGISTER, userRegisterSaga);
@@ -401,6 +443,12 @@ export function* watchGetProductionDetail() {
 export function* watchGetEnergyDashboard() {
   yield takeEvery(GET_ENERGY_DASHBOARD, getEnergyDashboardSaga);
 }
+export function* watchGetKbClassInstance() {
+  yield takeEvery(GET_KPI_CLASS_INSTANCE, getKbClassInstanceSaga);
+}
+export function* watchGetForecasting() {
+  yield takeEvery(GET_FORECAST, getForecastingSaga);
+}
 
 export default function* rootSaga() {
   yield all([
@@ -416,5 +464,7 @@ export default function* rootSaga() {
     fork(watchGetProductionDashboard),
     fork(watchGetProductionDetail),
     fork(watchGetEnergyDashboard),
+    fork(watchGetKbClassInstance),
+    fork(watchGetForecasting),
   ]);
 }

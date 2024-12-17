@@ -1,0 +1,38 @@
+.forecast {
+    padding: 1rem;
+
+    .submitRow {
+        margin-top: 1rem;
+
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+
+        .react-datepicker-wrapper {
+            height: 100%;
+            .react-datepicker__input-container {
+                height: 100%;
+                input {
+                    padding: 0.5rem 1rem;
+                    height: 25px;
+                    width: 100%;
+                    font-size: 16px;
+                    border: none;
+                    background-color: none;
+                }
+            }
+        }
+
+    }
+
+    .chartSection {
+        background-color: #fff;
+        margin-top: 25px;
+        border-radius: 25px;
+        width: 70%;
+    }
+    .chartContainer {
+        padding: 3rem;
+    }
+
+}

@@ -8,6 +8,8 @@ import BusinessIcon from '@mui/icons-material/Business'; // Import Business icon
 import BoltIcon from '@mui/icons-material/Bolt'; // Import Bolt icon for Energy
 import EuroIcon from '@mui/icons-material/Euro'; // Import Euro icon for Financials
 import QueryStatsIcon from '@mui/icons-material/QueryStats'; // Import QueryStats icon for Reports
+import UpdateIcon from '@mui/icons-material/Update'; // Import UpdateIcon icon for Forecasting
+import SettingsInputAntennaIcon from '@mui/icons-material/SettingsInputAntenna'; // Import SettingsInputAntennaIcon icon for Real Time
 import { Link, useLocation } from 'react-router-dom'; // Import Link and useLocation from react-router-dom for navigation
 import "./style.scss"; // Import custom styles for the sidebar
 import { getLocal } from "../../constants/localstorage"; // Import a helper function to get data from local storage
@@ -81,13 +83,25 @@ const MainListItems = () => {
           </div>
         )}
 
-        {/* List Item for Reports, highlights active link if the current location is "/reports" */}
-        <div className={`listItem ${location.pathname === "/reports" && "active"}`}>
-          <ListItemButton component={Link} to="/reports" className="listBtn">
+        {/* Conditionally render Reports menu item only if the user is an SMO */}
+        {smoView && (
+          <div className={`listItem ${location.pathname.includes("reports") && "active"}`}>
+            <ListItemButton component={Link} to="/reports" className="listBtn">
+              <ListItemIcon>
+                <QueryStatsIcon className="iconStyle" /> {/* QueryStats icon for Reports */}
+              </ListItemIcon>
+              <ListItemText primary="Reports" /> {/* Reports text */}
+            </ListItemButton>
+          </div>
+        )}
+        
+        {/* List Item for Forecast, highlights active link if the current location is "/forecast" */}
+        <div className={`listItem ${location.pathname.includes("forecast") && "active"}`}>
+          <ListItemButton component={Link} to="/forecast" className="listBtn">
             <ListItemIcon>
-              <QueryStatsIcon className="iconStyle" /> {/* QueryStats icon for Reports */}
+              <UpdateIcon className="iconStyle" /> {/* QueryStats icon for Forecast */}
             </ListItemIcon>
-            <ListItemText primary="Reports" /> {/* Reports text */}
+            <ListItemText primary="Forecast" /> {/* forecast text */}
           </ListItemButton>
         </div>
         
@@ -95,7 +109,7 @@ const MainListItems = () => {
         <div className={`listItem ${location.pathname === "/real-time" && "active"}`}>
           <ListItemButton component={Link} to="/real-time" className="listBtn">
             <ListItemIcon>
-              <QueryStatsIcon className="iconStyle" /> {/* QueryStats icon for Real Time Session */}
+              <SettingsInputAntennaIcon className="iconStyle" /> {/* QueryStats icon for Real Time Session */}
             </ListItemIcon>
             <ListItemText primary="Real Time Session" /> {/* Real Time Session text */}
           </ListItemButton>

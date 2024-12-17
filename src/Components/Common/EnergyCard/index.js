@@ -47,7 +47,7 @@ const EnergyCard = ({ machineName, machineType, machineStatus, total_consumption
                     <Box className="statRow">
                         {/* Displaying energy efficiency and power mean */}
                         <CardBoxStyle heading={"Energy Efficiency"} value={`${total_cycles_sum === 0 ? "Not Available" : `${truncateToFiveDecimals((total_consumption*400) / total_cycles_sum) || 0} kWh/cycle`}`} />
-                        <CardBoxStyle heading={"Power Mean"} value={"0.002 kWh"} />
+                        <CardBoxStyle heading={"Power"} value={"0.002 kWh"} />
                     </Box>
                 </Box>
 

@@ -18,7 +18,7 @@ import BasicCard from '../Common/BasicCard'; // Import BasicCard component for d
 import MachineDetailLineChart from './MachineDetailLineChart'; // Import custom line chart component for machine data
 import DateFilter from '../Common/DateFilter'; // Import DateFilter component to filter data by date
 import { getMachineDetail } from '../../store/main/actions'; // Import the action to fetch machine details
-import { getOneDay5MonthsAgo, capitalizeFirstLetter, truncateToFiveDecimals, formatDate, getLastDayOfMonth, addOneDay, showDateOnly, runDBQuery } from '../../constants/_helper'; // Import helper functions for date and data formatting
+import { getOneDay5MonthsAgo, capitalizeFirstLetter, truncateToFiveDecimals, formatDate, getLastDayOfMonth, addOneDay, showDateOnly, secondsToReadableFormat, runDBQuery } from '../../constants/_helper'; // Import helper functions for date and data formatting
 import { connect } from 'react-redux'; // Import Redux connect for mapping state and dispatch actions
 import { usePDF } from 'react-to-pdf'; // Import usePDF for generating PDF reports
 
@@ -248,7 +248,7 @@ const MachineDetail = ({ getMachineDetail, singleMachineDetail }) => {
                     <Box className="additionalDetails">
                         <BasicCard heading={"Utilization Rate"} duration={reportDate()} value={`${singleMachineDetail.utilization_rate === -1 ? "Not Available" : `${singleMachineDetail.utilization_rate} %`}`} isIcon={false} />
                         <BasicCard heading={"Availability"} duration={reportDate()} value={`${singleMachineDetail.availability === -1 || singleMachineDetail.availability === 0 ? "Not Available" : `${truncateToFiveDecimals(singleMachineDetail.availability)} %`}`} isIcon={false} />
-                        <BasicCard heading={"Downtime"} duration={reportDate()} value={`${singleMachineDetail.downtime === -1 || singleMachineDetail.downtime === 0 ? "Not Available" : `${singleMachineDetail.downtime} hours`}`} isIcon={false} />
+                        <BasicCard heading={"Downtime"} duration={reportDate()} value={`${singleMachineDetail.downtime === -1 || singleMachineDetail.downtime === 0 ? "Not Available" : `${secondsToReadableFormat(parseInt(singleMachineDetail.downtime))}`}`} isIcon={false} />
                         <BasicCard heading={"Mean time b/w Failure"} duration={reportDate()} value={`${singleMachineDetail.mean_time_between_failures === -1 ? "Not Available" : `${singleMachineDetail.mean_time_between_failures} hour`}`} isIcon={false} />
                     </Box>
                 </Box>

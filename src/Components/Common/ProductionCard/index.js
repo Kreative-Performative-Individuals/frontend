@@ -3,6 +3,7 @@ import "./style.scss"; // Import styles specific to this component
 import { Box, Typography } from '@mui/material'; // Import Material-UI components for layout and typography
 // import { GaugeComponent } from 'react-gauge-component';
 import { Gauge, gaugeClasses } from '@mui/x-charts/Gauge'; // Import Gauge component from MUI Charts
+import { capitalizeFirstLetter } from '../../../constants/_helper';
 
 // ProductionCard component definition
 const ProductionCard = ({
@@ -26,7 +27,7 @@ const ProductionCard = ({
                 <Box className="cardHead">
                     <Box>
                         <Typography className='machineName'>{machineName}</Typography> {/* Display machine name */}
-                        <Typography className='machineType'>{machineType}</Typography> {/* Display machine type */}
+                        <Typography className='machineType'>{capitalizeFirstLetter(machineType)}</Typography> {/* Display machine type */}
                     </Box>
                     {/* Display machine status with conditional styling based on status */}
                     <Box className={`machineStatus ${machineStatus === "Active" && "working"} ${machineStatus === "Offline" && "offline"} ${machineStatus === "Idle" && "idle"} ${machineStatus === "Under Maintenance" && "maintenance"}`}>

@@ -74,8 +74,8 @@ const Production = ({ getProductionDashboard, productionDashboard, loading }) =>
     };
 
     // Predefined machine types and statuses for filtering
-    const machineTypes = ["Metal Cutting", "Laser Cutting", "Laser Welding", "Assembly", "Testing", "Riveting"];
-    const machineStatuses = ["Working", "Offline", "Idle", "Independent"];
+    const machineTypes = ["metal_cutting", "laser_cutting", "laser_welding", "assembly", "testing", "riveting"];
+    const machineStatuses = ["Active", "Offline", "Idle"];
 
     // Effect to set initial machine view when the component mounts
     useEffect(() => {

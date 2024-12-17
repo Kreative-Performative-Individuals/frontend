@@ -87,7 +87,7 @@ const Energy = ({ getEnergyDashboard, energyDashboard, loading }) => {
 
     // Predefined machine types and statuses for filtering
     const machineTypes = ["Metal Cutting", "Laser Cutting", "Laser Welding", "Assembly", "Testing", "Riveting"];
-    const machineStatuses = ["Working", "Offline", "Idle", "Under Maintenance"];
+    const machineStatuses = ["working", "Offline", "Idle"];
 
     // Function to handle card click and navigate to machine detail page
     const handleCardClick = (machine) => {

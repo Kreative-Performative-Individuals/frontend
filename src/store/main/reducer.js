@@ -37,8 +37,16 @@ import {
   GET_ENERGY_DASHBOARD,
   GET_ENERGY_DASHBOARD_SUCCESS,
   GET_ENERGY_DASHBOARD_ERROR,
+  GET_KPI_CLASS_INSTANCE,
+  GET_KPI_CLASS_INSTANCE_SUCCESS,
+  GET_KPI_CLASS_INSTANCE_ERROR,
+  GET_FORECAST,
+  GET_FORECAST_SUCCESS,
+  GET_FORECAST_ERROR,
   REPORT_LIST,
-  ADD_REPORT_TO_LIST
+  GET_SINGLE_REPORT,
+  ADD_REPORT_TO_LIST,
+  DELETE_REPORT
 } from "../types";
 
 const initialState = {
@@ -58,7 +66,10 @@ const initialState = {
   productionDashboard: {},
   productionDetail: {},
   energyDashboard: {},
-  reports: getLocal("reports") ? JSON.parse(getLocal("reports")) : []
+  kpiClassInstane: {},
+  forecast: [],
+  reports: [],
+  singleReport: {}
 };
 
 const MyReducer = (state = initialState, action) => {
@@ -383,23 +394,102 @@ const MyReducer = (state = initialState, action) => {
                 energyDashboard: {}
             };
         
+        case GET_KPI_CLASS_INSTANCE:
+            return {
+                ...state,
+                error: false,
+                loading: true,
+                errMsg: "",
+                kpiClassInstane: {}
+            };
+    
+        case GET_KPI_CLASS_INSTANCE_SUCCESS:
+            return {
+                ...state,
+                error: false,
+                loading: false,
+                errMsg: "",
+                kpiClassInstane: action.payload
+            };
+        case GET_KPI_CLASS_INSTANCE_ERROR:
+            return {
+                ...state,
+                error: true,
+                loading: false,
+                errMsg: action.payload,
+                kpiClassInstane: {}
+            };
+        
+        case GET_FORECAST:
+            return {
+                ...state,
+                error: false,
+                loading: true,
+                errMsg: "",
+                forecast: []
+            };
+    
+        case GET_FORECAST_SUCCESS:
+            return {
+                ...state,
+                error: false,
+                loading: false,
+                errMsg: "",
+                forecast: action.payload
+            };
+        case GET_FORECAST_ERROR:
+            return {
+                ...state,
+                error: true,
+                loading: false,
+                errMsg: action.payload,
+                forecast: []
+            };
+        
         case REPORT_LIST:
             return {
                 ...state,
                 error: false,
-                reports: []
+                reports: JSON.parse(getLocal("reports")) || []
             };
-        case ADD_REPORT_TO_LIST:
-            const currentReports = state.reports;
-            currentReports.push(action.payload)
-            console.log(currentReports)
+
+        case GET_SINGLE_REPORT:
+            const reportList = JSON.parse(getLocal("reports")) || [];
+            const filteredList = reportList.find(report => report.reportId === action.payload);
             return {
                 ...state,
                 error: false,
-                reports: currentReports
+                singleReport: filteredList
             };
-      
-      
+        case ADD_REPORT_TO_LIST:
+            const existingList = JSON.parse(getLocal("reports")) || [];
+            const existingIndex = existingList.findIndex(report => report.reportId === action.payload.reportId);
+            if (existingIndex !== -1) {
+                // If reportId exists, update the existing report
+                existingList[existingIndex] = action.payload;
+            } else {
+                // If reportId does not exist, add a new report
+                existingList.push(action.payload);
+            }
+            // existingList.push(action.payload);
+            setLocal("reports", JSON.stringify(existingList))
+            return {
+                ...state,
+                error: false,
+                reports: existingList
+            };
+
+        case DELETE_REPORT:
+            const existing = JSON.parse(getLocal("reports")) || [];
+            const updatedList = existing.filter(report => report.reportId !== action.payload);
+            setLocal("reports", JSON.stringify(updatedList))
+            // const currentReports = state.reports;
+            // currentReports.push(action.payload)
+            return {
+                ...state,
+                error: false,
+                reports: updatedList
+            };
       default:
           return { ...state };
   }

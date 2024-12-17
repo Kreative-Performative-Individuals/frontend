@@ -1,0 +1,148 @@
+.reportTemplatePage {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 1.5rem;
+    position: relative;
+
+    .reportComponentsSection {
+        background-color: #fff;
+        width: 60%;
+        min-height: 70vh;
+        padding: 2rem;
+
+        .reportComponentsContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+
+            .reportSingleComponent {
+                background-color: #f1f1f1;
+                padding: 1rem;
+                color: #000;
+                font-size: 16px;
+                border: none;
+                display: flex;
+                position: relative;
+
+                .cross {
+                    position: absolute;
+                    top: -8px;
+                    right: -8px;
+                    display: flex; // Center the icon within the circle
+                    align-items: center;
+                    justify-content: center;
+                    background-color: #fff;
+                    background-color: #f5f5f5;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    padding: 2px;
+                    &:hover {
+                        background-color: #e0e0e0; // Slightly darker on hover
+                    }
+                }
+
+                .accordianHead {
+                    .MuiAccordionSummary-content {
+                        align-items: center !important;
+                    }
+                }
+
+                .FiltersContainer {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+
+                    .Filters {
+                        display: flex; // Flexbox for filter button container
+                        align-items: center; // Vertically center filter buttons
+                        justify-content: center; // Center filter buttons horizontally
+                        background-color: #fafbfd; // Light background color for the filter section
+
+                        .chartFilterButton {
+                            height: 40px; // Height of the filter buttons
+                            border: 1px solid #979797; // Border color for the filter buttons
+                            border-radius: 0; // No rounding for the filter buttons
+                            color: #000; // Black text color for the buttons
+
+                            &.active {
+                                background-color: #000; // Black background for active button
+                                color: #fff; // White text color for active button
+                            }
+                            &.left {
+                                border-top-left-radius: 10px; // Rounded top-left corner for left button
+                                border-bottom-left-radius: 10px; // Rounded bottom-left corner for left button
+                            }
+
+                            &.right {
+                                border-top-right-radius: 10px; // Rounded top-right corner for right button
+                                border-bottom-right-radius: 10px; // Rounded bottom-right corner for right button
+                            }
+
+                            &:hover {
+                                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); // Add shadow on hover for filter buttons
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .selectComponentsSection {
+        background-color: #fff;
+        width: 20%;
+        padding: 2rem;
+        position: fixed;
+        right: 30px;
+    }
+}
+
+.viewReport {
+    .selectMachines {
+        margin: 1.5rem 0;
+    }
+
+    .reportHeadSelector {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        .reportRange {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            .heading {
+                font-size: 18px;
+                font-weight: 600;
+            }
+            .react-datepicker-wrapper {
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                height: 100%; // Make date picker container take full height
+                .react-datepicker__input-container {
+                    height: 100%; // Make the input container of date picker take full height
+                    margin: 0 1rem 0 0;
+                    input {
+                        padding: 0.5rem 1rem;
+                        height: 25px; // Make input field take full height
+                        width: 100%; // Make input field take full width
+                        border: none; // Remove input border
+                    }
+                }
+            }
+        }
+        .reportButtons {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+    }
+}
+
+.page-break {
+    page-break-inside: avoid;
+}
+.page-break-after {
+    page-break-after: always;
+}

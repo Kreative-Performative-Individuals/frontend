@@ -10,7 +10,7 @@ import Divider from "@mui/material/Divider"; // Import Material-UI Divider compo
 import IconButton from "@mui/material/IconButton"; // Import Material-UI IconButton component
 import DehazeIcon from '@mui/icons-material/Dehaze'; // Import Dehaze icon for the menu button
 import { MainListItems } from "./listItems"; // Import main and secondary list items for the sidebar
-import Copyright from "../Authentication/Copyright"; // Import Copyright component
+// import Copyright from "../Authentication/Copyright"; // Import Copyright component
 import PersonIcon from '@mui/icons-material/Person'; // Import Person icon for user display
 import { getLocal } from "../../constants/localstorage"; // Import local storage utility
 import Chatbot from "./ChatUI"; // Import Chatbot component
@@ -171,7 +171,7 @@ const Layout = ({ children }) => {
                     >
                         <Toolbar /> {/* Toolbar for spacing */}
                         {children} {/* Render child components here */}
-                        <Copyright sx={{ pt: 4 }} /> {/* Copyright component at the bottom */}
+                        {/* <Copyright sx={{ pt: 4 }} /> Copyright component at the bottom */}
                     </Box>
                 </Box>
             </ThemeProvider>

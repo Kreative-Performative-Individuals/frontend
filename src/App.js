@@ -12,6 +12,10 @@ import Energy from "./Components/Energy"; // Import Energy component
 import EnergyDetail from "./Components/EnergyDetail"; // Import EnergyDetail component
 import RealTime from "./Components/RealTime"; // Import RealTime component
 import FinancialReport from "./Components/Financial"; // Import FinancialReport component
+import Reports from "./Components/Reports"; // Import Reports component
+import AddReport from "./Components/ReportTemplatePage/AddReport";
+import ViewReport from "./Components/ReportTemplatePage/ViewReport";
+import Forecast from "./Components/Forecast";
 
 function App() {
   // Create a router object that defines all application routes and their corresponding components
@@ -57,8 +61,28 @@ function App() {
       element: <FinancialReport />, // Render the FinancialReport component for this route
     },
     {
+      path: "/reports", // Route for generating or viewing reports
+      element: <Reports />, // Render the Reports component for this route
+    },
+    {
+      path: "/reports/new", // Route for generating or viewing reports
+      element: <AddReport />, // Render the Reports component for this /AddReportroute
+    },
+    {
+      path: "/reports/edit", // Route for generating or viewing reports
+      element: <AddReport />, // Render the Reports component for this /AddReportroute
+    },
+    {
+      path: "/reports/view", // Route for generating or viewing reports
+      element: <ViewReport />, // Render the Reports component for this /AddReportroute
+    },
+    {
       path: "/real-time", // Route for viewing real-time machine data
       element: <RealTime />, // Render the RealTime component for this route
+    },
+    {
+      path: "/forecast", // Route for viewing real-time machine data
+      element: <Forecast />, // Render the RealTime component for this route
     },
     {
       path: "/logout", // Route for logging out of the application
