@@ -1,8 +1,7 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Layout from '../Layout'
 
-import { Box, Button, FormControl, InputLabel, MenuItem, Typography } from '@mui/material';
-import Select from '@mui/material/Select';
+import { Box, Button, Typography } from '@mui/material';
 
 import BasicCard from '../Common/BasicCard'
 
@@ -11,17 +10,126 @@ import WorkingIcon from "../../Assets/Working Machines.svg";
 import CostIcon from "../../Assets/Total Cost.svg";
 import OfflineIcon from "../../Assets/Offline Machines.svg";
 
+import StackedBarChartIcon from '@mui/icons-material/StackedBarChart';
+import TimelineIcon from '@mui/icons-material/Timeline';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import PieChartIcon from '@mui/icons-material/PieChart';
+import ScatterPlotIcon from '@mui/icons-material/ScatterPlot';
+import DonutSmallIcon from '@mui/icons-material/DonutSmall';
+
 import FinancialLineChart from './FinancialLineChart'
 
 import "./style.scss";
+import { addOneDay, formatDate, getLastDayOfMonth, getOneDay5MonthsAgo, runDBQuery, showDateOnly, truncateToFiveDecimals } from '../../constants/_helper';
+import { usePDF } from 'react-to-pdf';
+import DateFilter from '../Common/DateFilter';
 
 const FinancialReport = () => {
+
+    const reportDateRef = useRef(null);
+    const filterRef = useRef(null);
+
+    const [financialDetail, setFinancialDetail] = useState({});
+
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedMonth, setSelectedMonth] = useState(null);
+    
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+    const [chartData, setChartData] = useState({});
+    const [chartType, setChartType] = useState("line");
+
+    const reportDate = () => {
+        const { init_date, end_date } = getOneDay5MonthsAgo();
+        const dateOfReport = startDate && endDate ? `${showDateOnly(formatDate(startDate))} - ${showDateOnly(formatDate(endDate))}` 
+        : selectedDate ? showDateOnly(formatDate(selectedDate)) 
+        : selectedMonth ? `${showDateOnly(formatDate(selectedMonth))} - ${showDateOnly(getLastDayOfMonth(selectedMonth))}` 
+        : (`${showDateOnly(init_date)} - ${showDateOnly(end_date)}`)
+        return dateOfReport
+    }
+
+    const { toPDF, targetRef } = usePDF({filename: `Financial Report - ${reportDate()}.pdf`});
+    const getQueryResult = async (initialize_date, ending_date) => {
+        const query = `SELECT jsonb_build_object( 'cost_sum', SUM(CASE WHEN kpi = 'cost' THEN sum ELSE 0 END), 'cost_avg', SUM(CASE WHEN kpi = 'cost' THEN avg ELSE 0 END), 'cost_min', SUM(CASE WHEN kpi = 'cost' THEN min ELSE 0 END), 'cost_max', SUM(CASE WHEN kpi = 'cost' THEN max ELSE 0 END), 'total_consumption', SUM(CASE WHEN kpi = 'consumption' THEN max ELSE 0 END), 'total_cycles', SUM(CASE WHEN kpi = 'cycles' THEN max ELSE 0 END)) AS result FROM real_time_data WHERE time >= '${initialize_date}' AND time <= '${ending_date}';`
+        const result = await runDBQuery(query);
+        setFinancialDetail(result.data.data[0][0]);
+    }
+    
+    const getChartQueryResult = async (initialize_date, ending_date) => {
+        const query = `SELECT time, SUM(CASE WHEN kpi = 'cost' THEN sum ELSE 0 END) AS cost_sum, SUM(CASE WHEN kpi = 'cost' THEN avg ELSE 0 END) AS cost_avg, SUM(CASE WHEN kpi = 'cost' THEN min ELSE 0 END) AS cost_min, SUM(CASE WHEN kpi = 'cost' THEN max ELSE 0 END) AS cost_max from real_time_data WHERE time >= '${initialize_date}' AND time <= '${ending_date}' GROUP BY time ORDER BY time;`
+        const result = await runDBQuery(query);
+        transformDataForChart(result.data.data)
+    }
+
+    function transformDataForChart(data) {
+        const result = {
+            labels: [],
+            cost_sum: [],
+            cost_avg: [],
+            cost_min: [],
+            cost_max: []
+        };
+    
+        data.forEach(item => {
+            const formattedDate = item[0].split('T')[0];
+            result.labels.push(formattedDate);
+            result.cost_sum.push(item[1]);
+            result.cost_avg.push(item[2]);
+            result.cost_min.push(item[3]);
+            result.cost_max.push(item[4]);
+        });
+    
+        setChartData(result);
+    }
+
+
+
+    const onDateRangeChange = (dates) => {
+        const [start, end] = dates;
+        setStartDate(start);
+        setEndDate(end);
+        setSelectedDate(null);
+        setSelectedMonth(null);
+        if (start && end) {
+            getQueryResult(formatDate(start), formatDate(end));
+            getChartQueryResult(formatDate(start), formatDate(end));
+        }
+    };
+    const onDateMonthChange = (date) => {
+        setSelectedMonth(date);
+        setSelectedDate(null);
+        setStartDate(null);
+        setEndDate(null);
+        if (date) {
+            const end_date = getLastDayOfMonth(date)
+            getQueryResult(formatDate(date), end_date)
+            getChartQueryResult(formatDate(date), end_date);
+        }
+    };
+    const onDateDayChange = (date) => {
+        setSelectedDate(date);
+        setSelectedMonth(null);
+        setStartDate(null);
+        setEndDate(null);
+        if (date) {
+            const end_date = addOneDay(date)
+            getQueryResult(formatDate(date), end_date)
+            getChartQueryResult(formatDate(date), end_date);
+        }
+    };
+
+    useEffect(() => {
+        const { init_date, end_date, oneWeekBeforeEndData } = getOneDay5MonthsAgo();
+        getQueryResult(init_date, end_date);
+        getChartQueryResult(oneWeekBeforeEndData, end_date)
+        // eslint-disable-next-line
+    }, [])
 
     const cardData = [
         {
             id: 1,
             heading: "Cost Sum",
-            value: "37%",
+            value: `${truncateToFiveDecimals(financialDetail.cost_sum)} €`,
             isStat: false,
             icon: GroupIcon,
             iconBackground: "rgba(130, 128, 255, 0.25)",
@@ -29,10 +137,7 @@ const FinancialReport = () => {
         {
             id: 2,
             heading: "Cost Mean",
-            value: "12%",
-            statUpOrDown: "Up",
-            statPercent: "1.3%",
-            statText: "Up from prev quarter",
+            value: `${truncateToFiveDecimals(financialDetail.cost_avg)} €`,
             isStat: false,
             icon: WorkingIcon,
             iconBackground: "rgba(254, 197, 61, 0.25)",
@@ -40,85 +145,62 @@ const FinancialReport = () => {
         {
             id: 3,
             heading: "Cost Min",
-            value: "6300€",
-            statUpOrDown: "Down",
+            value: `${truncateToFiveDecimals(financialDetail.cost_min)} €`,
             isStat: false,
-            statPercent: "4%",
-            statText: "Down from prev quarter",
             icon: CostIcon,
             iconBackground: "rgba(74, 217, 145, 0.25)",
         },
         {
             id: 4,
             heading: "Cost Max",
-            value: "12%",
+            value: `${truncateToFiveDecimals(financialDetail.cost_max)} €`,
             isStat: false,
-            statUpOrDown: "Up",
-            statPercent: "1.3%",
-            statText: "Up from prev quarter",
             icon: OfflineIcon,
             iconBackground: "rgba(254, 144, 102, 0.25)",
         },
     ];
 
+    const downloadReport = () => {
+        targetRef.current.style.padding = '40px';
+        filterRef.current.style.display = 'none';
+        reportDateRef.current.style.display = 'block';
+        toPDF();
+        targetRef.current.style.padding = '0px';
+        filterRef.current.style.display = 'flex';
+        reportDateRef.current.style.display = 'none';
+    };
+
     return (
         <Layout>
-            <Box className="financialReport">
+            <Box className="financialReport" ref={targetRef}>
                 <Box className="financialReportHead">
                     <Box className="financialReportIntro">
                         <Typography className='financialHeading'>Financial Report</Typography>
                     </Box>
+                    <Box className="financialReportFilters" ref={filterRef}>
+                    
+                        <DateFilter
+                            startDate={startDate}
+                            endDate={endDate}
+                            selectedDate={selectedDate}
+                            selectedMonth={selectedMonth}
+                            onDateDayChange={onDateDayChange}
+                            onDateMonthChange={onDateMonthChange}
+                            onDateRangeChange={onDateRangeChange}
+                        />
 
-                    <Box className="financialReportFilters">
-
-                        <Box sx={{ minWidth: 200, backgroundColor: "#fff" }}>
-                            <FormControl fullWidth>
-                                <InputLabel id="custom-range-select-label">Custom Range</InputLabel>
-                                <Select
-                                    labelId="custom-range-select-label"
-                                    id="demo-simple-select"
-                                    label="Custom Range"
-                                    placeholder="Custom Range"
-                                >
-                                    <MenuItem value={"Custom Range"}>Custom Range</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Box>
-                        <Box sx={{ minWidth: 120, backgroundColor: "#fff" }}>
-                            <FormControl fullWidth>
-                                <InputLabel id="date-select-label">Date</InputLabel>
-                                <Select
-                                    labelId="date-select-label"
-                                    id="date-select"
-                                    label="Date"
-                                    placeholder="Date"
-                                >
-                                    <MenuItem value={"Date"}>Date</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Box>
-                        <Box sx={{ minWidth: 120, backgroundColor: "#fff" }}>
-                            <FormControl fullWidth>
-                                <InputLabel id="month-select-label">Month</InputLabel>
-                                <Select
-                                    labelId="month-select-label"
-                                    id="month-select"
-                                    label="Month"
-                                    placeholder="Month"
-                                >
-                                    <MenuItem value={"Month"}>Month</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Box>
-                        <Button className="button">Download Report</Button>
+                        <Button className="button" onClick={downloadReport}>Download Report</Button>
                     </Box>
                 </Box>
+                <Typography sx={{ fontSize: "20px", fontWeight: "500", mt: 3, display: "none" }} ref={reportDateRef}>
+                    Report Date {reportDate()}
+                </Typography>
                 <Box className="financialReportStats">
-                    {cardData.map(({ id, heading, duration, value, isStat, statUpOrDown, statPercent, statText, icon, iconBackground }) => (
+                    {cardData.map(({ id, heading, value, isStat, statUpOrDown, statPercent, statText, icon, iconBackground }) => (
                         <BasicCard
                             key={id} // Using unique ID as key
                             heading={heading}
-                            duration={duration}
+                            duration={reportDate()}
                             value={value}
                             isStat={isStat}
                             statUpOrDown={statUpOrDown}
@@ -133,18 +215,21 @@ const FinancialReport = () => {
                     <Box className="header">
                         <Typography>Utilization</Typography>
                         <Box className="Filters">
-                            <Button className="chartFilterButton left"><LineChartSVG /></Button>
-                            <Button className="chartFilterButton"><AreaChartSVG /></Button>
-                            <Button className="chartFilterButton right"><BarChartSVG /></Button>
+                            <Button title='Line Chart' className={`chartFilterButton left ${chartType === "line" && "active"}`} onClick={() => setChartType("line")} ><TimelineIcon /></Button>
+                            <Button title='Bar Chart' className={`chartFilterButton ${chartType === "bar" && "active"}`} onClick={() => setChartType("bar")} ><BarChartIcon /></Button>
+                            <Button title='Stacked Bar Chart' className={`chartFilterButton ${chartType === "stacked" && "active"}`}  onClick={() => setChartType("stacked")} ><StackedBarChartIcon /></Button>
+                            <Button title='Pie Chart' className={`chartFilterButton ${chartType === "pie" && "active"}`} onClick={() => setChartType("pie")} ><PieChartIcon /></Button>
+                            <Button title='Radar Chart' className={`chartFilterButton ${chartType === "radar" && "active"}`} onClick={() => setChartType("radar")} ><ScatterPlotIcon /></Button>
+                            <Button title='Polar Chart' className={`chartFilterButton right ${chartType === "polar" && "active"}`} onClick={() => setChartType("polar")} ><DonutSmallIcon /></Button>
                         </Box>
                     </Box>
                     <Box></Box>
                 </Box>
                 <Box className="financialDetails">
-                    <Box><FinancialLineChart /></Box>
+                    <Box><FinancialLineChart chartData={chartData} chartType={chartType} /></Box>
                     <Box className="additionalDetails">
-                        <BasicCard heading={"Cost Per Cycle"} duration={"Today"} value={"6300€"} isIcon={false} />
-                        <BasicCard heading={"Total Energy Cost"} duration={"Today"} value={"500€"} isIcon={false} />
+                        <BasicCard heading={"Cost Per Cycle"} duration={reportDate()} value={`${truncateToFiveDecimals((financialDetail.cost_sum) / financialDetail.total_cycles)} €`} isIcon={false} />
+                        <BasicCard heading={"Total Energy Cost"} duration={reportDate()} value={`${truncateToFiveDecimals(financialDetail.total_consumption * financialDetail.cost_avg)} €`} isIcon={false} />
                     </Box>
                 </Box>
             </Box>
@@ -153,29 +238,3 @@ const FinancialReport = () => {
 }
 
 export default FinancialReport;
-
-const AreaChartSVG = () => {
-    return (
-        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M1.46667 0H0V21.2667V22H0.730124H0.733335H21.2667H21.2699H22V21.2681V21.2681V3.66667C22 3.34789 21.7941 3.06561 21.4905 2.96833C21.1869 2.87103 20.8553 2.98103 20.6699 3.24044L13.9189 12.6919L10.12 7.62667C9.97721 7.43628 9.75088 7.32701 9.51299 7.33363C9.27508 7.34023 9.05519 7.46187 8.92317 7.65989L1.46667 18.8446V0Z" fill="black" />
-        </svg>
-    )
-}
-const BarChartSVG = () => {
-    return (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M16.8889 9.55566V18.1112" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M12 5.88892V18.1111" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M20.5556 1H3.44444C2.09441 1 1 2.09441 1 3.44444V20.5556C1 21.9056 2.09441 23 3.44444 23H20.5556C21.9056 23 23 21.9056 23 20.5556V3.44444C23 2.09441 21.9056 1 20.5556 1Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M7.11108 13.2222V18.1111" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-    )
-}
-const LineChartSVG = () => {
-    return (
-        <svg width="25" height="13" viewBox="0 0 25 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M22.632 0C21.3509 0 20.3416 1.04814 20.3416 2.29037C20.3416 2.56211 20.3804 2.83385 20.4581 3.06677L15.7997 7.0264C15.4891 6.8323 15.1009 6.75466 14.6739 6.75466C14.2469 6.75466 13.8199 6.87112 13.4705 7.10404L10.8307 4.96894C10.9084 4.73602 10.9472 4.54193 10.9472 4.27019C10.9472 2.98913 9.89907 1.97981 8.65683 1.97981C7.37578 1.97981 6.36646 3.02795 6.36646 4.27019C6.36646 4.61957 6.4441 4.93013 6.56056 5.20186L3.22205 8.54037C2.95031 8.42391 2.60093 8.34627 2.29037 8.34627C1.00932 8.34627 0 9.39441 0 10.6366C0 11.9177 1.04814 12.927 2.29037 12.927C3.53261 12.927 4.58075 11.8789 4.58075 10.6366C4.58075 10.2873 4.50311 9.97671 4.38665 9.70497L7.72516 6.36646C7.99689 6.48292 8.34627 6.56056 8.65683 6.56056C9.08385 6.56056 9.51087 6.4441 9.86025 6.21118L12.5388 8.26863C12.4612 8.50155 12.4612 8.69565 12.4612 8.96739C12.4612 10.2484 13.5093 11.2578 14.7516 11.2578C15.9938 11.2578 17.0419 10.2096 17.0419 8.96739C17.0419 8.69565 17.0031 8.42391 16.9255 8.191L21.5839 4.23137C21.8944 4.42547 22.2826 4.50311 22.7096 4.50311C23.9907 4.50311 25 3.45497 25 2.21273C24.9612 1.04814 23.8742 0 22.632 0ZM2.25155 11.3354C1.90217 11.3354 1.59161 11.0248 1.59161 10.6755C1.59161 10.2873 1.90217 10.0155 2.25155 10.0155C2.60093 10.0155 2.91149 10.3261 2.91149 10.6755C2.91149 11.0248 2.63975 11.3354 2.25155 11.3354ZM7.95808 4.30901C7.95808 3.92081 8.26863 3.64907 8.61801 3.64907C8.96739 3.64907 9.27795 3.95963 9.27795 4.30901C9.27795 4.65839 8.96739 4.96894 8.61801 4.96894C8.26863 4.96894 7.95808 4.65839 7.95808 4.30901ZM14.7127 9.66615C14.3245 9.66615 14.0528 9.35559 14.0528 9.00621C14.0528 8.65683 14.3634 8.34627 14.7127 8.34627C15.0621 8.34627 15.3727 8.65683 15.3727 9.00621C15.3339 9.39441 15.1009 9.66615 14.7127 9.66615ZM22.632 2.95031C22.2826 2.95031 21.972 2.63975 21.972 2.29037C21.972 1.90217 22.2826 1.63044 22.632 1.63044C23.0202 1.63044 23.2919 1.94099 23.2919 2.29037C23.2919 2.67857 22.9814 2.95031 22.632 2.95031Z" fill="black" />
-        </svg>
-
-    )
-}

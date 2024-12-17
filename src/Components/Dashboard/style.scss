@@ -1,18 +1,21 @@
+/* Container for the statistics cards */
 .dashboardStatsContainer {
-    display: flex;              // Use flexbox for layout
-    flex-wrap: wrap;           // Allow items to wrap onto the next line if needed
-    gap: 1rem;                 // Space between cards
-    padding: 1rem;             // Add some padding around the container
-    justify-content: space-between; // Distribute space between items
+    display: flex;               // Use flexbox for layout
+    flex-wrap: wrap;             // Allow the items to wrap onto the next line when they exceed the container width
+    gap: 1rem;                  // Set space between items (cards) to 1rem
+    padding: 1rem;              // Add padding inside the container (around the cards)
+    justify-content: space-between; // Distribute the items (cards) with equal space between them
 }
 
+/* Container for the Recently Viewed section */
 .recentlyViewedContainer {
-    margin-top: 25px;
+    margin-top: 25px;           // Add margin to the top for spacing between the dashboard stats and the recently viewed section
 }
 
+/* Layout for the Recently Viewed machines/cards */
 .recentlyViewed {
-    margin-top: 20px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
+    margin-top: 20px;           // Add margin to the top to separate the Recently Viewed section from other content
+    display: flex;              // Use flexbox for the layout of cards
+    flex-wrap: wrap;            // Allow the items (cards) to wrap to the next line if needed
+    gap: 1.5rem;                // Set space between items (cards) to 1.5rem for better spacing between cards
 }

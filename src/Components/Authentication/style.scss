@@ -1,21 +1,37 @@
 .authContainer {
-    padding: 3rem 2rem;
-    border-radius: 25px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #fff;
-    width: 500px;
-
+    padding: 3rem 2rem; 
+    // Adds padding inside the container: 3rem on top and bottom, 2rem on left and right.
+    border-radius: 25px; 
+    // Rounds the corners of the container with a radius of 25px.
+    display: flex; 
+    // Uses Flexbox layout for positioning child elements.
+    flex-direction: column; 
+    // Stacks the children elements vertically (column direction).
+    align-items: center; 
+    // Centers the child elements horizontally within the container.
+    background-color: #fff; 
+    // Sets the background color of the container to white (#fff).
+    width: 500px; 
+    // Sets a fixed width for the container (500px).
+  
+    // Nested styles for child elements of .authContainer.
     .heading {
-        color: #202224;
-        font-size: 32px;
-        font-weight: bold;
+        color: #202224; 
+        // Sets the text color for the heading to a dark shade.
+        font-size: 32px; 
+        // Defines a large font size (32px) for the heading.
+        font-weight: bold; 
+        // Makes the heading text bold.
     }
+  
     .subHeading {
-        color: #202224;
-        font-size: 16px;
-        font-weight: 400;
-        text-align: center;
+        color: #202224; 
+        // Sets the text color for the subheading to a dark shade.
+        font-size: 16px; 
+        // Defines a smaller font size (16px) for the subheading.
+        font-weight: 400; 
+        // Sets the font weight of the subheading to normal (400).
+        text-align: center; 
+        // Centers the subheading text horizontally.
     }
 }

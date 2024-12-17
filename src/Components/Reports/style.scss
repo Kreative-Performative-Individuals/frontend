@@ -1,0 +1,30 @@
+.reports {
+    .reportHeader {
+        display: flex;
+        gap: 1rem;
+        .headerHeading {
+            font-weight: 500;
+        }
+    }
+    .reportTemplateName {
+        margin-top: 25px;
+        .reportsRows {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .reportTemplateContainer {
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            .reportActions {
+                display: flex;
+                gap: 1rem;
+            }
+        }
+    }
+}

@@ -1,3 +1,14 @@
+.loader {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(5px);
+    z-index: 100,
+}
 .production {
     display: flex; // Flexbox layout for the main container
     flex-direction: column; // Stack children vertically
@@ -16,7 +27,7 @@
         justify-content: space-between; // Space items evenly
 
         .headerHeading {
-            font-size: 16px; // Font size for the header text
+            font-size: 14px; // Font size for the header text
             margin-bottom: -30px;
         }
 

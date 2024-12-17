@@ -1,89 +1,91 @@
 .energyCard {
-    padding: 1rem; // Padding inside the card
-    background-color: #fff; // Background color of the card
-    border-radius: 15px; // Rounded corners for the card
-    width: 325px; // Fixed width for the card
+    padding: 1rem; // Adds padding inside the card for spacing between content and card border
+    background-color: #fff; // Sets the background color of the card to white
+    border-radius: 15px; // Rounds the corners of the card with a 15px radius
+    width: 350px; // Sets a fixed width for the card to ensure consistent layout
 
     .cardHead {
-        display: flex; // Use flexbox for layout
-        align-items: center; // Center items vertically
-        justify-content: space-between; // Space items evenly
+        display: flex; // Uses Flexbox layout for positioning child elements
+        align-items: center; // Vertically aligns items in the center of the container
+        justify-content: space-between; // Distributes the child elements with space in between
 
         .machineName {
-            font-weight: 600; // Bold font for machine name
-            font-size: 16px; // Font size for machine name
-            color: #202224; // Text color for machine name
+            font-weight: 600; // Makes the machine name text bold
+            font-size: 16px; // Sets the font size of the machine name to 16px
+            color: #202224; // Sets the text color to a dark gray
         }
 
         .machineType {
-            font-weight: 400; // Normal font weight for machine type
-            font-size: 11px; // Font size for machine type
-            color: #202224; // Text color for machine type
-            margin-top: -5px; // Negative margin to adjust spacing
+            font-weight: 400; // Sets the font weight to normal
+            font-size: 11px; // Reduces the font size of the machine type
+            color: #202224; // Sets the text color to dark gray
+            margin-top: -5px; // Adds a negative margin to adjust vertical spacing between elements
         }
 
         .machineStatus {
-            font-size: 12px; // Font size for machine status
-            font-weight: 600; // Bold font for machine status
-            padding: 0.5rem 1rem; // Padding around the status
-            border-radius: 5px; // Rounded corners for status badge
+            font-size: 12px; // Font size of the status text
+            font-weight: 600; // Makes the status text bold
+            padding: 0.5rem 1rem; // Adds padding around the status text for better readability
+            border-radius: 5px; // Rounds the corners of the status badge for a soft look
 
             &.working {
-                background-color: rgba($color: #00B69B, $alpha: 0.2); // Background color for working status
-                color: #00B69B; // Text color for working status
+                background-color: rgba(#00B69B, 0.2); // Sets a light green background color for the "working" status
+                color: #00B69B; // Green text color for the "working" status
             }
 
             &.offline {
-                background-color: rgba($color: #EF3826, $alpha: 0.2); // Background color for offline status
-                color: #EF3826; // Text color for offline status
+                background-color: rgba(#EF3826, 0.2); // Sets a light red background color for the "offline" status
+                color: #EF3826; // Red text color for the "offline" status
             }
 
             &.idle {
-                background-color: rgba($color: #FD9A56, $alpha: 0.2); // Background color for idle status
-                color: #FD9A56; // Text color for idle status
+                background-color: rgba(#FD9A56, 0.2); // Sets a light orange background color for the "idle" status
+                color: #FD9A56; // Orange text color for the "idle" status
             }
 
             &.maintenance {
-                background-color: rgba($color: #7e7e7e, $alpha: 0.2); // Background color for maintenance status
-                color: #7e7e7e; // Text color for maintenance status
+                background-color: rgba(#7e7e7e, 0.2); // Sets a light gray background color for the "maintenance" status
+                color: #7e7e7e; // Gray text color for the "maintenance" status
             }
         }
     }
 
-    cursor: pointer; // Change cursor to pointer on hover
+    cursor: pointer; // Changes the cursor to a pointer when hovered over the card (indicating it's clickable)
 
     &:hover {
-        scale: 1.05; // Scale up the card on hover
-        transition: all 0.5s ease; // Smooth transition for hover effect
+        scale: 1.05; // Increases the size of the card slightly when hovered (providing a subtle zoom effect)
+        transition: all 0.5s ease; // Applies a smooth transition to all properties over 0.5 seconds when hovered
     }
 
     .energyCardBody {
-        padding: 1rem 0.5rem;
+        padding: 1rem 0.5rem; // Adds padding inside the body of the card for spacing
 
         .rowHeading {
-            font-size: 14px;
-            font-weight: 400;
-            color: #808285;
+            font-size: 14px; // Sets the font size for row headings
+            font-weight: 400; // Sets normal font weight for row headings
+            color: #808285; // Sets a lighter gray color for row headings
         }
+
         .statRow {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            display: flex; // Uses Flexbox for positioning elements in a row
+            align-items: center; // Vertically aligns elements in the row
+            justify-content: space-between; // Distributes items in the row with space between them
+
             .boxStyle {
-                padding: 0.5rem;
-                background: linear-gradient(135deg, rgba(74,217,145,1) 0%, rgba(0,182,155,1) 100%);
-                border-radius: 5px;
+                padding: 0.5rem; // Adds padding inside each box
+                background: linear-gradient(135deg, rgba(74,217,145,1) 0%, rgba(0,182,155,1) 100%); // Adds a gradient background with two shades of green
+                border-radius: 5px; // Rounds the corners of each box
+
                 .heading {
-                    color: #606264;
-                    font-size: 12px;
+                    color: #606264; // Sets a medium gray color for the heading text
+                    font-size: 12px; // Reduces the font size of the heading text
                 }
+
                 .value {
-                    font-size: 16px;
-                    font-weight: 500;
+                    font-size: 15px; // Increases the font size of the value text
+                    font-weight: 500; // Sets the font weight to medium for value text
                 }
             }
         }
-
     }
-
 }

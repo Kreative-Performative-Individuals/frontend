@@ -2,95 +2,91 @@
     padding: 1rem; // Padding inside the card
     background-color: #fff; // Background color of the card
     border-radius: 15px; // Rounded corners for the card
-    width: 325px; // Fixed width for the card
+    width: 350px; // Fixed width for the card
 
     .cardHead {
         display: flex; // Use flexbox for layout
         align-items: center; // Center items vertically
-        justify-content: space-between; // Space items evenly
+        justify-content: space-between; // Space items evenly (machine name/type on left, status on right)
 
         .machineName {
             font-weight: 600; // Bold font for machine name
             font-size: 16px; // Font size for machine name
-            color: #202224; // Text color for machine name
+            color: #202224; // Text color for machine name (dark gray)
         }
 
         .machineType {
             font-weight: 400; // Normal font weight for machine type
-            font-size: 11px; // Font size for machine type
-            color: #202224; // Text color for machine type
-            margin-top: -5px; // Negative margin to adjust spacing
+            font-size: 11px; // Font size for machine type (smaller)
+            color: #202224; // Text color for machine type (dark gray)
+            margin-top: -5px; // Negative margin to adjust spacing between name and type
         }
 
         .machineStatus {
-            font-size: 12px; // Font size for machine status
+            font-size: 12px; // Font size for machine status (smaller)
             font-weight: 600; // Bold font for machine status
-            padding: 0.5rem 1rem; // Padding around the status
+            padding: 0.5rem 1rem; // Padding around the status badge
             border-radius: 5px; // Rounded corners for status badge
 
             &.working {
-                background-color: rgba($color: #00B69B, $alpha: 0.2); // Background color for working status
-                color: #00B69B; // Text color for working status
+                background-color: rgba($color: #00B69B, $alpha: 0.2); // Light green background for working status
+                color: #00B69B; // Text color for working status (green)
             }
 
             &.offline {
-                background-color: rgba($color: #EF3826, $alpha: 0.2); // Background color for offline status
-                color: #EF3826; // Text color for offline status
+                background-color: rgba($color: #EF3826, $alpha: 0.2); // Light red background for offline status
+                color: #EF3826; // Text color for offline status (red)
             }
 
             &.idle {
-                background-color: rgba($color: #FD9A56, $alpha: 0.2); // Background color for idle status
-                color: #FD9A56; // Text color for idle status
+                background-color: rgba($color: #FD9A56, $alpha: 0.2); // Light orange background for idle status
+                color: #FD9A56; // Text color for idle status (orange)
             }
 
             &.maintenance {
-                background-color: rgba($color: #7e7e7e, $alpha: 0.2); // Background color for maintenance status
-                color: #7e7e7e; // Text color for maintenance status
+                background-color: rgba($color: #7e7e7e, $alpha: 0.2); // Light gray background for maintenance status
+                color: #7e7e7e; // Text color for maintenance status (gray)
             }
         }
     }
 
-    cursor: pointer; // Change cursor to pointer on hover
+    cursor: pointer; // Change cursor to pointer on hover, indicating interactivity
 
     &:hover {
-        scale: 1.05; // Scale up the card on hover
-        transition: all 0.5s ease; // Smooth transition for hover effect
+        scale: 1.05; // Scale up the card by 5% when hovered
+        transition: all 0.5s ease; // Smooth transition for hover effect (scaling and other changes)
     }
 
     .productionCardBody {
-        padding: 1rem 0.5rem;
+        padding: 1rem 0.5rem; // Vertical padding for the body section, with less horizontal padding
 
         .statRow {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-weight: 300;
-            font-size: 15px;
+            display: flex; // Flexbox layout for stat row
+            align-items: center; // Center items vertically within the row
+            justify-content: space-between; // Space out the elements within the row
+            font-weight: 300; // Lighter font weight for stats
+            font-size: 15px; // Font size for stats (medium)
         }
 
         .cycleBar {
-            display: flex;
-            height: 15px;
-            overflow: hidden;
+            display: flex; // Flexbox layout for cycle bar
+            height: 15px; // Fixed height for the cycle bar
+            overflow: hidden; // Hide overflow if content exceeds the bar width
         }
     }
 
     .productionCardFooter {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-top: -20px;
+        display: flex; // Flexbox layout for footer
+        align-items: center; // Center items vertically within the footer
+        justify-content: center; // Center the gauges horizontally
+        margin-top: -20px; // Negative margin to pull footer closer to the body
 
         .gaugeContainer {
-            // display: flex;
-            // flex-direction: column;
-            // align-items: center;
-            // justify-content: center;
-            text-align: center;
+            text-align: center; // Center text inside the gauge container
 
             .gaugeLegend {
-                font-size: 10px;
-                margin-top: -25px;
+                font-size: 10px; // Smaller font size for the gauge legends
+                margin-top: -25px; // Negative margin to move the legend closer to the gauge
             }
         }
     }

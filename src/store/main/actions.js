@@ -26,8 +26,25 @@ import {
   GET_MACHINE_DETAIL,
   GET_MACHINE_DETAIL_SUCCESS,
   GET_MACHINE_DETAIL_ERROR,
+  GET_PRODUCTION_DASHBOARD,
+  GET_PRODUCTION_DASHBOARD_SUCCESS,
+  GET_PRODUCTION_DASHBOARD_ERROR,
+  GET_PRODUCTION_DETAIL,
+  GET_PRODUCTION_DETAIL_SUCCESS,
+  GET_PRODUCTION_DETAIL_ERROR,
+  GET_ENERGY_DASHBOARD,
+  GET_ENERGY_DASHBOARD_SUCCESS,
+  GET_ENERGY_DASHBOARD_ERROR,
+  GET_KPI_CLASS_INSTANCE,
+  GET_KPI_CLASS_INSTANCE_SUCCESS,
+  GET_KPI_CLASS_INSTANCE_ERROR,
+  GET_FORECAST,
+  GET_FORECAST_SUCCESS,
+  GET_FORECAST_ERROR,
   REPORT_LIST,
+  GET_SINGLE_REPORT,
   ADD_REPORT_TO_LIST,
+  DELETE_REPORT
 } from "../types";
 
 export const registerUser = (payload, navigate) => ({
@@ -164,10 +181,91 @@ export const getMachineDetailError = payload => ({
   payload
 });
 
+export const getProductionDashboard = () => ({
+  type: GET_PRODUCTION_DASHBOARD
+});
+
+export const getProductionDashboardSuccess = (payload) => ({
+  type: GET_PRODUCTION_DASHBOARD_SUCCESS,
+  payload
+});
+
+export const getProductionDashboardError = payload => ({
+  type: GET_PRODUCTION_DASHBOARD_ERROR,
+  payload
+});
+
+export const getProductionDetail = (payload) => ({
+  type: GET_PRODUCTION_DETAIL,
+  payload
+});
+
+export const getProductionDetailSuccess = (payload) => ({
+  type: GET_PRODUCTION_DETAIL_SUCCESS,
+  payload
+});
+
+export const getProductionDetailError = payload => ({
+  type: GET_PRODUCTION_DETAIL_ERROR,
+  payload
+});
+
+export const getEnergyDashboard = () => ({
+  type: GET_ENERGY_DASHBOARD
+});
+
+export const getEnergyDashboardSuccess = (payload) => ({
+  type: GET_ENERGY_DASHBOARD_SUCCESS,
+  payload
+});
+
+export const getEnergyDashboardError = payload => ({
+  type: GET_ENERGY_DASHBOARD_ERROR,
+  payload
+});
+
+export const getKpiClassInstance = (payload) => ({
+  type: GET_KPI_CLASS_INSTANCE,
+  payload
+});
+
+export const getKpiClassInstanceSuccess = (payload) => ({
+  type: GET_KPI_CLASS_INSTANCE_SUCCESS,
+  payload
+});
+
+export const getKpiClassInstanceError = payload => ({
+  type: GET_KPI_CLASS_INSTANCE_ERROR,
+  payload
+});
+
+export const getForecasting = (payload) => ({
+  type: GET_FORECAST,
+  payload
+});
+
+export const getForecastingSuccess = (payload) => ({
+  type: GET_FORECAST_SUCCESS,
+  payload
+});
+
+export const getForecastingError = payload => ({
+  type: GET_FORECAST_ERROR,
+  payload
+});
+
 export const getReportList = () => ({
   type: REPORT_LIST
 });
+export const getSingleReport = (payload) => ({
+  type: GET_SINGLE_REPORT,
+  payload
+});
 export const addReportToList = (payload) => ({
   type: ADD_REPORT_TO_LIST,
+  payload
+});
+export const deleteReport = (payload) => ({
+  type: DELETE_REPORT,
   payload
 });

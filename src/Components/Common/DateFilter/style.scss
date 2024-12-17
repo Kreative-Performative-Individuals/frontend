@@ -1,4 +1,4 @@
 .filter {
-    display: flex;
-    gap: 0.5rem;
+    display: flex;        // Enables Flexbox layout for the container
+    gap: 0.5rem;          // Adds space (0.5rem) between each child element inside the container
 }

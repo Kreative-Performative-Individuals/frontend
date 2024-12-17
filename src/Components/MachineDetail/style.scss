@@ -1,135 +1,142 @@
 .machineDetail {
+    // Main container for machine details
+
     .machineDetailHead {
         display: flex; // Use flexbox for layout
-        align-items: center; // Center items vertically
-        justify-content: space-between; // Space items evenly
+        align-items: center; // Vertically center items
+        justify-content: space-between; // Distribute space evenly between items
 
         .machineDetailIntro {
             display: flex; // Use flexbox for layout
-            align-items: center; // Center items vertically
-            justify-content: space-between; // Space items evenly
-            gap: 1rem;
+            align-items: center; // Vertically center items
+            justify-content: space-between; // Distribute space evenly between items
+            gap: 1rem; // Add space between items
 
             .machineName {
-                font-size: 24px;
-                font-weight: 500;
+                font-size: 24px; // Large font size for machine name
+                font-weight: 500; // Medium font weight
             }
 
             .machineStatus {
-                font-size: 12px; // Font size for machine status
-                font-weight: 600; // Bold font for machine status
-                padding: 0.5rem 1rem; // Padding around the status
-                border-radius: 5px; // Rounded corners for status badge
+                font-size: 12px; // Small font size for status
+                font-weight: 600; // Bold font for status
+                padding: 0.5rem 1rem; // Padding around the status label
+                border-radius: 5px; // Rounded corners for the status badge
 
                 &.working {
-                    background-color: rgba($color: #00B69B, $alpha: 0.2); // Background color for working status
-                    color: #00B69B; // Text color for working status
+                    background-color: rgba($color: #00B69B, $alpha: 0.2); // Light green background for working status
+                    color: #00B69B; // Green text color
                 }
 
                 &.offline {
-                    background-color: rgba($color: #EF3826, $alpha: 0.2); // Background color for offline status
-                    color: #EF3826; // Text color for offline status
+                    background-color: rgba($color: #EF3826, $alpha: 0.2); // Light red background for offline status
+                    color: #EF3826; // Red text color
                 }
 
                 &.idle {
-                    background-color: rgba($color: #FD9A56, $alpha: 0.2); // Background color for idle status
-                    color: #FD9A56; // Text color for idle status
+                    background-color: rgba($color: #FD9A56, $alpha: 0.2); // Light orange background for idle status
+                    color: #FD9A56; // Orange text color
                 }
 
                 &.maintenance {
-                    background-color: rgba($color: #7e7e7e, $alpha: 0.2); // Background color for maintenance status
-                    color: #7e7e7e; // Text color for maintenance status
+                    background-color: rgba($color: #7e7e7e, $alpha: 0.2); // Light gray background for maintenance status
+                    color: #7e7e7e; // Gray text color
                 }
             }
         }
 
         .machineDetailFilters {
-            display: flex;
-            gap: 0.5rem;
+            display: flex; // Use flexbox for filter layout
+            gap: 0.5rem; // Add space between filter elements
 
             .react-datepicker-wrapper {
-                height: 100%;
+                height: 100%; // Ensure the date picker takes full height
                 .react-datepicker__input-container {
-                    height: 100%;
+                    height: 100%; // Ensure input container takes full height
                     input {
-                        height: 100%;
-                        width: 100%;
-                        border: none;
+                        height: 100%; // Full height for the input field
+                        width: 100%; // Full width for the input field
+                        border: none; // Remove input border
                     }
                 }
             }
 
             .button {
-                padding: 0.5rem 1rem;
-                color: #fff;
-                background-color: #4880FF;
-                border-radius: 10px;
+                padding: 0.5rem 1rem; // Padding inside the button
+                color: #fff; // White text color
+                background-color: #4880FF; // Blue background color
+                border-radius: 10px; // Rounded corners for the button
             }
         }
     }
 
     .machineDetailStats {
-        margin-top: 15px;
-        display: flex; // Flexbox layout for the stats container
+        margin-top: 15px; // Space above the stats container
+        display: flex; // Use flexbox for stats container
         gap: 1rem; // Space between stats cards
-        padding: 1rem; // Add some padding around the container
-        justify-content: space-between; // Distribute space between items
+        padding: 1rem; // Padding around the container
+        justify-content: space-between; // Distribute space evenly between stats cards
     }
 
     .machineDetailChartFilter {
-        display: grid;
-        grid-template-columns: 3fr 1fr;
-        gap: 1.5rem;
-        margin-top: 30px;
-        align-items: center;
-        justify-content: space-between;
+        display: grid; // Use grid layout for chart filters
+        grid-template-columns: 3fr 1fr; // Three parts for the first column and one part for the second
+        gap: 1.5rem; // Space between grid items
+        margin-top: 30px; // Space above the chart filter
+        align-items: center; // Vertically align items to the center
+        justify-content: space-between; // Space out the items
 
         .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            display: flex; // Flexbox for the header layout
+            align-items: center; // Vertically align items
+            justify-content: space-between; // Space out header items
 
             .Filters {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                background-color: #FAFBFD;
+                display: flex; // Flexbox for the filters container
+                align-items: center; // Vertically align filter items
+                justify-content: center; // Center the filter items horizontally
+                background-color: #FAFBFD; // Light background for the filter container
 
                 .chartFilterButton {
-                    height: 40px;
-                    border: 1px solid #979797;
-                    border-radius: 0;
+                    height: 40px; // Set height for the button
+                    border: 1px solid #979797; // Border for the button
+                    border-radius: 0; // Remove border radius for square corners
+                    color: #000; // Black text color
+
+                    &.active {
+                        background-color: #000; // Black background for active button
+                        color: #fff; // White text color for active button
+                    }
 
                     &.left {
-                        border-top-left-radius: 10px;
-                        border-bottom-left-radius: 10px;
+                        border-top-left-radius: 10px; // Rounded top left corner
+                        border-bottom-left-radius: 10px; // Rounded bottom left corner
                     }
 
                     &.right {
-                        border-top-right-radius: 10px;
-                        border-bottom-right-radius: 10px;
+                        border-top-right-radius: 10px; // Rounded top right corner
+                        border-bottom-right-radius: 10px; // Rounded bottom right corner
                     }
 
                     &:hover {
-                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); // Add shadow on hover
                     }
-
                 }
             }
         }
     }
 
     .machineDetailDetails {
-        display: grid;
-        grid-template-columns: 3fr 1fr;
-        gap: 1.5rem;
-        align-items: center;
-        justify-content: flex-start;
+        display: grid; // Use grid layout for details section
+        grid-template-columns: 3fr 1fr; // Set 3:1 column ratio
+        gap: 1.5rem; // Space between items
+        align-items: center; // Vertically align items
+        justify-content: flex-start; // Align items to the start (left)
 
         .additionalDetails {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
+            display: flex; // Flexbox for additional details layout
+            flex-direction: column; // Arrange items in a column
+            gap: 1rem; // Space between additional details items
         }
     }
 }

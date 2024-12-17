@@ -1,13 +1,15 @@
+/* Set default styles for the body element */
 body {
-  margin: 0;
+  margin: 0; /* Remove default margin for the body */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    sans-serif; /* Use a system-based font stack for better compatibility and readability */
+  -webkit-font-smoothing: antialiased; /* Improve font rendering on WebKit-based browsers */
+  -moz-osx-font-smoothing: grayscale; /* Improve font rendering on macOS using grayscale smoothing */
 }
 
+/* Set default styles for code elements */
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+    monospace; /* Use a monospaced font stack for better readability of code blocks */
 }

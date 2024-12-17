@@ -1,7 +1,8 @@
 import React from 'react'; // Import React library
-import "./style.scss"; // Import styles specific to this component
+import "./style.scss"; // Import the styles specific to this component
 import { Box, Typography } from '@mui/material'; // Import Material-UI components for layout and typography
 import MachineUsageChart from './MachineUsageChart'; // Import the chart component to display machine usage data
+import { capitalizeFirstLetter } from '../../../constants/_helper';
 
 // MachineUsageCard component definition
 const MachineUsageCard = ({ machineName, machineType="Metal Cutting", machineStatus, chartData, onClick }) => {
@@ -13,7 +14,7 @@ const MachineUsageCard = ({ machineName, machineType="Metal Cutting", machineSta
                 <Box className="cardHead">
                     <Box>
                         <Typography className='machineName'>{machineName}</Typography> {/* Display machine name */}
-                        <Typography className='machineType'>{machineType}</Typography> {/* Display machine type */}
+                        <Typography className='machineType'>{capitalizeFirstLetter(machineType)}</Typography> {/* Display machine type */}
                     </Box>
                     {/* Display machine status with conditional styling based on status */}
                     <Box className={`machineStatus ${machineStatus === "Active" && "working"} ${machineStatus === "Offline" && "offline"} ${machineStatus === "Idle" && "idle"} ${machineStatus === "Under Maintenance" && "maintenance"}`}>

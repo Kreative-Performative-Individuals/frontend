@@ -2,7 +2,7 @@ import React from 'react'; // Import React library
 import { Doughnut } from 'react-chartjs-2'; // Import Doughnut chart from react-chartjs-2
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'; // Import necessary components from Chart.js
 import "./style.scss"; // Import styles specific to this component
-import { secondsToHHMMSS, secondsToReadableFormat } from '../../../constants/_helper';
+import { secondsToHHMMSS, secondsToReadableFormat } from '../../../constants/_helper'; // Helper functions to format time
 
 // Register components with Chart.js
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -10,7 +10,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 // MachineUsageChart component definition
 const MachineUsageChart = ({ chartData }) => {
     
-    const arrayForChart = Object.values(chartData);
+    const arrayForChart = chartData ? Object.values(chartData) : []; // Convert chart data object to array
 
     const data = {
         labels: ['Working Time', 'Idle Time', 'Offline Time', "Independent Time"], // Labels for the chart segments
@@ -67,15 +67,16 @@ const MachineUsageChart = ({ chartData }) => {
         },
     };
 
+    // Function to check if all values in the array are zero
     function hasAllZeroValues(arr) {
         return arr.every(value => value === 0);
     }
 
     // Render the doughnut chart inside a container
     return (
-        <div className='chart-container' >
+        <div className='chart-container'>
             {!hasAllZeroValues(arrayForChart) && (
-                <Doughnut data={data} options={options} />
+                <Doughnut data={data} options={options} /> // Render Doughnut chart if not all values are zero
             )}
         </div>
     );
