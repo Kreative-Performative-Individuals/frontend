@@ -38,9 +38,10 @@ const Chatbot = ({ chatRag, ragResponse }) => {
         ]);
         // Make an API request to get the bot's response
         if (lastQuery === "") {
-          await chatRag({ message: inputMessage }); // Send the input message for first query
           setLastQuery(inputMessage); // Set the current query as the last query
+          await chatRag({ message: inputMessage }); // Send the input message for first query
         } else {
+          setLastQuery(inputMessage); // Set the current query as the last query
           await chatRag({ message: inputMessage, previous_query: lastQuery }); // Send the input message along with the previous query
         }
       } catch (error) {
