@@ -18,6 +18,7 @@ import axios from "axios";
 import { kbUrl, kpiEngineUrl } from "../../constants/apiRoutes";
 import { connect } from "react-redux";
 import { getKpiClassInstance } from "../../store/main/actions";
+import { getLocal } from "../../constants/localstorage";  
 
 const CustomKPI = ({ getKpiClassInstance, kpiClassInstane }) => {
   const [formValues, setFormValues] = useState({
@@ -34,7 +35,7 @@ const CustomKPI = ({ getKpiClassInstance, kpiClassInstane }) => {
     message: "",
     severity: "success",
   });
-
+  const [smoView, setSmoView] = useState(false); // State to track if the user is an SMO (Specialized Manufacturing Owner)
   const [kpiList, setKpiList] = useState([]);
   const [kpiToDelete, setKpiToDelete] = useState(null); // Track selected KPI for deletion
 
@@ -140,6 +141,14 @@ const CustomKPI = ({ getKpiClassInstance, kpiClassInstane }) => {
     // eslint-disable-next-line
   }, []);
 
+  useEffect(() => {
+    const user = getLocal("authUser"); 
+    const userData = JSON.parse(user); 
+    if (userData && userData.email.includes("smo")) { 
+        setSmoView(true); 
+    }
+  }, []);
+
   return (
     <Layout>
       <div className="reportTemplatePage">
@@ -180,7 +189,9 @@ const CustomKPI = ({ getKpiClassInstance, kpiClassInstane }) => {
                 >
                   <MenuItem value="kpi">General</MenuItem>
                   <MenuItem value="energy_kpi">Energy</MenuItem>
-                  <MenuItem value="financial_kpi">Financial</MenuItem>
+                  {smoView && (
+                    <MenuItem value="financial_kpi">Financial</MenuItem>
+                  )}
                   <MenuItem value="production_kpi">Production</MenuItem>
                   <MenuItem value="machine_usage_kpi">Machine Usage</MenuItem>
                 </Select>
