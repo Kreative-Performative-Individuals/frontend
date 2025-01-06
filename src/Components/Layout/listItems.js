@@ -9,7 +9,8 @@ import BoltIcon from '@mui/icons-material/Bolt'; // Import Bolt icon for Energy
 import EuroIcon from '@mui/icons-material/Euro'; // Import Euro icon for Financials
 import QueryStatsIcon from '@mui/icons-material/QueryStats'; // Import QueryStats icon for Reports
 import UpdateIcon from '@mui/icons-material/Update'; // Import UpdateIcon icon for Forecasting
-import SettingsInputAntennaIcon from '@mui/icons-material/SettingsInputAntenna'; // Import SettingsInputAntennaIcon icon for Real Time
+import AddIcon from '@mui/icons-material/Add'; // Import Add icon for Custom KPI
+import SettingsInputAntennaIcon from '@mui/icons-material/SettingsInputAntenna'; // Import SettingsInputAntenna icon for Real Time Session
 import { Link, useLocation } from 'react-router-dom'; // Import Link and useLocation from react-router-dom for navigation
 import "./style.scss"; // Import custom styles for the sidebar
 import { getLocal } from "../../constants/localstorage"; // Import a helper function to get data from local storage
@@ -112,6 +113,15 @@ const MainListItems = () => {
               <SettingsInputAntennaIcon className="iconStyle" /> {/* QueryStats icon for Real Time Session */}
             </ListItemIcon>
             <ListItemText primary="Real Time Session" /> {/* Real Time Session text */}
+          </ListItemButton>
+        </div>
+        
+        <div className={`listItem ${location.pathname === "/custom-kpi" && "active"}`}>
+          <ListItemButton component={Link} to="/custom-kpi" className="listBtn">
+            <ListItemIcon>
+              <AddIcon className="iconStyle" /> {/* QueryStats icon for Custom KPI */}
+            </ListItemIcon>
+            <ListItemText primary="Custom KPI" /> {/* Custom KPI text */}
           </ListItemButton>
         </div>
 

@@ -16,6 +16,7 @@ import Reports from "./Components/Reports"; // Import Reports component
 import AddReport from "./Components/ReportTemplatePage/AddReport";
 import ViewReport from "./Components/ReportTemplatePage/ViewReport";
 import Forecast from "./Components/Forecast";
+import CustomKPI from "./Components/CustomKPI";
 
 function App() {
   // Create a router object that defines all application routes and their corresponding components
@@ -83,6 +84,10 @@ function App() {
     {
       path: "/forecast", // Route for viewing real-time machine data
       element: <Forecast />, // Render the RealTime component for this route
+    },
+    {
+      path: "/custom-kpi", // Route for viewing real-time machine data
+      element: <CustomKPI />, // Render the RealTime component for this route
     },
     {
       path: "/logout", // Route for logging out of the application
