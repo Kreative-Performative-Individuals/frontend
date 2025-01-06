@@ -37,4 +37,4 @@ export const CheckKpiEngineAPI = `${kpiEngineUrl}`; // GET
 export const GetDerivedKpiDataAPI = `${kpiEngineUrl}/kpi`; // POST { name, machines, operations, time_aggregation, start_date, end_date, step }
 export const GetDerivedKpiChartAPI = `${kpiEngineUrl}/kpi/chart`; // POST { name, machines, operations, time_aggregation, start_date, end_date, step }
 
-export { baseUrl, kpiEngineWS };
+export { baseUrl, kbUrl, kpiEngineWS, kpiEngineUrl };

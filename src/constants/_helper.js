@@ -1,6 +1,7 @@
 import axios from "axios";
 import { GetDerivedKpiChartAPI, GetDerivedKpiDataAPI, runQueryAPI } from "./apiRoutes";
 import { getLocal, setLocal } from "./localstorage";
+import { v4 as uuidv4 } from 'uuid';
 
 // Array containing column names for machine data
 const machineColumnNames = [
@@ -199,6 +200,28 @@ const updateRecentlyViewed = (category, item) => {
   setLocal("recents", JSON.stringify(recentlyViewed));
 };
 
+const saveToMostlyViewed = (newObject) => {
+  // Get the existing `mostlyViewed` array from localStorage
+  const mostlyViewed = JSON.parse(getLocal('mostlyViewed')) || [];
+
+  // Check if the object already exists in the array
+  const existingIndex = mostlyViewed.findIndex(item =>
+      JSON.stringify(item.data) === JSON.stringify(newObject)
+  );
+
+  if (existingIndex !== -1) {
+      // If the object exists, increase its viewCount
+      mostlyViewed[existingIndex].viewCount += 1;
+  } else {
+      // If the object does not exist, add it with a viewCount of 1
+      mostlyViewed.push({ data: newObject, viewCount: 1, id: uuidv4() });
+  }
+
+  // Save the updated array back to localStorage
+  setLocal('mostlyViewed', JSON.stringify(mostlyViewed));
+};
+
+
 function getAllDatesBetween(startDate, endDate) {
   const dates = [];
   let currentDate = new Date(startDate); // Start from the given startDate
@@ -237,5 +260,6 @@ export {
   updateRecentlyViewed,
   callKpiEngine,
   callKpiEngineChart,
-  getAllDatesBetween
+  getAllDatesBetween,
+  saveToMostlyViewed
 };

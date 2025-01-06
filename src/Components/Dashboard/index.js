@@ -8,12 +8,12 @@ import TotalCost from "../../Assets/Total Cost.svg";
 import TotalAlerts from "../../Assets/Total Alerts.svg";
 import MachineUsageCard from "../Common/MachineUsageCard"; // Card to display machine usage stats
 import { useNavigate } from "react-router-dom"; // Hook for navigation between routes
-import { Typography } from "@mui/material"; // Material UI Typography for text elements
+import { Box, Button, Divider, List, ListItem, Typography } from "@mui/material"; // Material UI Typography for text elements
 import ProductionCard from "../Common/ProductionCard"; // Card for production-related data
 import EnergyCard from "../Common/EnergyCard"; // Card for energy-related data
 import { connect } from "react-redux"; // Connecting to the Redux store
 import { getDashboardParams } from "../../store/main/actions"; // Action to fetch dashboard parameters
-import { truncateToFiveDecimals } from "../../constants/_helper"; // Utility function to truncate decimal values
+import { truncateToFiveDecimals, formatDate } from "../../constants/_helper"; // Utility function to truncate decimal values
 import { getLocal } from "../../constants/localstorage"; // Function to get data from local storage
 
 // Dashboard component
@@ -24,17 +24,31 @@ function Dashboard( { getDashboardParams, loading, dashboardParams } ) {
   
   // useState hook to manage the recently viewed machines (from local storage)
   const [recentlyViewed, setRecentlyViewed] = useState(JSON.parse(getLocal("recents"))); // eslint-disable-line
+  const [mostlyViewed, setMostlyViewed] = useState(JSON.parse(getLocal("mostlyViewed"))); // eslint-disable-line
 
   // Destructure the recently viewed data
   const machinesUsage = recentlyViewed?.machines || []; // Extract machine usage data
   const productionMachines = recentlyViewed?.production || []; // Extract production machine data
   const energyMachines = recentlyViewed?.energy || []; // Extract energy machine data
+  
+  const mostlyViewedConfigurations = mostlyViewed || [];
 
   // useEffect hook to fetch dashboard parameters once on component mount
   useEffect(() => {
     getDashboardParams(); // Fetch dashboard params from the Redux store
     // eslint-disable-next-line
   }, []);
+
+  const getSelectedMachineNames = (groupedSelectedMachines) => {
+    const names = Object.values(groupedSelectedMachines)
+      .flat()
+      .map((machine) => `${machine.name}`);
+    return names;
+  };
+
+  const onOpenConfiguration = (id) => {
+    navigate(`/data-viewer?viewId=${id}`)
+  }
   
   // Card data for various statistics displayed on the dashboard
   const cardData = [
@@ -101,18 +115,81 @@ function Dashboard( { getDashboardParams, loading, dashboardParams } ) {
             />
           ))}
         </div>
+
+        <div className="mostlyViewedContainer">
+          
+          {/* Display the recently viewed machines */}
+          <div className="mostlyViewed">
+            {/* Render MachineUsageCard for machine usage data */}
+            <Box sx={{ mt: 5 }}>
+              <Typography variant="h6" gutterBottom>
+                Mostly Viewed Configurations
+              </Typography>
+              {mostlyViewedConfigurations && mostlyViewedConfigurations.length > 0 ? (
+                <List>
+                  {mostlyViewedConfigurations.sort((a, b) => b.viewCount - a.viewCount).slice(0, 5).map((configuration, index) => (
+                    <React.Fragment key={index}>
+                      <ListItem>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            width: "100%",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Typography variant="body1" sx={{ flex: 1 }}>
+                            <strong>KPI:</strong> {configuration.data.kpi}
+                          </Typography>
+                          <Typography variant="body1" sx={{ flex: 1 }}>
+                            <strong>Operation:</strong>{" "}
+                            {configuration.data.operation === "all" ? "All" : configuration.data.operation}
+                          </Typography>
+                          <Typography variant="body1" sx={{ flex: 1 }}>
+                            <strong>Selected Machines:</strong>{" "}
+                            {getSelectedMachineNames(configuration.data.machines).length}
+                          </Typography>
+                          <Typography variant="body1" sx={{ flex: 1 }}>
+                            <strong>Range:</strong>{" "}
+                            {`${formatDate(configuration.data.timeframe.startDate).substring(
+                              0,
+                              10
+                            )} - ${formatDate(configuration.data.timeframe.endDate).substring(0, 10)}`}
+                          </Typography>
+                          <Typography variant="body1" sx={{ flex: 1 }}>
+                            <strong>Chart Type:</strong> {configuration.data.chartType}
+                          </Typography>
+                          <Button
+                            variant="contained"
+                            size="small"
+                            sx={{ ml: 2 }}
+                            onClick={() => onOpenConfiguration(configuration.id)}
+                          >
+                            View
+                          </Button>
+                        </Box>
+                      </ListItem>
+                      {index < mostlyViewedConfigurations.length - 1 && <Divider />}
+                    </React.Fragment>
+                  ))}
+                </List>
+              ) : (
+                <Typography variant="body1" sx={{ mt: 2, textAlign: "center" }}>
+                  No Viewed Configurations
+                </Typography>
+              )}
+            </Box>
+          </div>
+        </div>
         
         {/* Recently Viewed Machines */}
         <div className="recentlyViewedContainer">
-          <Typography variant="p" className='headerHeading'>Recently Viewed</Typography>
-          {/* If no recently viewed machines, show message */}
+          <Typography variant="h6" className='headerHeading'>Recently Viewed</Typography>
           {machinesUsage.length === 0 && productionMachines.length === 0 && energyMachines.length === 0 && (
             <Typography variant="h6" sx={{ ml: 2, mt: 2 }}>No Recently Viewed</Typography>
           )}
           
-          {/* Display the recently viewed machines */}
           <div className="recentlyViewed">
-            {/* Render MachineUsageCard for machine usage data */}
             {machinesUsage && machinesUsage.map((machine, index) => (
               <MachineUsageCard
                 key={index}
@@ -124,7 +201,6 @@ function Dashboard( { getDashboardParams, loading, dashboardParams } ) {
               />
             ))}
             
-            {/* Render ProductionCard for production machines */}
             {productionMachines && productionMachines.map((machine, index) => (
               <ProductionCard
                   key={index}
@@ -142,7 +218,6 @@ function Dashboard( { getDashboardParams, loading, dashboardParams } ) {
               />
             ))}
             
-            {/* Render EnergyCard for energy machines */}
             {energyMachines && energyMachines.map((machine, index) => (
               <EnergyCard
                   key={index}
@@ -157,6 +232,9 @@ function Dashboard( { getDashboardParams, loading, dashboardParams } ) {
             ))}
           </div>
         </div>
+
+
+        
       </Layout>
     </React.Fragment>
   );

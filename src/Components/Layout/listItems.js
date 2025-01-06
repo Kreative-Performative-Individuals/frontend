@@ -10,6 +10,7 @@ import EuroIcon from '@mui/icons-material/Euro'; // Import Euro icon for Financi
 import QueryStatsIcon from '@mui/icons-material/QueryStats'; // Import QueryStats icon for Reports
 import UpdateIcon from '@mui/icons-material/Update'; // Import UpdateIcon icon for Forecasting
 import SettingsInputAntennaIcon from '@mui/icons-material/SettingsInputAntenna'; // Import SettingsInputAntennaIcon icon for Real Time
+import DataThresholdingIcon from '@mui/icons-material/DataThresholding';
 import { Link, useLocation } from 'react-router-dom'; // Import Link and useLocation from react-router-dom for navigation
 import "./style.scss"; // Import custom styles for the sidebar
 import { getLocal } from "../../constants/localstorage"; // Import a helper function to get data from local storage
@@ -112,6 +113,24 @@ const MainListItems = () => {
               <SettingsInputAntennaIcon className="iconStyle" /> {/* QueryStats icon for Real Time Session */}
             </ListItemIcon>
             <ListItemText primary="Real Time Session" /> {/* Real Time Session text */}
+          </ListItemButton>
+        </div>
+        
+        {/* <div className={`listItem ${location.pathname === "/custom-kpi" && "active"}`}>
+          <ListItemButton component={Link} to="/custom-kpi" className="listBtn">
+            <ListItemIcon>
+              <SettingsInputAntennaIcon className="iconStyle" />
+            </ListItemIcon>
+            <ListItemText primary="Custom KPI" />
+          </ListItemButton>
+        </div> */}
+        
+        <div className={`listItem ${location.pathname === "/data-viewer" && "active"}`}>
+          <ListItemButton component={Link} to="/data-viewer" className="listBtn">
+            <ListItemIcon>
+              <DataThresholdingIcon className="iconStyle" /> {/* DataThresholdingIcon icon for Data Viewer */}
+            </ListItemIcon>
+            <ListItemText primary="Data Viewer" /> {/* Data Viewer text */}
           </ListItemButton>
         </div>
 

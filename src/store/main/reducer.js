@@ -46,7 +46,8 @@ import {
   REPORT_LIST,
   GET_SINGLE_REPORT,
   ADD_REPORT_TO_LIST,
-  DELETE_REPORT
+  DELETE_REPORT,
+  FILTER_MACHINE_LIST
 } from "../types";
 
 const initialState = {
@@ -69,7 +70,8 @@ const initialState = {
   kpiClassInstane: {},
   forecast: [],
   reports: [],
-  singleReport: {}
+  singleReport: {},
+  filteredMachineList: [],
 };
 
 const MyReducer = (state = initialState, action) => {
@@ -483,12 +485,16 @@ const MyReducer = (state = initialState, action) => {
             const existing = JSON.parse(getLocal("reports")) || [];
             const updatedList = existing.filter(report => report.reportId !== action.payload);
             setLocal("reports", JSON.stringify(updatedList))
-            // const currentReports = state.reports;
-            // currentReports.push(action.payload)
             return {
                 ...state,
                 error: false,
                 reports: updatedList
+            };
+        
+        case FILTER_MACHINE_LIST:
+            return {
+                ...state,
+                filteredMachineList: action.payload
             };
       default:
           return { ...state };
